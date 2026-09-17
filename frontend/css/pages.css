@@ -1,0 +1,1297 @@
+/* =====================================================
+   CAMPUSMIND AI
+   PAGES STYLESHEET
+   About + Features
+===================================================== */
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background: #070b16;
+    color: #ffffff;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =====================================================
+   BACKGROUND GLOW
+===================================================== */
+
+.page-glow {
+    position: fixed;
+
+    width: 500px;
+    height: 500px;
+
+    border-radius: 50%;
+
+    filter: blur(140px);
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    opacity: 0.12;
+}
+
+.glow-left {
+    top: 100px;
+    left: -280px;
+    background: #635bff;
+}
+
+.glow-right {
+    top: 500px;
+    right: -280px;
+    background: #00d4ff;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.page-navbar {
+    position: sticky;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 76px;
+
+    padding: 0 7%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 1000;
+
+    background: rgba(7, 11, 22, 0.78);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.page-logo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    font-size: 19px;
+
+    font-weight: 800;
+}
+
+.page-logo b {
+    color: #00d4ff;
+}
+
+.page-logo-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00d4ff
+        );
+
+    box-shadow:
+        0 0 25px rgba(0, 212, 255, 0.25);
+}
+
+.page-logo-icon i {
+    color: #ffffff;
+}
+
+
+/* =====================================================
+   BACK HOME BUTTON
+===================================================== */
+
+.back-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px 17px;
+
+    border-radius: 10px;
+
+    color: #cbd4e5;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.1);
+
+    font-size: 13px;
+
+    transition: 0.3s ease;
+}
+
+.back-button:hover {
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    border-color:
+        rgba(0, 212, 255, 0.3);
+
+    transform: translateX(-3px);
+}
+
+.back-button i {
+    color: #00d4ff;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.page-hero {
+    position: relative;
+
+    min-height: 620px;
+
+    padding:
+        120px 7% 100px;
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* =====================================================
+   HERO BADGE
+===================================================== */
+
+.hero-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 8px 15px;
+
+    border-radius: 50px;
+
+    color: #9eefff;
+
+    background:
+        rgba(0, 212, 255, 0.06);
+
+    border:
+        1px solid rgba(0, 212, 255, 0.18);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    animation:
+        fadeDown 0.8s ease both;
+}
+
+.hero-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #00d4ff;
+
+    box-shadow:
+        0 0 15px #00d4ff;
+
+    animation:
+        pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+}
+
+
+/* =====================================================
+   HERO HEADING
+===================================================== */
+
+.page-hero h1 {
+    max-width: 900px;
+
+    margin-top: 25px;
+
+    font-size:
+        clamp(48px, 7vw, 82px);
+
+    line-height: 1.03;
+
+    letter-spacing: -3px;
+
+    font-weight: 800;
+
+    animation:
+        fadeUp 0.9s ease 0.1s both;
+}
+
+.page-hero h1 span {
+    display: block;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #8178ff,
+            #00d4ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+
+/* =====================================================
+   HERO PARAGRAPH
+===================================================== */
+
+.page-hero > p {
+    max-width: 720px;
+
+    margin-top: 25px;
+
+    color: #8d98ad;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+
+    animation:
+        fadeUp 0.9s ease 0.2s both;
+}
+
+
+/* =====================================================
+   HERO ACTIONS
+===================================================== */
+
+.hero-actions {
+    display: flex;
+
+    gap: 14px;
+
+    margin-top: 35px;
+
+    animation:
+        fadeUp 0.9s ease 0.3s both;
+}
+
+.page-primary-button,
+.page-secondary-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 13px 21px;
+
+    border-radius: 11px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: 0.3s ease;
+}
+
+.page-primary-button {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00bde8
+        );
+
+    box-shadow:
+        0 10px 30px rgba(0, 190, 235, 0.15);
+}
+
+.page-primary-button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 15px 35px rgba(0, 190, 235, 0.3);
+}
+
+.page-primary-button i {
+    transition: 0.3s;
+}
+
+.page-primary-button:hover i {
+    transform: translateX(4px);
+}
+
+.page-secondary-button {
+    color: #dce3f2;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+}
+
+.page-secondary-button:hover {
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    transform: translateY(-3px);
+}
+
+.page-secondary-button i {
+    color: #00d4ff;
+}
+
+
+/* =====================================================
+   COMMON SECTION
+===================================================== */
+
+.about-section,
+.workflow-section,
+.technology-section {
+    padding:
+        100px 7%;
+}
+
+
+/* =====================================================
+   SECTION HEADING
+===================================================== */
+
+.section-heading {
+    max-width: 720px;
+
+    margin: 0 auto 55px;
+
+    text-align: center;
+}
+
+.section-heading > span,
+.section-label {
+    color: #00d4ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.section-heading h2,
+.technology-content h2 {
+    margin-top: 12px;
+
+    font-size:
+        clamp(32px, 4vw, 52px);
+
+    line-height: 1.15;
+
+    letter-spacing: -1.5px;
+}
+
+.section-heading h2 strong,
+.technology-content h2 strong {
+    color: #7770ff;
+}
+
+.section-heading p {
+    margin-top: 14px;
+
+    color: #7f899f;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   ABOUT GRID
+===================================================== */
+
+.about-grid {
+    max-width: 1150px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+
+/* =====================================================
+   INFO CARD
+===================================================== */
+
+.info-card {
+    position: relative;
+
+    min-height: 280px;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.015)
+        );
+
+    border:
+        1px solid rgba(255, 255, 255, 0.07);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.35s ease,
+        border 0.35s ease,
+        background 0.35s ease;
+
+    animation:
+        fadeUp 0.8s ease both;
+}
+
+.info-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    right: -90px;
+    top: -90px;
+
+    border-radius: 50%;
+
+    background: #00d4ff;
+
+    filter: blur(60px);
+
+    opacity: 0.08;
+}
+
+.info-card:hover {
+    transform: translateY(-8px);
+
+    border-color:
+        rgba(0, 212, 255, 0.25);
+
+    background:
+        rgba(255, 255, 255, 0.065);
+}
+
+
+/* =====================================================
+   INFO ICON
+===================================================== */
+
+.info-icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    color: #00d4ff;
+
+    background:
+        rgba(0, 212, 255, 0.08);
+
+    border:
+        1px solid rgba(0, 212, 255, 0.1);
+
+    font-size: 20px;
+
+    margin-bottom: 25px;
+
+    transition: 0.3s;
+}
+
+.info-card:hover .info-icon {
+    transform: scale(1.08) rotate(-3deg);
+
+    box-shadow:
+        0 0 25px rgba(0, 212, 255, 0.12);
+}
+
+.info-card h3 {
+    font-size: 18px;
+}
+
+.info-card p {
+    margin-top: 11px;
+
+    color: #7f899f;
+
+    font-size: 13px;
+
+    line-height: 1.75;
+}
+
+
+/* =====================================================
+   WORKFLOW
+===================================================== */
+
+.workflow {
+    max-width: 1100px;
+
+    margin: auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.workflow-card {
+    width: 280px;
+
+    min-height: 260px;
+
+    padding: 28px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.045),
+            rgba(255, 255, 255, 0.012)
+        );
+
+    border:
+        1px solid rgba(255, 255, 255, 0.07);
+
+    transition: 0.35s ease;
+
+    position: relative;
+}
+
+.workflow-card:hover {
+    transform: translateY(-8px);
+
+    border-color:
+        rgba(108, 99, 255, 0.35);
+}
+
+
+/* =====================================================
+   STEP NUMBER
+===================================================== */
+
+.step-number {
+    position: absolute;
+
+    top: 15px;
+    right: 18px;
+
+    color: rgba(255, 255, 255, 0.18);
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   WORKFLOW ICON
+===================================================== */
+
+.workflow-icon {
+    width: 65px;
+    height: 65px;
+
+    margin: 10px auto 22px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00bde8
+        );
+
+    box-shadow:
+        0 0 30px rgba(0, 212, 255, 0.12);
+
+    font-size: 22px;
+
+    animation:
+        floatingIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatingIcon {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.workflow-card h3 {
+    font-size: 19px;
+}
+
+.workflow-card p {
+    margin-top: 10px;
+
+    color: #7f899f;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   WORKFLOW LINE
+===================================================== */
+
+.workflow-line {
+    width: 65px;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #00d4ff,
+            transparent
+        );
+
+    opacity: 0.35;
+}
+
+
+/* =====================================================
+   TECHNOLOGY SECTION
+===================================================== */
+
+.technology-section {
+    max-width: 1200px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 0.8fr;
+
+    gap: 80px;
+
+    align-items: center;
+}
+
+.technology-content > p {
+    max-width: 600px;
+
+    margin-top: 20px;
+
+    color: #8994aa;
+
+    font-size: 15px;
+
+    line-height: 1.8;
+}
+
+
+/* =====================================================
+   TECH LIST
+===================================================== */
+
+.tech-list {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+.tech-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.06);
+
+    color: #cbd4e5;
+
+    font-size: 13px;
+
+    transition: 0.3s ease;
+}
+
+.tech-item:hover {
+    transform: translateX(5px);
+
+    border-color:
+        rgba(0, 212, 255, 0.25);
+}
+
+.tech-item i {
+    color: #00d4ff;
+
+    font-size: 17px;
+
+    width: 20px;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   TECHNOLOGY VISUAL
+===================================================== */
+
+.technology-visual {
+    min-height: 370px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+/* ORBITS */
+
+.tech-orbit {
+    position: absolute;
+
+    border:
+        1px solid rgba(0, 212, 255, 0.15);
+
+    border-radius: 50%;
+
+    animation:
+        orbitRotate 12s linear infinite;
+}
+
+.orbit-one {
+    width: 290px;
+    height: 290px;
+}
+
+.orbit-two {
+    width: 210px;
+    height: 210px;
+
+    border-color:
+        rgba(108, 99, 255, 0.18);
+
+    animation-duration: 8s;
+
+    animation-direction: reverse;
+}
+
+@keyframes orbitRotate {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* CORE */
+
+.tech-core {
+    width: 120px;
+    height: 120px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00bde8
+        );
+
+    box-shadow:
+        0 0 70px rgba(0, 212, 255, 0.25);
+
+    z-index: 2;
+
+    animation:
+        corePulse 3s ease-in-out infinite;
+}
+
+.tech-core i {
+    font-size: 35px;
+}
+
+.tech-core span {
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+@keyframes corePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+
+/* =====================================================
+   CTA
+===================================================== */
+
+.page-cta {
+    margin:
+        40px 7% 100px;
+
+    padding:
+        55px 60px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 99, 255, 0.13),
+            rgba(0, 212, 255, 0.05)
+        );
+
+    border:
+        1px solid rgba(255, 255, 255, 0.07);
+
+    overflow: hidden;
+
+    position: relative;
+}
+
+.page-cta::before {
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    right: -120px;
+    top: -160px;
+
+    border-radius: 50%;
+
+    background: #00d4ff;
+
+    filter: blur(100px);
+
+    opacity: 0.08;
+}
+
+.page-cta > div {
+    position: relative;
+    z-index: 1;
+}
+
+.page-cta > div > span {
+    color: #00d4ff;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.page-cta h2 {
+    margin-top: 8px;
+
+    font-size:
+        clamp(28px, 4vw, 42px);
+
+    line-height: 1.15;
+}
+
+.page-cta p {
+    margin-top: 10px;
+
+    color: #8994aa;
+
+    font-size: 13px;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.page-footer {
+    padding:
+        30px 7%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.06);
+
+    color: #68738a;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes fadeUp {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+@keyframes fadeDown {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+    .page-navbar {
+        padding: 0 5%;
+    }
+
+    .about-section,
+    .workflow-section {
+        padding:
+            80px 5%;
+    }
+
+    .about-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .workflow {
+        flex-direction: column;
+
+        gap: 20px;
+    }
+
+    .workflow-line {
+        width: 1px;
+
+        height: 45px;
+    }
+
+    .technology-section {
+        grid-template-columns: 1fr;
+
+        padding:
+            80px 5%;
+    }
+
+    .technology-visual {
+        min-height: 320px;
+    }
+
+    .page-cta {
+        margin-left: 5%;
+        margin-right: 5%;
+
+        padding: 45px;
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .page-navbar {
+        height: 68px;
+
+        padding: 0 5%;
+    }
+
+    .page-logo {
+        font-size: 16px;
+    }
+
+    .page-logo-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .back-button {
+        padding: 9px 12px;
+
+        font-size: 11px;
+    }
+
+    .page-hero {
+        min-height: 570px;
+
+        padding:
+            90px 5% 70px;
+    }
+
+    .page-hero h1 {
+        font-size: 45px;
+
+        letter-spacing: -2px;
+    }
+
+    .page-hero > p {
+        font-size: 14px;
+    }
+
+    .hero-actions {
+        width: 100%;
+
+        flex-direction: column;
+    }
+
+    .page-primary-button,
+    .page-secondary-button {
+        width: 100%;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .workflow-card {
+        width: 100%;
+
+        max-width: 350px;
+    }
+
+    .tech-list {
+        grid-template-columns: 1fr;
+    }
+
+    .technology-visual {
+        min-height: 290px;
+    }
+
+    .orbit-one {
+        width: 230px;
+        height: 230px;
+    }
+
+    .orbit-two {
+        width: 165px;
+        height: 165px;
+    }
+
+    .tech-core {
+        width: 100px;
+        height: 100px;
+    }
+
+    .page-cta {
+        margin:
+            20px 5% 70px;
+
+        padding: 32px 25px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .page-footer {
+        flex-direction: column;
+
+        gap: 8px;
+
+        text-align: center;
+    }
+
+}

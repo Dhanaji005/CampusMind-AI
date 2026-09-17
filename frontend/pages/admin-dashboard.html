@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMind AI — Admin Command Center</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main & Dashboard Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- React 18 & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <span>CampusMind <span class="ai-text">AI</span></span>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="admin-dashboard.html" class="active">Admin Portal</a>
+            <a href="student-dashboard.html">Student View</a>
+            <a href="chat.html">AI Chat</a>
+            <a href="features.html">Features</a>
+        </nav>
+        <div class="auth-buttons">
+            <a href="../auth/signin.html" class="signin-button">Sign In</a>
+        </div>
+    </header>
+
+    <!-- REACT ROOT -->
+    <div id="admin-dashboard-root">
+        <div style="text-align:center;padding:140px 20px;color:#00d4ff;">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size:32px;"></i>
+            <p style="margin-top:16px;font-size:16px;">Loading Admin Command Center…</p>
+        </div>
+    </div>
+
+    <!-- REACT SCRIPT -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const API_BASE = (function () {
+            if (window.CAMPUSMIND_API_BASE) return window.CAMPUSMIND_API_BASE;
+            try {
+                if (window.location && window.location.protocol && window.location.protocol.startsWith("http")) {
+                    const port = window.location.port;
+                    if (!port || port === "80" || port === "443" || port === "5000") {
+                        return window.location.origin;
+                    }
+                    if (window.location.hostname) {
+                        return window.location.protocol + "//" + window.location.hostname + ":5000";
+                    }
+                }
+            } catch (e) {}
+            return "http://127.0.0.1:5000";
+        })();
+
+        function AdminDashboardApp() {
+            const [activeTab, setActiveTab] = useState("documents"); // documents, notices, events, users
+            const [documents, setDocuments] = useState([]);
+            const [notices, setNotices] = useState([]);
+            const [users, setUsers] = useState([]);
+            const [events, setEvents] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [msg, setMsg] = useState({ text: "", type: "" });
+
+            // Upload Form State
+            const [uploadFile, setUploadFile] = useState(null);
+            const [docTitle, setDocTitle] = useState("");
+            const [docCategory, setDocCategory] = useState("syllabus");
+            const [docDept, setDocDept] = useState("Computer Science");
+            const [docYear, setDocYear] = useState("All");
+            const [isUploading, setIsUploading] = useState(false);
+
+            // Notice Form State
+            const [noticeTitle, setNoticeTitle] = useState("");
+            const [noticeContent, setNoticeContent] = useState("");
+            const [noticeCategory, setNoticeCategory] = useState("Academic");
+            const [noticeDept, setNoticeDept] = useState("All");
+            const [noticeYear, setNoticeYear] = useState("All");
+            const [noticePriority, setNoticePriority] = useState("Normal");
+
+            // Event Form State
+            const [eventTitle, setEventTitle] = useState("");
+            const [eventDesc, setEventDesc] = useState("");
+            const [eventCategory, setEventCategory] = useState("Hackathon");
+            const [eventVenue, setEventVenue] = useState("Main Auditorium");
+            const [eventDate, setEventDate] = useState("");
+
+            // Attendance Manager State (HOD & Admin)
+            const [attendanceRecords, setAttendanceRecords] = useState([]);
+            const [attDeptFilter, setAttDeptFilter] = useState("All");
+            const [attYearFilter, setAttYearFilter] = useState("All");
+            const [attStatusFilter, setAttStatusFilter] = useState("All");
+            const [attUploadFile, setAttUploadFile] = useState(null);
+            const [attDept, setAttDept] = useState("BBA(CA)");
+            const [attYear, setAttYear] = useState("1st Year");
+            const [attSubject, setAttSubject] = useState("Core Curriculum");
+            const [attSubjectCode, setAttSubjectCode] = useState("");
+            const [attMonth, setAttMonth] = useState("Overall");
+            const [attUploadedBy, setAttUploadedBy] = useState("Department HOD");
+            const [isUploadingAtt, setIsUploadingAtt] = useState(false);
+
+            // Manual Attendance Form State
+            const [manualName, setManualName] = useState("");
+            const [manualRoll, setManualRoll] = useState("");
+            const [manualId, setManualId] = useState("");
+            const [manualEmail, setManualEmail] = useState("");
+            const [manualTotal, setManualTotal] = useState("40");
+            const [manualAttended, setManualAttended] = useState("35");
+
+            function showToast(text, type = "success") {
+                setMsg({ text, type });
+                setTimeout(() => setMsg({ text: "", type: "" }), 4000);
+            }
+
+            // Fetch Documents
+            async function fetchDocuments() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/documents`);
+                    const data = await res.json();
+                    if (data.success) setDocuments(data.documents);
+                } catch (e) {
+                    console.error("Error fetching documents:", e);
+                }
+            }
+
+            // Fetch Notices
+            async function fetchNotices() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/student/notices`);
+                    const data = await res.json();
+                    if (data.success) setNotices(data.notices);
+                } catch (e) {
+                    console.error("Error fetching notices:", e);
+                }
+            }
+
+            // Fetch Users
+            async function fetchUsers() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/users`);
+                    const data = await res.json();
+                    if (data.success) setUsers(data.users);
+                } catch (e) {
+                    console.error("Error fetching users:", e);
+                }
+            }
+
+            // Fetch Attendance Records
+            async function fetchAttendance() {
+                try {
+                    let url = `${API_BASE}/api/attendance/department?department=${encodeURIComponent(attDeptFilter)}&year=${encodeURIComponent(attYearFilter)}`;
+                    if (attStatusFilter !== "All") url += `&status=${encodeURIComponent(attStatusFilter)}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data.success) setAttendanceRecords(data.records);
+                } catch (e) {
+                    console.error("Error fetching attendance:", e);
+                }
+            }
+
+            useEffect(() => {
+                fetchDocuments();
+                fetchNotices();
+                fetchUsers();
+                fetchAttendance();
+            }, []);
+
+            useEffect(() => {
+                if (activeTab === "attendance") {
+                    fetchAttendance();
+                }
+            }, [activeTab, attDeptFilter, attYearFilter, attStatusFilter]);
+
+            // Handle Attendance Sheet Upload by HOD
+            async function handleAttendanceUpload(e) {
+                e.preventDefault();
+                if (!attUploadFile) {
+                    showToast("Please choose an attendance sheet (CSV / Excel / TXT).", "error");
+                    return;
+                }
+
+                setIsUploadingAtt(true);
+                const formData = new FormData();
+                formData.append("file", attUploadFile);
+                formData.append("department", attDept);
+                formData.append("year_of_study", attYear);
+                formData.append("subject_name", attSubject);
+                formData.append("subject_code", attSubjectCode);
+                formData.append("month", attMonth);
+                formData.append("uploaded_by", attUploadedBy);
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/attendance/upload`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, "success");
+                        setAttUploadFile(null);
+                        const fileInput = document.getElementById("att-file-picker");
+                        if (fileInput) fileInput.value = "";
+                        fetchAttendance();
+                    } else {
+                        showToast(data.error || "Failed to process attendance sheet.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error uploading attendance sheet: " + err.message, "error");
+                } finally {
+                    setIsUploadingAtt(false);
+                }
+            }
+
+            // Handle Manual Attendance Submit by HOD
+            async function handleManualAttendanceSubmit(e) {
+                e.preventDefault();
+                if (!manualName) {
+                    showToast("Please enter the student's name.", "error");
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/attendance/record`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            student_name: manualName,
+                            roll_no: manualRoll,
+                            student_id: manualId,
+                            email: manualEmail,
+                            department: attDept,
+                            year_of_study: attYear,
+                            subject_name: attSubject,
+                            subject_code: attSubjectCode,
+                            month: attMonth,
+                            total_lectures: parseInt(manualTotal) || 0,
+                            attended_lectures: parseInt(manualAttended) || 0,
+                            uploaded_by: attUploadedBy
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, "success");
+                        setManualName("");
+                        setManualRoll("");
+                        setManualId("");
+                        setManualEmail("");
+                        fetchAttendance();
+                    } else {
+                        showToast(data.error || "Failed to save attendance record.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error recording attendance: " + err.message, "error");
+                }
+            }
+
+            // Delete Attendance Record
+            async function handleDeleteAttendance(recId) {
+                if (!confirm("Are you sure you want to remove this attendance record?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/attendance/${recId}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Attendance record removed.", "success");
+                        fetchAttendance();
+                    }
+                } catch (err) {
+                    showToast("Error deleting record: " + err.message, "error");
+                }
+            }
+
+            // Handle Document Upload
+            async function handleDocUpload(e) {
+                e.preventDefault();
+                if (!uploadFile) {
+                    showToast("Please choose a PDF or text file.", "error");
+                    return;
+                }
+
+                setIsUploading(true);
+                const formData = new FormData();
+                formData.append("file", uploadFile);
+                formData.append("title", docTitle || uploadFile.name);
+                formData.append("category", docCategory);
+                formData.append("department", docDept);
+                formData.append("target_year", docYear);
+
+                try {
+                    const token = localStorage.getItem("campusmind_jwt");
+                    const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+
+                    const res = await fetch(`${API_BASE}/api/admin/documents/upload`, {
+                        method: "POST",
+                        headers,
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        showToast(`Document "${data.document.title}" chunked and indexed into RAG! 🚀`, "success");
+                        setUploadFile(null);
+                        setDocTitle("");
+                        document.getElementById("admin-file-picker").value = "";
+                        fetchDocuments();
+                    } else {
+                        showToast(data.error || "Failed to upload document.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error uploading file to backend.", "error");
+                } finally {
+                    setIsUploading(false);
+                }
+            }
+
+            // Handle Delete Document
+            async function handleDeleteDoc(id) {
+                if (!confirm("Are you sure you want to remove this document and its embeddings from the RAG store?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/documents/${id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Document deleted.", "success");
+                        fetchDocuments();
+                    }
+                } catch (e) {
+                    showToast("Error deleting document.", "error");
+                }
+            }
+
+            // Handle Create Notice
+            async function handleCreateNotice(e) {
+                e.preventDefault();
+                if (!noticeTitle.trim() || !noticeContent.trim()) {
+                    showToast("Title and content are required.", "error");
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/notices`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: noticeTitle,
+                            content: noticeContent,
+                            category: noticeCategory,
+                            department: noticeDept,
+                            target_year: noticeYear,
+                            priority: noticePriority
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Notice published successfully! 📢", "success");
+                        setNoticeTitle("");
+                        setNoticeContent("");
+                        fetchNotices();
+                    }
+                } catch (e) {
+                    showToast("Error publishing notice.", "error");
+                }
+            }
+
+            // Handle Delete Notice
+            async function handleDeleteNotice(id) {
+                if (!confirm("Delete this notice?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/notices/${id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Notice deleted.", "success");
+                        fetchNotices();
+                    }
+                } catch (e) {
+                    showToast("Error deleting notice.", "error");
+                }
+            }
+
+            // Handle Create Event
+            async function handleCreateEvent(e) {
+                e.preventDefault();
+                if (!eventTitle.trim() || !eventDesc.trim()) {
+                    showToast("Event title and description are required.", "error");
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/events`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: eventTitle,
+                            description: eventDesc,
+                            category: eventCategory,
+                            venue: eventVenue,
+                            event_date: eventDate || new Date().toISOString()
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Campus event scheduled! 🎪", "success");
+                        setEventTitle("");
+                        setEventDesc("");
+                    }
+                } catch (e) {
+                    showToast("Error creating event.", "error");
+                }
+            }
+
+            // Handle Role Change
+            async function handleRoleChange(userId, newRole) {
+                try {
+                    const res = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ role: newRole })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`Role updated to '${newRole}'.`, "success");
+                        fetchUsers();
+                    }
+                } catch (e) {
+                    showToast("Failed to update role.", "error");
+                }
+            }
+
+            return (
+                <div className="dashboard-page">
+                    {/* Header */}
+                    <div className="dashboard-header">
+                        <div className="dashboard-user-info">
+                            <h1>
+                                <span>🛡️ Campus Command Center</span>
+                                <span className="badge-role badge-admin">Admin Authority</span>
+                            </h1>
+                            <div className="dashboard-user-meta">
+                                <span><i className="fa-solid fa-microchip"></i> RAG Pipeline Active (pgvector + Embeddings)</span>
+                                <span><i className="fa-solid fa-file-pdf"></i> {documents.length} Grounded Documents</span>
+                                <span><i className="fa-solid fa-users"></i> {users.length} Registered Users</span>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-actions">
+                            <a href="chat.html" className="btn-primary-action">
+                                <i className="fa-solid fa-comments"></i> Admin AI Chat
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Toast Message */}
+                    {msg.text && (
+                        <div style={{
+                            padding: "12px 20px",
+                            borderRadius: "10px",
+                            marginBottom: "24px",
+                            background: msg.type === "error" ? "rgba(239, 68, 68, 0.2)" : "rgba(0, 212, 255, 0.15)",
+                            border: `1px solid ${msg.type === "error" ? "rgba(239, 68, 68, 0.4)" : "rgba(0, 212, 255, 0.4)"}`,
+                            color: msg.type === "error" ? "#fca5a5" : "#00d4ff",
+                            fontWeight: 600
+                        }}>
+                            {msg.type === "error" ? "⚠️ " : "✓ "} {msg.text}
+                        </div>
+                    )}
+
+                    {/* Navigation Tabs */}
+                    <div style={{ display: "flex", gap: "10px", marginBottom: "28px", flexWrap: "wrap" }}>
+                        <button
+                            className={activeTab === "documents" ? "btn-primary-action" : "btn-secondary-action"}
+                            onClick={() => setActiveTab("documents")}
+                        >
+                            <i className="fa-solid fa-file-shield"></i> RAG Knowledge Base ({documents.length})
+                        </button>
+                        <button
+                            className={activeTab === "notices" ? "btn-primary-action" : "btn-secondary-action"}
+                            onClick={() => setActiveTab("notices")}
+                        >
+                            <i className="fa-solid fa-bullhorn"></i> Notice Publisher ({notices.length})
+                        </button>
+                        <button
+                            className={activeTab === "events" ? "btn-primary-action" : "btn-secondary-action"}
+                            onClick={() => setActiveTab("events")}
+                        >
+                            <i className="fa-solid fa-calendar-plus"></i> Events & Schedules
+                        </button>
+                        <button
+                            className={activeTab === "users" ? "btn-primary-action" : "btn-secondary-action"}
+                            onClick={() => setActiveTab("users")}
+                        >
+                            <i className="fa-solid fa-users-gear"></i> User Roles ({users.length})
+                        </button>
+                        <button
+                            className={activeTab === "attendance" ? "btn-primary-action" : "btn-secondary-action"}
+                            onClick={() => setActiveTab("attendance")}
+                        >
+                            <i className="fa-solid fa-clipboard-user"></i> HOD Attendance ({attendanceRecords.length})
+                        </button>
+                    </div>
+
+                    {/* TAB 1: RAG Documents Upload & Store */}
+                    {activeTab === "documents" && (
+                        <div>
+                            {/* Upload Box */}
+                            <div className="section-box" style={{ border: "1px solid rgba(0, 212, 255, 0.3)" }}>
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-cloud-arrow-up" style={{ color: "#00d4ff" }}></i> Ingest Document into RAG Knowledge Base</h2>
+                                    <span className="header-tag">PDF / TXT Auto-Chunk & Embed</span>
+                                </div>
+
+                                <form onSubmit={handleDocUpload}>
+                                    <div
+                                        className="upload-dropzone"
+                                        onClick={() => document.getElementById("admin-file-picker").click()}
+                                    >
+                                        <i className="fa-solid fa-file-pdf upload-icon"></i>
+                                        <h3>{uploadFile ? uploadFile.name : "Click to browse or drop Official Campus Document (PDF / TXT)"}</h3>
+                                        <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "6px" }}>
+                                            Upload syllabus guides, academic regulations, exam rules, timetables, or campus policies.
+                                        </p>
+                                        <input
+                                            type="file"
+                                            id="admin-file-picker"
+                                            accept=".pdf,.txt,.md"
+                                            style={{ display: "none" }}
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    setUploadFile(e.target.files[0]);
+                                                    if (!docTitle) setDocTitle(e.target.files[0].name.replace(/\.[^/.]+$/, ""));
+                                                }
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "16px" }}>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Document Title:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. 2026 Academic Regulations"
+                                                value={docTitle}
+                                                onChange={(e) => setDocTitle(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Category:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={docCategory}
+                                                onChange={(e) => setDocCategory(e.target.value)}
+                                            >
+                                                <option value="syllabus">Syllabus</option>
+                                                <option value="policy">Academic Policy / Rules</option>
+                                                <option value="exam">Examination Guideline</option>
+                                                <option value="timetable">Timetable / Schedule</option>
+                                                <option value="handbook">Hostel / Facility Handbook</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Department:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={docDept}
+                                                onChange={(e) => setDocDept(e.target.value)}
+                                            >
+                                                <option value="All">All Departments</option>
+                                                <option value="BBA(CA)">BBA(CA) (3 Years)</option>
+                                                <option value="BCS">BCS / B.Sc(CS) (3 Years)</option>
+                                                <option value="BBA">BBA (3 Years)</option>
+                                                <option value="B.Sc">B.Sc (3 Years)</option>
+                                                <option value="B.Com">B.Com (3 Years)</option>
+                                                <option value="M.Sc">M.Sc (2 Years PG)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Target Year:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={docYear}
+                                                onChange={(e) => setDocYear(e.target.value)}
+                                            >
+                                                <option value="All">All Years</option>
+                                                <option value="1st Year">1st Year (FY)</option>
+                                                <option value="2nd Year">2nd Year (SY)</option>
+                                                <option value="3rd Year">3rd Year (TY)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="btn-primary-action"
+                                        disabled={isUploading}
+                                    >
+                                        {isUploading ? (
+                                            <>
+                                                <i className="fa-solid fa-spinner fa-spin"></i> Processing & Embedding Chunks…
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fa-solid fa-microchip"></i> Chunk, Embed & Save to RAG Store
+                                            </>
+                                        )}
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Catalog Table */}
+                            <div className="section-box">
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-database" style={{ color: "#38bdf8" }}></i> Grounded Documents in Knowledge Base</h2>
+                                    <span className="header-tag">{documents.length} Active Documents</span>
+                                </div>
+
+                                <div style={{ overflowX: "auto" }}>
+                                    <table className="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Doc ID</th>
+                                                <th>Document Title</th>
+                                                <th>Category</th>
+                                                <th>Department</th>
+                                                <th>Target Year</th>
+                                                <th>Indexed Chunks</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {documents.map((doc) => (
+                                                <tr key={doc.id}>
+                                                    <td>#{doc.id}</td>
+                                                    <td>
+                                                        <strong style={{ color: "#fff" }}>{doc.title}</strong>
+                                                        <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{doc.file_name}</div>
+                                                    </td>
+                                                    <td>
+                                                        <span className="badge-role badge-student" style={{ fontSize: "11px" }}>{doc.category}</span>
+                                                    </td>
+                                                    <td>{doc.department}</td>
+                                                    <td>{doc.target_year}</td>
+                                                    <td>
+                                                        <span style={{ color: "#00d4ff", fontWeight: 700 }}>{doc.total_chunks} chunks</span>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            className="btn-table-delete"
+                                                            onClick={() => handleDeleteDoc(doc.id)}
+                                                        >
+                                                            <i className="fa-solid fa-trash"></i> Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 2: Notice Publisher */}
+                    {activeTab === "notices" && (
+                        <div>
+                            <div className="section-box">
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-paper-plane" style={{ color: "#00d4ff" }}></i> Publish Official Notice</h2>
+                                    <span className="header-tag">Broadcast to Students & Faculty</span>
+                                </div>
+
+                                <form onSubmit={handleCreateNotice}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Notice Title:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. 3rd Year BBA(CA) Lab Exam Timetable"
+                                                value={noticeTitle}
+                                                onChange={(e) => setNoticeTitle(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Department:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={noticeDept}
+                                                onChange={(e) => setNoticeDept(e.target.value)}
+                                            >
+                                                <option value="All">All Departments</option>
+                                                <option value="BBA(CA)">BBA(CA) (3 Years)</option>
+                                                <option value="BCS">BCS / B.Sc(CS) (3 Years)</option>
+                                                <option value="BBA">BBA (3 Years)</option>
+                                                <option value="B.Sc">B.Sc (3 Years)</option>
+                                                <option value="B.Com">B.Com (3 Years)</option>
+                                                <option value="M.Sc">M.Sc (2 Years PG)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Category:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={noticeCategory}
+                                                onChange={(e) => setNoticeCategory(e.target.value)}
+                                            >
+                                                <option value="Academic">Academic</option>
+                                                <option value="Exam">Exam</option>
+                                                <option value="Placement">Placement</option>
+                                                <option value="Event">Event</option>
+                                                <option value="General">General</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Target Year:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={noticeYear}
+                                                onChange={(e) => setNoticeYear(e.target.value)}
+                                            >
+                                                <option value="All">All Years</option>
+                                                <option value="1st Year">1st Year (FY)</option>
+                                                <option value="2nd Year">2nd Year (SY)</option>
+                                                <option value="3rd Year">3rd Year (TY)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Priority:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={noticePriority}
+                                                onChange={(e) => setNoticePriority(e.target.value)}
+                                            >
+                                                <option value="Normal">Normal</option>
+                                                <option value="High">High</option>
+                                                <option value="Urgent">Urgent</option>
+                                                <option value="Low">Low</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ marginBottom: "16px" }}>
+                                        <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Notice Content / Circular Body:</label>
+                                        <textarea
+                                            className="ai-quick-input"
+                                            rows="3"
+                                            style={{ width: "100%", marginTop: "4px", borderRadius: "10px" }}
+                                            placeholder="Enter the official details, instructions, links, or deadlines…"
+                                            value={noticeContent}
+                                            onChange={(e) => setNoticeContent(e.target.value)}
+                                        ></textarea>
+                                    </div>
+
+                                    <button type="submit" className="btn-primary-action">
+                                        <i className="fa-solid fa-bullhorn"></i> Publish Notice Immediately
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Active Notices Table */}
+                            <div className="section-box">
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-list-check" style={{ color: "#34d399" }}></i> Active Notices List</h2>
+                                </div>
+                                <div style={{ overflowX: "auto" }}>
+                                    <table className="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Category</th>
+                                                <th>Target Year</th>
+                                                <th>Priority</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {notices.map((n) => (
+                                                <tr key={n.id}>
+                                                    <td>
+                                                        <strong style={{ color: "#fff" }}>{n.title}</strong>
+                                                        <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{n.content.slice(0, 80)}…</div>
+                                                    </td>
+                                                    <td><span className={`notice-category ${n.category}`}>{n.category}</span></td>
+                                                    <td>{n.target_year}</td>
+                                                    <td>
+                                                        <span style={{ color: n.priority === "Urgent" ? "#f87171" : "#94a3b8", fontWeight: 600 }}>{n.priority}</span>
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            className="btn-table-delete"
+                                                            onClick={() => handleDeleteNotice(n.id)}
+                                                        >
+                                                            <i className="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 3: Events & Schedules */}
+                    {activeTab === "events" && (
+                        <div>
+                            <div className="section-box">
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-calendar-plus" style={{ color: "#c084fc" }}></i> Schedule Campus Event</h2>
+                                </div>
+                                <form onSubmit={handleCreateEvent}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Event Title:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. CampusHack 2026"
+                                                value={eventTitle}
+                                                onChange={(e) => setEventTitle(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Category:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={eventCategory}
+                                                onChange={(e) => setEventCategory(e.target.value)}
+                                            >
+                                                <option value="Hackathon">Hackathon</option>
+                                                <option value="Seminar">Seminar</option>
+                                                <option value="Workshop">Workshop</option>
+                                                <option value="Cultural">Cultural</option>
+                                                <option value="Sports">Sports</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Venue:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={eventVenue}
+                                                onChange={(e) => setEventVenue(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div style={{ marginBottom: "16px" }}>
+                                        <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Event Description:</label>
+                                        <textarea
+                                            className="ai-quick-input"
+                                            rows="2"
+                                            style={{ width: "100%", marginTop: "4px", borderRadius: "10px" }}
+                                            placeholder="Details, eligibility, and rules…"
+                                            value={eventDesc}
+                                            onChange={(e) => setEventDesc(e.target.value)}
+                                        ></textarea>
+                                    </div>
+                                    <button type="submit" className="btn-primary-action">
+                                        <i className="fa-solid fa-plus"></i> Add Event to Campus Calendar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 4: User & Role Manager */}
+                    {activeTab === "users" && (
+                        <div className="section-box">
+                            <div className="section-box-header">
+                                <h2><i className="fa-solid fa-users-gear" style={{ color: "#38bdf8" }}></i> Registered Users & Role-Based Access</h2>
+                                <span className="header-tag">{users.length} Users</span>
+                            </div>
+
+                            <div style={{ overflowX: "auto" }}>
+                                <table className="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Department</th>
+                                            <th>Year of Study</th>
+                                            <th>Change Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map((u) => (
+                                            <tr key={u.id}>
+                                                <td>#{u.id}</td>
+                                                <td><strong style={{ color: "#fff" }}>{u.name}</strong></td>
+                                                <td>{u.email}</td>
+                                                <td>
+                                                    <span className={`badge-role badge-${u.role}`}>{u.role}</span>
+                                                </td>
+                                                <td>{u.department}</td>
+                                                <td>{u.year_of_study}</td>
+                                                <td>
+                                                    <select
+                                                        className="year-selector"
+                                                        value={u.role}
+                                                        onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                                                        style={{ padding: "4px 8px", fontSize: "11px" }}
+                                                    >
+                                                        <option value="student">Student</option>
+                                                        <option value="faculty">Faculty</option>
+                                                        <option value="admin">Admin</option>
+                                                        <option value="alumni">Alumni</option>
+                                                        <option value="guest">Guest</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 5: Attendance Manager (HOD Controls) */}
+                    {activeTab === "attendance" && (
+                        <div>
+                            {/* Upload Attendance Sheet (CSV / Excel) */}
+                            <div className="section-box" style={{ border: "1px solid rgba(16, 185, 129, 0.3)", marginBottom: "28px" }}>
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-file-csv" style={{ color: "#10b981" }}></i> Upload Department Attendance Sheet (Auto-Read & Publish)</h2>
+                                    <span className="header-tag" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid #10b981" }}>CSV / Text Sheet</span>
+                                </div>
+
+                                <form onSubmit={handleAttendanceUpload}>
+                                    <div
+                                        className="upload-dropzone"
+                                        style={{ borderColor: attUploadFile ? "#10b981" : "rgba(255,255,255,0.15)" }}
+                                        onClick={() => document.getElementById("att-file-picker").click()}
+                                    >
+                                        <i className="fa-solid fa-file-excel upload-icon" style={{ color: attUploadFile ? "#10b981" : "#00d4ff" }}></i>
+                                        <h3>{attUploadFile ? attUploadFile.name : "Click to browse or drop Attendance Sheet (.csv / .txt)"}</h3>
+                                        <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "6px" }}>
+                                            Upload your department attendance sheet with Roll No, Student Name, Total Lectures & Attended Lectures. The system will automatically calculate percentages, verify SPPU 75% compliance, and publish to each student's personal dashboard!
+                                        </p>
+                                        <input
+                                            type="file"
+                                            id="att-file-picker"
+                                            accept=".csv,.txt"
+                                            style={{ display: "none" }}
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    setAttUploadFile(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "16px" }}>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Department:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={attDept}
+                                                onChange={(e) => setAttDept(e.target.value)}
+                                            >
+                                                <option value="BBA(CA)">BBA(CA) (Computer Application)</option>
+                                                <option value="BCS">BCS / B.Sc(CS)</option>
+                                                <option value="BBA">BBA</option>
+                                                <option value="B.Sc">B.Sc</option>
+                                                <option value="B.Com">B.Com</option>
+                                                <option value="M.Sc">M.Sc</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Academic Year:</label>
+                                            <select
+                                                className="year-selector"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={attYear}
+                                                onChange={(e) => setAttYear(e.target.value)}
+                                            >
+                                                <option value="1st Year">1st Year (FY)</option>
+                                                <option value="2nd Year">2nd Year (SY)</option>
+                                                <option value="3rd Year">3rd Year (TY)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Subject Name:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. Data Structures / Web Tech"
+                                                value={attSubject}
+                                                onChange={(e) => setAttSubject(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>HOD / Faculty In-Charge:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. Prof. Nilesh Kaldate (HOD)"
+                                                value={attUploadedBy}
+                                                onChange={(e) => setAttUploadedBy(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+                                        <button type="submit" className="btn-primary-action" disabled={isUploadingAtt} style={{ background: "#10b981", color: "#070b16" }}>
+                                            {isUploadingAtt ? (
+                                                <>
+                                                    <i className="fa-solid fa-spinner fa-spin"></i> Reading & Publishing Sheet…
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fa-solid fa-cloud-arrow-up"></i> Auto-Read & Publish Attendance Sheet
+                                                </>
+                                            )}
+                                        </button>
+                                        <a
+                                            href={`${API_BASE}/api/attendance/template`}
+                                            className="btn-secondary-action"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                                        >
+                                            <i className="fa-solid fa-download"></i> Download Sample CSV Template
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            {/* Manual Single Entry Form */}
+                            <div className="section-box" style={{ marginBottom: "28px" }}>
+                                <div className="section-box-header">
+                                    <h2><i className="fa-solid fa-user-pen" style={{ color: "#38bdf8" }}></i> Quick Manual Student Attendance Entry</h2>
+                                    <span className="header-tag">Individual Record Marking</span>
+                                </div>
+
+                                <form onSubmit={handleManualAttendanceSubmit}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "14px", marginBottom: "14px" }}>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Student Name *:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="Full Student Name"
+                                                value={manualName}
+                                                onChange={(e) => setManualName(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Roll No:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. 101"
+                                                value={manualRoll}
+                                                onChange={(e) => setManualRoll(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Student ID / PRN:</label>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="e.g. VPCSC-2026-001"
+                                                value={manualId}
+                                                onChange={(e) => setManualId(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Student Email:</label>
+                                            <input
+                                                type="email"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                placeholder="student@gmail.com"
+                                                value={manualEmail}
+                                                onChange={(e) => setManualEmail(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Total Lectures Conducted:</label>
+                                            <input
+                                                type="number"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={manualTotal}
+                                                onChange={(e) => setManualTotal(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "12px", color: "var(--text-muted)" }}>Lectures Attended:</label>
+                                            <input
+                                                type="number"
+                                                className="ai-quick-input"
+                                                style={{ width: "100%", marginTop: "4px" }}
+                                                value={manualAttended}
+                                                onChange={(e) => setManualAttended(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <button type="submit" className="btn-primary-action">
+                                        <i className="fa-solid fa-check"></i> Save Attendance Record
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Attendance Records Table */}
+                            <div className="section-box">
+                                <div className="section-box-header" style={{ display: "block" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                                        <h2><i className="fa-solid fa-table-list" style={{ color: "#00d4ff" }}></i> Published Attendance Directory</h2>
+                                        <span className="header-tag">{attendanceRecords.length} Records Published</span>
+                                    </div>
+
+                                    {/* Filters Bar */}
+                                    <div style={{ display: "flex", gap: "12px", marginTop: "14px", flexWrap: "wrap" }}>
+                                        <div>
+                                            <label style={{ fontSize: "11px", color: "#94a3b8", display: "block" }}>Department:</label>
+                                            <select
+                                                className="year-selector"
+                                                value={attDeptFilter}
+                                                onChange={(e) => setAttDeptFilter(e.target.value)}
+                                                style={{ padding: "5px 10px", fontSize: "12px" }}
+                                            >
+                                                <option value="All">All Departments</option>
+                                                <option value="BBA(CA)">BBA(CA)</option>
+                                                <option value="BCS">BCS</option>
+                                                <option value="BBA">BBA</option>
+                                                <option value="B.Sc">B.Sc</option>
+                                                <option value="B.Com">B.Com</option>
+                                                <option value="M.Sc">M.Sc</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "11px", color: "#94a3b8", display: "block" }}>Year:</label>
+                                            <select
+                                                className="year-selector"
+                                                value={attYearFilter}
+                                                onChange={(e) => setAttYearFilter(e.target.value)}
+                                                style={{ padding: "5px 10px", fontSize: "12px" }}
+                                            >
+                                                <option value="All">All Years</option>
+                                                <option value="1st Year">1st Year (FY)</option>
+                                                <option value="2nd Year">2nd Year (SY)</option>
+                                                <option value="3rd Year">3rd Year (TY)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: "11px", color: "#94a3b8", display: "block" }}>SPPU Status Filter:</label>
+                                            <select
+                                                className="year-selector"
+                                                value={attStatusFilter}
+                                                onChange={(e) => setAttStatusFilter(e.target.value)}
+                                                style={{ padding: "5px 10px", fontSize: "12px" }}
+                                            >
+                                                <option value="All">All Statuses</option>
+                                                <option value="Good">Good (&gt;= 75% Compliant)</option>
+                                                <option value="Average">Average (60% - 74%)</option>
+                                                <option value="Critical">Critical (Defaulter &lt; 60%)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style={{ overflowX: "auto" }}>
+                                    <table className="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Roll No</th>
+                                                <th>Student Name</th>
+                                                <th>Department / Year</th>
+                                                <th>Subject</th>
+                                                <th>Conducted</th>
+                                                <th>Attended</th>
+                                                <th>Percentage</th>
+                                                <th>Status</th>
+                                                <th>Marked By</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {attendanceRecords.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="10" style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
+                                                        No attendance records found. Upload a sheet above or enter attendance manually.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                attendanceRecords.map((r) => (
+                                                    <tr key={r.id}>
+                                                        <td><strong>#{r.roll_no || '-'}</strong></td>
+                                                        <td>
+                                                            <strong style={{ color: "#fff" }}>{r.student_name}</strong>
+                                                            {r.student_id && <div style={{ fontSize: "10.5px", color: "#94a3b8" }}>ID: {r.student_id}</div>}
+                                                        </td>
+                                                        <td>{r.department} ({r.year_of_study})</td>
+                                                        <td>
+                                                            {r.subject_code ? <span style={{ color: "#00d4ff", marginRight: "4px" }}>[{r.subject_code}]</span> : null}
+                                                            {r.subject_name}
+                                                        </td>
+                                                        <td>{r.total_lectures}</td>
+                                                        <td>{r.attended_lectures}</td>
+                                                        <td style={{ fontWeight: 700, color: r.percentage >= 75 ? '#10b981' : (r.percentage >= 60 ? '#f59e0b' : '#ef4444') }}>
+                                                            {r.percentage}%
+                                                        </td>
+                                                        <td>
+                                                            <span style={{
+                                                                fontSize: "11px",
+                                                                padding: "3px 8px",
+                                                                borderRadius: "12px",
+                                                                fontWeight: 600,
+                                                                background: r.status === 'Good' ? 'rgba(16, 185, 129, 0.15)' : (r.status === 'Average' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)'),
+                                                                color: r.status === 'Good' ? '#10b981' : (r.status === 'Average' ? '#f59e0b' : '#ef4444')
+                                                            }}>
+                                                                {r.status}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ fontSize: "11.5px", color: "#94a3b8" }}>{r.uploaded_by}</td>
+                                                        <td>
+                                                            <button
+                                                                className="btn-danger-sm"
+                                                                onClick={() => handleDeleteAttendance(r.id)}
+                                                                title="Delete attendance entry"
+                                                            >
+                                                                <i className="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("admin-dashboard-root")).render(<AdminDashboardApp />);
+    </script>
+
+    <script src="../js/script.js"></script>
+</body>
+
+</html>

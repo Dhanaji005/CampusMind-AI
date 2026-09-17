@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up | CampusMind AI</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Auth CSS -->
+    <link rel="stylesheet" href="../css/auth.css">
+
+</head>
+
+
+<body>
+
+    <div class="auth-page">
+
+        <!-- Background Glow -->
+        <div class="auth-glow glow-one"></div>
+        <div class="auth-glow glow-two"></div>
+
+
+        <!-- Back To Home -->
+        <a
+            href="../index.html"
+            class="back-home"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to Home
+
+        </a>
+
+
+        <div class="auth-container">
+
+
+            <!-- BRAND -->
+            <div class="auth-brand">
+
+                <div class="brand-icon">
+
+                    <i class="fa-solid fa-brain"></i>
+
+                </div>
+
+                <span>
+
+                    CampusMind
+
+                    <b>AI</b>
+
+                </span>
+
+            </div>
+
+
+
+            <!-- AUTH CARD -->
+            <div class="auth-card">
+
+
+                <!-- AUTH ICON -->
+                <div class="auth-icon">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                </div>
+
+
+                <!-- TITLE -->
+                <h1>
+                    Create your account
+                </h1>
+
+
+                <p class="auth-subtitle">
+
+                    Start your smarter campus learning journey with AI.
+
+                </p>
+
+
+
+                <!-- SIGN UP FORM -->
+                <form id="signupForm">
+
+
+                    <!-- =========================
+                         FULL NAME
+                    ========================== -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Full Name
+                        </label>
+
+
+                        <div class="input-box">
+
+                            <i class="fa-regular fa-user"></i>
+
+
+                            <input
+                                type="text"
+                                id="name"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                            >
+
+                        </div>
+
+
+                        <!-- Name Error -->
+                        <small
+                            id="nameError"
+                            class="form-error"
+                        ></small>
+
+                    </div>
+
+
+
+                    <!-- =========================
+                         EMAIL
+                    ========================== -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+
+                        <div class="input-box">
+
+                            <i class="fa-regular fa-envelope"></i>
+
+
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="you@campus.edu or personal email"
+                                autocomplete="email"
+                            >
+
+                        </div>
+
+
+                        <!-- Email Error -->
+                        <small
+                            id="emailError"
+                            class="form-error"
+                        ></small>
+
+                    </div>
+
+
+                    <!-- =========================
+                         ROLE SELECTION
+                    ========================== -->
+                    <div class="form-group">
+                        <label for="userRole">
+                            Your Campus Role
+                        </label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-id-badge"></i>
+                            <select id="userRole" style="background:transparent;border:none;color:#fff;width:100%;outline:none;font-family:inherit;font-size:14px;">
+                                <option value="student" style="background:#0f172a;color:#fff;">Student (Undergraduate / Postgraduate)</option>
+                                <option value="faculty" style="background:#0f172a;color:#fff;">Faculty / Professor</option>
+                                <option value="alumni" style="background:#0f172a;color:#fff;">Alumni Graduate</option>
+                                <option value="admin" style="background:#0f172a;color:#fff;">Campus Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <!-- =========================
+                         DYNAMIC STUDENT PROFILE FIELDS
+                    ========================== -->
+                    <div id="studentProfileFields">
+                        <div class="form-group">
+                            <label for="department">Department / Branch</label>
+                            <div class="input-box">
+                                <i class="fa-solid fa-building-columns"></i>
+                                <select id="department" style="background:transparent;border:none;color:#fff;width:100%;outline:none;font-family:inherit;font-size:14px;">
+                                    <option value="BBA(CA)" style="background:#0f172a;color:#fff;">BBA (CA) - Computer Application (3 Years)</option>
+                                    <option value="BBA" style="background:#0f172a;color:#fff;">BBA - Business Administration (3 Years)</option>
+                                    <option value="BCS" style="background:#0f172a;color:#fff;">BCS - Computer Science (3 Years)</option>
+                                    <option value="B.Sc" style="background:#0f172a;color:#fff;">B.Sc - Science (3 Years)</option>
+                                    <option value="B.Com" style="background:#0f172a;color:#fff;">B.Com - Commerce (3 Years)</option>
+                                    <option value="M.Sc" style="background:#0f172a;color:#fff;">M.Sc - Computer Science (2 Years PG)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group">
+                                <label for="yearOfStudy">Year of Study</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <select id="yearOfStudy" style="background:transparent;border:none;color:#fff;width:100%;outline:none;font-family:inherit;font-size:14px;">
+                                        <option value="1st Year" style="background:#0f172a;color:#fff;">1st Year (FY)</option>
+                                        <option value="2nd Year" style="background:#0f172a;color:#fff;">2nd Year (SY)</option>
+                                        <option value="3rd Year" style="background:#0f172a;color:#fff;">3rd Year (TY)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="semester">Semester</label>
+                                <div class="input-box">
+                                    <i class="fa-solid fa-calendar-week"></i>
+                                    <select id="semester" style="background:transparent;border:none;color:#fff;width:100%;outline:none;font-family:inherit;font-size:14px;">
+                                        <option value="1" style="background:#0f172a;color:#fff;">Semester 1</option>
+                                        <option value="2" style="background:#0f172a;color:#fff;">Semester 2</option>
+                                        <option value="3" style="background:#0f172a;color:#fff;">Semester 3</option>
+                                        <option value="4" style="background:#0f172a;color:#fff;">Semester 4</option>
+                                        <option value="5" style="background:#0f172a;color:#fff;">Semester 5</option>
+                                        <option value="6" style="background:#0f172a;color:#fff;">Semester 6</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- =========================
+                         SECURITY ROLE VERIFICATION PASSCODE
+                    ========================== -->
+                    <div id="roleSecurityBox" style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:14px;margin-bottom:18px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label id="passcodeLabel" for="rolePasscode" style="color:#fca5a5;font-weight:700;">
+                                <i class="fa-solid fa-shield-halved"></i> Institutional Security Passcode / Access Key
+                            </label>
+                            <div class="input-box" style="margin-top:6px;border-color:rgba(239,68,68,0.4);">
+                                <i class="fa-solid fa-key" style="color:#f87171;"></i>
+                                <input
+                                    type="password"
+                                    id="rolePasscode"
+                                    placeholder="Enter authorization key (e.g. VPCSC@FAC2026)"
+                                    autocomplete="off"
+                                >
+                            </div>
+                            <small id="passcodeHelpText" style="display:block;margin-top:4px;color:#cbd5e1;font-size:11px;">
+                                Required to prevent unauthorized staff or admin account creation.
+                            </small>
+                            <small id="passcodeError" class="form-error"></small>
+                        </div>
+                    </div>
+
+
+                    <!-- =========================
+                         PASSWORD
+                    ========================== -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Create a password"
+                                autocomplete="new-password"
+                            >
+
+
+                            <!-- Password Toggle -->
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-target="password"
+                                aria-label="Show password"
+                            >
+
+                                <i class="fa-regular fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- Password Error -->
+                        <small
+                            id="passwordError"
+                            class="form-error"
+                        ></small>
+
+
+                        <!-- Password Strength -->
+                        <div
+                            id="passwordStrength"
+                            class="password-strength"
+                        ></div>
+
+                    </div>
+
+
+
+                    <!-- =========================
+                         CONFIRM PASSWORD
+                    ========================== -->
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+
+                            Confirm Password
+
+                        </label>
+
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                placeholder="Confirm your password"
+                                autocomplete="new-password"
+                            >
+
+
+                            <!-- Confirm Password Toggle -->
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-target="confirmPassword"
+                                aria-label="Show password"
+                            >
+
+                                <i class="fa-regular fa-eye"></i>
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- Confirm Password Error -->
+                        <small
+                            id="confirmPasswordError"
+                            class="form-error"
+                        ></small>
+
+                    </div>
+
+
+
+                    <!-- =========================
+                         TERMS
+                    ========================== -->
+
+                    <label class="terms">
+
+                        <input
+                            type="checkbox"
+                            id="terms"
+                        >
+
+
+                        <span>
+
+                            I agree to the CampusMind AI
+                            terms and privacy policy.
+
+                        </span>
+
+                    </label>
+
+
+                    <!-- Terms Error -->
+                    <small
+                        id="termsError"
+                        class="form-error"
+                    ></small>
+
+
+
+                    <!-- =========================
+                         CREATE ACCOUNT BUTTON
+                    ========================== -->
+
+                    <button
+                        type="submit"
+                        class="auth-button"
+                    >
+
+                        <span>
+                            Create Account
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+
+
+                    <!-- SUCCESS / GENERAL MESSAGE -->
+                    <div
+                        id="signupMessage"
+                        class="form-message"
+                    ></div>
+
+
+                </form>
+
+
+
+                <!-- =========================
+                     SWITCH TO SIGN IN
+                ========================== -->
+
+                <div class="auth-divider">
+
+                    <span>
+                        Already have an account?
+                    </span>
+
+                </div>
+
+
+                <a
+                    href="signin.html"
+                    class="switch-auth"
+                >
+
+                    Sign In
+
+                </a>
+
+
+            </div>
+
+
+
+            <!-- FOOTER -->
+            <p class="auth-footer">
+
+                © 2026 CampusMind AI
+                • Built for smart campus learning
+
+            </p>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- AUTH JAVASCRIPT -->
+    <script src="../js/auth.js"></script>
+
+
+</body>
+</html>

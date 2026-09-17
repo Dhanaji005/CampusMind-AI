@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMind AI — Student Cockpit</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main Styles & Dashboard Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- React 18 & Babel for Component Architecture -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <span>CampusMind <span class="ai-text">AI</span></span>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="student-dashboard.html" class="active">Dashboard</a>
+            <a href="chat.html">AI Chat</a>
+            <a href="features.html">Features</a>
+            <a href="about.html">About</a>
+        </nav>
+        <div class="auth-buttons">
+            <a href="../auth/signin.html" class="signin-button">Sign In</a>
+        </div>
+    </header>
+
+    <!-- REACT ROOT CONTAINER -->
+    <div id="student-dashboard-root">
+        <div style="text-align:center;padding:140px 20px;color:#00d4ff;">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size:32px;"></i>
+            <p style="margin-top:16px;font-size:16px;">Loading your smart campus cockpit…</p>
+        </div>
+    </div>
+
+    <!-- REACT COMPONENT LOGIC -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const API_BASE = (function () {
+            if (window.CAMPUSMIND_API_BASE) return window.CAMPUSMIND_API_BASE;
+            try {
+                if (window.location && window.location.protocol && window.location.protocol.startsWith("http")) {
+                    const port = window.location.port;
+                    if (!port || port === "80" || port === "443" || port === "5000") {
+                        return window.location.origin;
+                    }
+                    if (window.location.hostname) {
+                        return window.location.protocol + "//" + window.location.hostname + ":5000";
+                    }
+                }
+            } catch (e) {}
+            return "http://127.0.0.1:5000";
+        })();
+
+        function StudentDashboardApp() {
+            // Read logged-in user from localStorage or defaults
+            const rawUser = localStorage.getItem("campusmind_user");
+            const initialUser = rawUser ? JSON.parse(rawUser) : {
+                name: "Student",
+                email: "student@vpcscindapur.org",
+                role: "student",
+                department: "BBA(CA)",
+                year_of_study: "3rd Year",
+                semester: 5,
+                student_id: "VPCSC-2024-118"
+            };
+
+            const [user, setUser] = useState(initialUser);
+            const [selectedDept, setSelectedDept] = useState(initialUser.department || "BBA(CA)");
+            const [selectedYear, setSelectedYear] = useState(initialUser.year_of_study || "3rd Year");
+            const [selectedSem, setSelectedSem] = useState("all");
+            const [dashboardData, setDashboardData] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [quickPrompt, setQuickPrompt] = useState("");
+            const [quickReply, setQuickReply] = useState(null);
+            const [askingAi, setAskingAi] = useState(false);
+            const [selectedSubjectModal, setSelectedSubjectModal] = useState(null);
+
+            // Handle department switch
+            function handleDeptChange(newDept) {
+                setSelectedDept(newDept);
+                setSelectedSem("all");
+                if (newDept === "M.Sc" && selectedYear === "3rd Year") {
+                    setSelectedYear("2nd Year");
+                }
+            }
+
+            // Fetch dashboard data based on selected year & dept
+            async function fetchDashboard(year, dept) {
+                setLoading(true);
+                try {
+                    const token = localStorage.getItem("campusmind_jwt");
+                    const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+                    const res = await fetch(`${API_BASE}/api/student/dashboard?year=${encodeURIComponent(year)}&department=${encodeURIComponent(dept)}`, {
+                        headers
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        setDashboardData(data.dashboard);
+                    }
+                } catch (err) {
+                    console.error("Dashboard fetch error:", err);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            useEffect(() => {
+                fetchDashboard(selectedYear, selectedDept);
+            }, [selectedYear, selectedDept]);
+
+            // Quick AI Query handler
+            async function handleAskQuickAi(e) {
+                if (e) e.preventDefault();
+                const q = quickPrompt.trim();
+                if (!q) return;
+
+                setAskingAi(true);
+                setQuickReply(null);
+
+                try {
+                    const token = localStorage.getItem("campusmind_jwt");
+                    const headers = { "Content-Type": "application/json" };
+                    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+                    const res = await fetch(`${API_BASE}/api/chatbot/chat`, {
+                        method: "POST",
+                        headers,
+                        body: JSON.stringify({
+                            message: q,
+                            persona: "student",
+                            use_rag: true
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        setQuickReply(data);
+                    } else {
+                        setQuickReply({ reply: "⚠️ " + (data.error || "Failed to get AI response.") });
+                    }
+                } catch (err) {
+                    setQuickReply({ reply: "⚠️ Unable to contact AI backend." });
+                } finally {
+                    setAskingAi(false);
+                }
+            }
+
+            const [isRecordingQuick, setIsRecordingQuick] = useState(false);
+
+            function handleToggleQuickVoice() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+                    return;
+                }
+
+                if (isRecordingQuick) {
+                    setIsRecordingQuick(false);
+                    return;
+                }
+
+                try {
+                    const rec = new SpeechRecognition();
+                    rec.lang = "en-IN";
+                    rec.interimResults = true;
+                    rec.continuous = false;
+
+                    rec.onstart = () => setIsRecordingQuick(true);
+                    rec.onresult = (event) => {
+                        let text = "";
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            text += event.results[i][0].transcript;
+                        }
+                        if (text) setQuickPrompt(text);
+                    };
+                    rec.onerror = () => setIsRecordingQuick(false);
+                    rec.onend = () => setIsRecordingQuick(false);
+
+                    rec.start();
+                } catch (err) {
+                    setIsRecordingQuick(false);
+                }
+            }
+
+            function handleAskAboutSubject(subject) {
+                const prompt = `Explain the syllabus and exam preparation strategy for ${subject.subject_code}: ${subject.subject_name} (${selectedYear} ${selectedDept}).`;
+                window.location.href = `chat.html?prompt=${encodeURIComponent(prompt)}&persona=student`;
+            }
+
+            return (
+                <div className="dashboard-page">
+                    {/* Header */}
+                    <div className="dashboard-header">
+                        <div className="dashboard-user-info" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                            <div className="dashboard-header-avatar">
+                                {user.avatar_url && (user.avatar_url.startsWith("http") || user.avatar_url.startsWith("data:image")) ? (
+                                    <img src={user.avatar_url} alt={user.name} />
+                                ) : (
+                                    user.avatar_url || (user.name ? user.name.charAt(0).toUpperCase() : "👨‍🎓")
+                                )}
+                            </div>
+                            <div>
+                                <h1>
+                                    <span>👋 Hello, {user.name}</span>
+                                    <span className="badge-role badge-student">Student</span>
+                                </h1>
+                                <div className="dashboard-user-meta">
+                                    <span><i className="fa-solid fa-graduation-cap"></i> <strong>{selectedDept}</strong> — {selectedYear}</span>
+                                    <span><i className="fa-solid fa-id-badge"></i> ID: {user.student_id || "VPCSC-2024-118"}</span>
+                                    <span><i className="fa-solid fa-building-columns"></i> VPCSC Indapur</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-actions" style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                            <div>
+                                <label style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "3px" }}>
+                                    <i className="fa-solid fa-graduation-cap"></i> Department / Program:
+                                </label>
+                                <select
+                                    className="year-selector"
+                                    value={selectedDept}
+                                    onChange={(e) => handleDeptChange(e.target.value)}
+                                >
+                                    <option value="BBA(CA)">BBA(CA) (3 Years)</option>
+                                    <option value="BCS">BCS / B.Sc(CS) (3 Years)</option>
+                                    <option value="BBA">BBA (3 Years)</option>
+                                    <option value="B.Sc">B.Sc (3 Years)</option>
+                                    <option value="B.Com">B.Com (3 Years)</option>
+                                    <option value="M.Sc">M.Sc (2 Years PG)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style={{ fontSize: "11px", color: "var(--text-muted)", display: "block", marginBottom: "3px" }}>
+                                    <i className="fa-solid fa-calendar"></i> Academic Year:
+                                </label>
+                                <select
+                                    className="year-selector"
+                                    value={selectedYear}
+                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                >
+                                    <option value="1st Year">1st Year (FY)</option>
+                                    <option value="2nd Year">2nd Year (SY)</option>
+                                    {selectedDept !== "M.Sc" && <option value="3rd Year">3rd Year (TY)</option>}
+                                </select>
+                            </div>
+
+                            <a href="chat.html" className="btn-primary-action" style={{ alignSelf: "flex-end" }}>
+                                <i className="fa-solid fa-brain"></i> Open AI Study Chat
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Compute Filtered Subjects & Credits */}
+                    {dashboardData && (() => {
+                        const semOptions = (function() {
+                            if (selectedYear === "1st Year") return [{ sem: 1, label: "Semester I" }, { sem: 2, label: "Semester II" }];
+                            if (selectedYear === "2nd Year") return [{ sem: 3, label: "Semester III" }, { sem: 4, label: "Semester IV" }];
+                            if (selectedYear === "3rd Year") return [{ sem: 5, label: "Semester V" }, { sem: 6, label: "Semester VI" }];
+                            return [];
+                        })();
+
+                        const filteredSubjects = dashboardData.subjects
+                            ? dashboardData.subjects.filter(sub => selectedSem === "all" || String(sub.semester) === String(selectedSem))
+                            : [];
+
+                        const activeCredits = filteredSubjects.reduce((acc, s) => acc + (s.credits || 0), 0);
+                        const creditLabel = selectedSem === "all" ? "Total Annual Credits" : `${semOptions.find(o => String(o.sem) === selectedSem)?.label || 'Semester'} Credits`;
+
+                        return (
+                            <>
+                                {/* Stats Row */}
+                                <div className="stats-grid">
+                                    <div className="stat-card">
+                                        <div className="stat-icon blue"><i className="fa-solid fa-book"></i></div>
+                                        <div className="stat-info">
+                                            <div className="stat-value">{filteredSubjects.length}</div>
+                                            <div className="stat-label">Enrolled Subjects ({selectedSem === "all" ? selectedYear : semOptions.find(o => String(o.sem) === selectedSem)?.label})</div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-icon purple"><i className="fa-solid fa-award"></i></div>
+                                        <div className="stat-info">
+                                            <div className="stat-value">{activeCredits}</div>
+                                            <div className="stat-label">{creditLabel}</div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-icon amber"><i className="fa-solid fa-clock"></i></div>
+                                        <div className="stat-info">
+                                            <div className="stat-value">{dashboardData.summary.upcoming_exams_count}</div>
+                                            <div className="stat-label">Scheduled Mid-Term Exams</div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className={`stat-icon ${dashboardData.attendance && dashboardData.attendance.is_updated ? (dashboardData.attendance.status === 'Good' ? 'green' : (dashboardData.attendance.status === 'Average' ? 'amber' : 'red')) : 'purple'}`}>
+                                            <i className="fa-solid fa-clipboard-user"></i>
+                                        </div>
+                                        <div className="stat-info">
+                                            <div className="stat-value">
+                                                {dashboardData.attendance && dashboardData.attendance.is_updated ? `${dashboardData.attendance.overall_percentage}%` : 'Pending'}
+                                            </div>
+                                            <div className="stat-label">
+                                                {dashboardData.attendance && dashboardData.attendance.is_updated ? `Attendance (${dashboardData.attendance.status})` : 'Attendance (Awaiting HOD)'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-icon green"><i className="fa-solid fa-bullhorn"></i></div>
+                                        <div className="stat-info">
+                                            <div className="stat-value">{dashboardData.summary.active_notices_count}</div>
+                                            <div className="stat-label">Active Campus Circulars</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="dashboard-grid-2">
+                                    {/* Left Column: Attendance, Subjects & Exam Schedule */}
+                                    <div className="dashboard-col-left">
+
+                                        {/* Attendance Section */}
+                                        <div className="section-box" style={{ marginBottom: "24px" }}>
+                                            <div className="section-box-header">
+                                                <h2>
+                                                    <i className="fa-solid fa-clipboard-user" style={{ color: "#10b981" }}></i> Official Attendance & Lecture Records
+                                                </h2>
+                                                {dashboardData.attendance && dashboardData.attendance.is_updated ? (
+                                                    <span className="header-tag" style={{
+                                                        background: dashboardData.attendance.status === 'Good' ? 'rgba(16, 185, 129, 0.15)' : (dashboardData.attendance.status === 'Average' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)'),
+                                                        color: dashboardData.attendance.status === 'Good' ? '#10b981' : (dashboardData.attendance.status === 'Average' ? '#f59e0b' : '#ef4444'),
+                                                        border: `1px solid ${dashboardData.attendance.status === 'Good' ? '#10b981' : (dashboardData.attendance.status === 'Average' ? '#f59e0b' : '#ef4444')}`
+                                                    }}>
+                                                        Overall: {dashboardData.attendance.overall_percentage}% ({dashboardData.attendance.status === 'Good' ? 'SPPU Compliant' : 'Defaulter Warning'})
+                                                    </span>
+                                                ) : (
+                                                    <span className="header-tag" style={{ background: "rgba(255,255,255,0.06)", color: "#94a3b8" }}>
+                                                        Awaiting HOD Upload
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {dashboardData.attendance && dashboardData.attendance.is_updated ? (
+                                                <div style={{ padding: "16px 20px" }}>
+                                                    {/* Overall Attendance Bar */}
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                                                        <span style={{ fontSize: "13px", color: "#94a3b8" }}>
+                                                            Lectures Attended: <strong style={{ color: "#f8fafc" }}>{dashboardData.attendance.attended_lectures}</strong> / {dashboardData.attendance.total_lectures} Total Conducted
+                                                        </span>
+                                                        <span style={{ fontSize: "12px", color: dashboardData.attendance.status === 'Good' ? '#10b981' : (dashboardData.attendance.status === 'Average' ? '#f59e0b' : '#ef4444'), fontWeight: 600 }}>
+                                                            {dashboardData.attendance.status === 'Good' ? '✅ Meets SPPU 75% Mandate' : (dashboardData.attendance.status === 'Average' ? '⚠️ Average: Below 75% Rule' : '🚨 Critical Defaulter: Exam Clearance at Risk')}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ width: "100%", height: "8px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", overflow: "hidden", marginBottom: "18px" }}>
+                                                        <div style={{
+                                                            width: `${Math.min(dashboardData.attendance.overall_percentage, 100)}%`,
+                                                            height: "100%",
+                                                            background: dashboardData.attendance.status === 'Good' ? 'linear-gradient(90deg, #10b981, #00d4ff)' : (dashboardData.attendance.status === 'Average' ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' : '#ef4444'),
+                                                            borderRadius: "4px",
+                                                            transition: "width 0.5s ease"
+                                                        }}></div>
+                                                    </div>
+
+                                                    {/* Subject Breakdown Table */}
+                                                    <div style={{ overflowX: "auto" }}>
+                                                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px" }}>
+                                                            <thead>
+                                                                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8", textAlign: "left" }}>
+                                                                    <th style={{ padding: "8px 10px" }}>Subject</th>
+                                                                    <th style={{ padding: "8px 10px" }}>Conducted</th>
+                                                                    <th style={{ padding: "8px 10px" }}>Attended</th>
+                                                                    <th style={{ padding: "8px 10px" }}>Percentage</th>
+                                                                    <th style={{ padding: "8px 10px" }}>Status</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {dashboardData.attendance.records.map((rec, rIdx) => (
+                                                                    <tr key={rIdx} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                                                                        <td style={{ padding: "10px", color: "#f8fafc", fontWeight: 500 }}>
+                                                                            {rec.subject_code ? <span style={{ color: "#00d4ff", marginRight: "6px" }}>[{rec.subject_code}]</span> : null}
+                                                                            {rec.subject_name}
+                                                                        </td>
+                                                                        <td style={{ padding: "10px", color: "#cbd5e1" }}>{rec.total_lectures}</td>
+                                                                        <td style={{ padding: "10px", color: "#cbd5e1" }}>{rec.attended_lectures}</td>
+                                                                        <td style={{ padding: "10px", fontWeight: 700, color: rec.percentage >= 75 ? '#10b981' : (rec.percentage >= 60 ? '#f59e0b' : '#ef4444') }}>
+                                                                            {rec.percentage}%
+                                                                        </td>
+                                                                        <td style={{ padding: "10px" }}>
+                                                                            <span style={{
+                                                                                fontSize: "11px",
+                                                                                padding: "3px 8px",
+                                                                                borderRadius: "12px",
+                                                                                fontWeight: 600,
+                                                                                background: rec.status === 'Good' ? 'rgba(16, 185, 129, 0.15)' : (rec.status === 'Average' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)'),
+                                                                                color: rec.status === 'Good' ? '#10b981' : (rec.status === 'Average' ? '#f59e0b' : '#ef4444')
+                                                                            }}>
+                                                                                {rec.status}
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div style={{ marginTop: "12px", fontSize: "11px", color: "#64748b", textAlign: "right" }}>
+                                                        * Official attendance marked & uploaded by {dashboardData.attendance.records[0]?.uploaded_by || 'Department HOD'}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div style={{ padding: "26px 20px", textAlign: "center", background: "rgba(15,23,42,0.4)" }}>
+                                                    <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "rgba(0,212,255,0.08)", color: "#00d4ff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "18px", marginBottom: "10px" }}>
+                                                        <i className="fa-solid fa-file-circle-question"></i>
+                                                    </div>
+                                                    <h3 style={{ fontSize: "15px", color: "#e2e8f0", marginBottom: "6px" }}>Attendance Not Yet Published</h3>
+                                                    <p style={{ fontSize: "12.5px", color: "#94a3b8", maxWidth: "520px", margin: "0 auto", lineHeight: "1.5" }}>
+                                                        {dashboardData.attendance?.message || `The attendance sheet for ${selectedDept} (${selectedYear}) has not yet been published by your Department HOD. Once the HOD marks or uploads the sheet, your verified attendance report will automatically appear here.`}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Subjects Section */}
+                                        <div className="section-box">
+                                            <div className="section-box-header" style={{ display: "block" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                                                    <h2><i className="fa-solid fa-book-bookmark" style={{ color: "#00d4ff" }}></i> Enrolled Subjects & Syllabus (vpcscindapur.org)</h2>
+                                                    <span className="header-tag">{filteredSubjects.length} Courses · {activeCredits} Credits</span>
+                                                </div>
+
+                                                {/* Official Semester Filter Tabs */}
+                                                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "14px" }}>
+                                                    <button
+                                                        type="button"
+                                                        style={{
+                                                            background: selectedSem === "all" ? "#00d4ff" : "rgba(15,23,42,0.8)",
+                                                            color: selectedSem === "all" ? "#070b16" : "#cbd5e1",
+                                                            border: selectedSem === "all" ? "1px solid #00d4ff" : "1px solid rgba(255,255,255,0.12)",
+                                                            padding: "6px 14px",
+                                                            borderRadius: "20px",
+                                                            fontSize: "12px",
+                                                            fontWeight: "700",
+                                                            cursor: "pointer",
+                                                            transition: "all 0.2s ease"
+                                                        }}
+                                                        onClick={() => setSelectedSem("all")}
+                                                    >
+                                                        All Semesters ({dashboardData.subjects.length})
+                                                    </button>
+                                                    {semOptions.map(opt => {
+                                                        const count = dashboardData.subjects.filter(s => String(s.semester) === String(opt.sem)).length;
+                                                        const creds = dashboardData.subjects.filter(s => String(s.semester) === String(opt.sem)).reduce((a, b) => a + (b.credits || 0), 0);
+                                                        const isActive = selectedSem === String(opt.sem);
+                                                        return (
+                                                            <button
+                                                                key={opt.sem}
+                                                                type="button"
+                                                                style={{
+                                                                    background: isActive ? "#00d4ff" : "rgba(15,23,42,0.8)",
+                                                                    color: isActive ? "#070b16" : "#cbd5e1",
+                                                                    border: isActive ? "1px solid #00d4ff" : "1px solid rgba(255,255,255,0.12)",
+                                                                    padding: "6px 14px",
+                                                                    borderRadius: "20px",
+                                                                    fontSize: "12px",
+                                                                    fontWeight: "700",
+                                                                    cursor: "pointer",
+                                                                    transition: "all 0.2s ease"
+                                                                }}
+                                                                onClick={() => setSelectedSem(String(opt.sem))}
+                                                            >
+                                                                {opt.label} ({count} Courses · {creds} Credits)
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            <div className="subjects-grid">
+                                                {filteredSubjects.map((sub) => (
+                                                    <div key={sub.id} className="subject-card">
+                                                        <div>
+                                                            <div className="subject-card-top">
+                                                                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                                                                    <span className="subject-code">{sub.subject_code}</span>
+                                                                    <span style={{ fontSize: "11px", background: "rgba(0, 212, 255, 0.15)", color: "#00d4ff", padding: "2px 8px", borderRadius: "12px", border: "1px solid rgba(0, 212, 255, 0.3)", fontWeight: "600" }}>
+                                                                        Sem {sub.semester}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="subject-credits">{sub.credits} Credits</span>
+                                                            </div>
+                                                            <div className="subject-name">{sub.subject_name}</div>
+                                                            <div className="subject-instructor">
+                                                                <i className="fa-solid fa-chalkboard-user" style={{ color: "#38bdf8", marginRight: "6px" }}></i> {sub.instructor || "Faculty Professor"}
+                                                            </div>
+                                                            <div className="subject-syllabus">
+                                                                <strong>Syllabus Key:</strong> {sub.syllabus_summary}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="subject-card-actions">
+                                                            <button
+                                                                type="button"
+                                                                className="btn-ask-ai"
+                                                                onClick={() => handleAskAboutSubject(sub)}
+                                                            >
+                                                                <i className="fa-solid fa-wand-magic-sparkles"></i> Ask AI Mentor
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Exam Schedule Section */}
+                                <div className="section-box">
+                                    <div className="section-box-header">
+                                        <h2><i className="fa-solid fa-calendar-days" style={{ color: "#f59e0b" }}></i> Upcoming Examination Schedule</h2>
+                                        <span className="header-tag">Official Dates</span>
+                                    </div>
+
+                                    {dashboardData.exams.length === 0 ? (
+                                        <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>No exams scheduled for {selectedYear} currently.</p>
+                                    ) : (
+                                        <div className="exam-list">
+                                            {dashboardData.exams.map((ex) => (
+                                                <div key={ex.id} className="exam-item">
+                                                    <div className="exam-title-group">
+                                                        <h4>{ex.subject_name} ({ex.subject_code || "EXAM"})</h4>
+                                                        <div className="exam-meta">
+                                                            <span><i className="fa-regular fa-clock"></i> {ex.start_time} - {ex.end_time}</span>
+                                                            <span><i className="fa-solid fa-location-dot"></i> {ex.room_no}</span>
+                                                            <span><i className="fa-solid fa-tag"></i> {ex.exam_type}</span>
+                                                        </div>
+                                                        {ex.syllabus_topics && (
+                                                            <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "6px" }}>
+                                                                <strong>Topics:</strong> {ex.syllabus_topics}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="exam-date-badge">
+                                                        <div className="day">{ex.exam_date.split("-")[2] || ex.exam_date}</div>
+                                                        <div className="month">{ex.exam_date.split("-")[1] ? "MONTH " + ex.exam_date.split("-")[1] : "DATE"}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Right Column: AI Assistant, Notices & Events */}
+                            <div className="dashboard-col-right">
+                                {/* Embedded RAG Study Assistant */}
+                                <div className="section-box" style={{ border: "1px solid rgba(0, 212, 255, 0.3)" }}>
+                                    <div className="section-box-header">
+                                        <h2><i className="fa-solid fa-brain" style={{ color: "#00d4ff" }}></i> Smart Study Assistant</h2>
+                                        <span className="header-tag" style={{ color: "#00d4ff", background: "rgba(0, 212, 255, 0.1)" }}>Grounded RAG</span>
+                                    </div>
+
+                                    <form onSubmit={handleAskQuickAi}>
+                                        <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                                            <input
+                                                type="text"
+                                                className="ai-quick-input"
+                                                placeholder={isRecordingQuick ? "🎙️ Listening... Speak now..." : `Ask about ${selectedYear} syllabus or campus rules…`}
+                                                value={quickPrompt}
+                                                onChange={(e) => setQuickPrompt(e.target.value)}
+                                                style={{ width: "100%" }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleToggleQuickVoice}
+                                                className={`btn-primary-action ${isRecordingQuick ? 'recording' : ''}`}
+                                                style={{
+                                                    padding: "0 14px",
+                                                    background: isRecordingQuick ? "rgba(239, 68, 68, 0.3)" : "rgba(255, 255, 255, 0.08)",
+                                                    border: isRecordingQuick ? "1px solid #ef4444" : "1px solid rgba(255, 255, 255, 0.15)",
+                                                    color: isRecordingQuick ? "#ef4444" : "#00d4ff",
+                                                    cursor: "pointer",
+                                                    borderRadius: "10px"
+                                                }}
+                                                title="Voice Input (Speech-to-Text)"
+                                            >
+                                                <i className={`fa-solid ${isRecordingQuick ? 'fa-microphone-lines fa-fade' : 'fa-microphone'}`}></i>
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                className="btn-primary-action"
+                                                disabled={askingAi}
+                                                style={{ padding: "0 16px" }}
+                                            >
+                                                {askingAi ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane"></i>}
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    {quickReply && (
+                                        <div style={{
+                                            background: "rgba(0,0,0,0.3)",
+                                            padding: "14px",
+                                            borderRadius: "10px",
+                                            fontSize: "13px",
+                                            lineHeight: "1.5",
+                                            marginTop: "12px",
+                                            border: "1px solid var(--border-glass)"
+                                        }}>
+                                            <div style={{ color: "#00d4ff", fontWeight: 600, marginBottom: "6px" }}>
+                                                <i className="fa-solid fa-robot"></i> CampusMind AI:
+                                            </div>
+                                            <div>{quickReply.reply}</div>
+                                            {quickReply.sources && quickReply.sources.length > 0 && (
+                                                <div className="citation-badge-container">
+                                                    {quickReply.sources.map((s, idx) => (
+                                                        <span key={idx} className="citation-badge" title={s.snippet}>
+                                                            <i className="fa-solid fa-file-lines"></i> {s.title}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Targeted Notices Section */}
+                                <div className="section-box">
+                                    <div className="section-box-header">
+                                        <h2><i className="fa-solid fa-bullhorn" style={{ color: "#34d399" }}></i> Official Notices</h2>
+                                        <span className="header-tag">{selectedYear} & Campus</span>
+                                    </div>
+
+                                    <div className="notices-list">
+                                        {dashboardData.notices.map((n) => (
+                                            <div key={n.id} className="notice-card">
+                                                <div className="notice-card-header">
+                                                    <span className={`notice-category ${n.category}`}>{n.category}</span>
+                                                    {n.priority === "Urgent" && (
+                                                        <span style={{ color: "#f87171", fontSize: "11px", fontWeight: 700 }}>
+                                                            <i className="fa-solid fa-triangle-exclamation"></i> URGENT
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="notice-title">{n.title}</div>
+                                                <div className="notice-content">{n.content}</div>
+                                                <div className="notice-author">
+                                                    <i className="fa-solid fa-building-columns"></i> {n.published_by}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Campus Events Section */}
+                                <div className="section-box">
+                                    <div className="section-box-header">
+                                        <h2><i className="fa-solid fa-calendar-star" style={{ color: "#c084fc" }}></i> Events & Hackathons</h2>
+                                        <span className="header-tag">Campus Life</span>
+                                    </div>
+
+                                    <div className="events-list">
+                                        {dashboardData.events.map((ev) => (
+                                            <div key={ev.id} className="event-card">
+                                                <div className="event-card-date">
+                                                    <span className="event-day">{ev.event_date.split(" ")[0].split("-")[2] || "15"}</span>
+                                                    <span className="event-month">EVENT</span>
+                                                </div>
+                                                <div className="event-card-details">
+                                                    <h4>{ev.title}</h4>
+                                                    <p>{ev.description}</p>
+                                                    <div className="event-venue">
+                                                        <i className="fa-solid fa-location-dot"></i> {ev.venue}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                );
+            })()}
+        </div>
+    );
+        }
+
+        ReactDOM.createRoot(document.getElementById("student-dashboard-root")).render(<StudentDashboardApp />);
+    </script>
+
+    <!-- Synchronize Navbar Auth State -->
+    <script src="../js/script.js"></script>
+</body>
+
+</html>

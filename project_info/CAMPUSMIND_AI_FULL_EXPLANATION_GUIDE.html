@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMind AI — Complete Technical & Code Explanation Guide</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-page: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --accent: #0284c7;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --code-bg: #0f172a;
+            --code-text: #f8fafc;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-page);
+            color: var(--text-dark);
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 45px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+                color: #000000 !important;
+            }
+            .container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 10px 0 !important;
+                max-width: 100% !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            pre, code {
+                border: 1px solid #ccc !important;
+                background: #f1f5f9 !important;
+                color: #000 !important;
+            }
+            a {
+                text-decoration: none !important;
+                color: #000 !important;
+            }
+        }
+
+        /* HEADER */
+        .doc-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 30px;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .badge-institution {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .doc-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+            line-height: 1.25;
+        }
+
+        .doc-header p {
+            font-size: 15px;
+            color: var(--text-muted);
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .btn-print {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-print:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* SECTIONS */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 22px 0 10px 0;
+        }
+
+        p {
+            margin-bottom: 14px;
+            color: #334155;
+            font-size: 15px;
+        }
+
+        ul, ol {
+            margin: 10px 0 16px 24px;
+            color: #334155;
+            font-size: 15px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* HIGHLIGHT BOXES */
+        .callout-box {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 18px 0;
+            font-size: 14.5px;
+        }
+
+        .callout-box.success {
+            background: #f0fdf4;
+            border-left-color: var(--success);
+        }
+
+        .callout-box.warning {
+            background: #fffbeb;
+            border-left-color: var(--warning);
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+            font-size: 14px;
+        }
+
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            text-align: left;
+        }
+
+        table th {
+            background: #f8fafc;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        table tr:nth-child(even) {
+            background: #fdfdfd;
+        }
+
+        /* CODE SNIPPETS */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 16px 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Fira Code', Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 16px 0;
+        }
+
+        code {
+            font-family: 'Fira Code', Consolas, monospace;
+            font-size: 13.5px;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .file-tag {
+            display: inline-block;
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        /* FLOWCHART CARDS */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .flow-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .flow-card .num {
+            display: inline-flex;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .flow-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #0f172a;
+        }
+
+        .flow-card p {
+            font-size: 13px;
+            margin: 0;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER / ACTION -->
+    <div class="doc-header">
+        <button class="btn-print no-print" onclick="window.print()">
+            <i class="fa-solid fa-file-pdf"></i> Print / Save as PDF
+        </button>
+        <div class="badge-institution">
+            Vidya Pratishthan's Commerce & Science College, Indapur (VPCSC)
+        </div>
+        <h1>CampusMind AI — Full Project & Code Architecture Guide</h1>
+        <p>A Complete Technical Breakdown, Code Walkthrough, RAG Pipeline Flow, and Viva/Interview Guide for College Project Presentation.</p>
+    </div>
+
+    <!-- 1. PROJECT SUMMARY -->
+    <div class="section">
+        <h2 class="section-title"><i class="fa-solid fa-brain"></i> 1. Project Overview & Actual Purpose (Kya Hai Ye Project?)</h2>
+        <p><strong>CampusMind AI</strong> ek <em>Enterprise-Grade Intelligent Smart Campus Platform</em> hai jise <strong>VPCSC Indapur (Affiliated to Savitribai Phule Pune University — SPPU)</strong> ke students, faculty aur administrative staff ke liye banaya gaya hai.</p>
+        
+        <div class="callout-box">
+            <strong>🎯 Main Goal:</strong> Traditional colleges me students ko syllabus, exam timetables, fee window counters, HOD details aur circulars ke liye alag-alag notices dekhne padte hain ya line lagani padti hai. CampusMind AI ek hi platform par in sabhi ko <strong>Grounded AI + Voice Interaction + Role-Based Dashboards + Cloud Sync</strong> ke sath solve karta hai.
+        </div>
+
+        <h3>Key Real-World Problems Solved:</h3>
+        <ul>
+            <li><strong>Zero AI Hallucination (Grounded RAG):</strong> Normal AI (ChatGPT) college ke imaginary rules guess karta hai. Lekin CampusMind AI college ke official PDF circulars aur SPPU syllabus ko pehle scan karta hai aur sirf verified documents se hi 100% accurate jawab deta hai.</li>
+            <li><strong>Degree & Year-Aware Personalized Cockpit:</strong> Student jis bhi program ka hai (e.g. <code>BBA(CA)</code> 3rd Year ya <code>BCS</code> 1st Year), dashboard uske year ke subjects, teachers aur exam timetables automatically dikhata hai.</li>
+            <li><strong>Voice Accessibility (Speech-to-Text & TTS):</strong> Student direct bol kar (Voice typing se) question puchh sakta hai aur AI ke answers ko sun (Listen audio) bhi sakta hai.</li>
+            <li><strong>Mathematical & SPPU Academic Calculations:</strong> CGPA to percentage conversion, 75% attendance target tracker, marks split up, time complexity aur networking subnetting directly solve karta hai.</li>
+            <li><strong>Dual Cloud & Local Storage:</strong> Supabase PostgreSQL Cloud Database + Local SQLite backup.</li>
+        </ul>
+    </div>
+
+    <!-- 2. HIGH LEVEL ARCHITECTURE -->
+    <div class="section page-break">
+        <h2 class="section-title"><i class="fa-solid fa-network-wired"></i> 2. High-Level Architecture & End-to-End Request Flow</h2>
+        <p>Poora project <strong>3 Main Layers</strong> me structured hai:</p>
+
+        <div class="flow-grid">
+            <div class="flow-card">
+                <span class="num">1</span>
+                <h4>Frontend UI Layer</h4>
+                <p>HTML5, Modern CSS Glassmorphism, React 18 (Dashboards), Web Speech API (Voice), HTML5 Canvas (Image compression).</p>
+            </div>
+            <div class="flow-card">
+                <span class="num">2</span>
+                <h4>Backend & AI Layer</h4>
+                <p>Python Flask REST API, PyJWT (Token Security), Dense Vector Embeddings, RAG Retrieval Engine, OpenRouter AI.</p>
+            </div>
+            <div class="flow-card">
+                <span class="num">3</span>
+                <h4>Database & Cloud Storage</h4>
+                <p>Supabase PostgreSQL Cloud DB (<code>public.users</code>) + Local SQLite (<code>campusmind.db</code>) + Uploaded PDF files.</p>
+            </div>
+        </div>
+
+        <h3>How a Chat Query Travels Through the System (End-to-End Flow):</h3>
+        <ol>
+            <li><strong>User Query Input:</strong> Student browser me message likhta hai ya mic daba kar bolta hai (Web Speech API).</li>
+            <li><strong>Authentication Check:</strong> Browser local storage se JWT Token attach karta hai (`Authorization: Bearer &lt;token&gt;`).</li>
+            <li><strong>Backend Processing (`/api/chatbot/chat`):</strong> Flask API request receive karta hai aur user ka role aur academic year detect karta hai.</li>
+            <li><strong>RAG Vector Semantic Search:</strong> User ke question ko 384-dimensional vector me convert kiya jata hai aur official college PDF documents ke chunks se Cosine Similarity match kiya jata hai.</li>
+            <li><strong>Augmented AI Inference:</strong> Top retrieved verified context + Persona system prompt ko OpenRouter (NVIDIA Nemotron 3.5 AI) ko bheja jata hai.</li>
+            <li><strong>Grounded Response & Citations:</strong> AI jawab generate karta hai. Frontend par verified source citations, Listen button, Copy, Edit aur Resend options ke sath render hota hai.</li>
+        </ol>
+    </div>
+
+    <!-- 3. CODEBASE EXPLANATION -->
+    <div class="section page-break">
+        <h2 class="section-title"><i class="fa-solid fa-code"></i> 3. Detailed Codebase & Module-by-Module Explanation</h2>
+        <p>Aayiye har ek major file aur uske andar likhe code ka actual purpose samajhte hain:</p>
+
+        <!-- BACKEND CODE -->
+        <h3>A. Backend Files (Python + Flask)</h3>
+
+        <div class="file-tag">bakend/app.py</div>
+        <p><strong>Purpose:</strong> Backend ka Main Entry Point aur Flask Application Factory.</p>
+        <ul>
+            <li>Flask server initialize karta hai, CORS security enable karta hai.</li>
+            <li>Sabhi routes blueprints ko register karta hai (<code>/api/auth</code>, <code>/api/student</code>, <code>/api/chatbot</code>, <code>/api/admin</code>).</li>
+            <li>Health check endpoint (<code>GET /api/health</code>) provide karta hai jo Supabase connection, AI engine aur DB status return karta hai.</li>
+        </ul>
+
+        <div class="file-tag">bakend/services/openrouter_service.py</div>
+        <p><strong>Purpose:</strong> AI Chatbot Engine & VPCSC Persona Prompts.</p>
+        <ul>
+            <li>OpenRouter API ke through <code>nvidia/nemotron-3.5-lightning:free</code> model ko connect karta hai.</li>
+            <li><code>get_persona_system_prompt()</code>: Isme VPCSC Indapur ki official leadership (Principal Dr. Lalasaheb Kashid, HODs: Prof. Kaldate, Prof. Bhong, Prof. Shaikh, Window 1, 2, 3 details) hardcoded foundation truth ke roop me configured hai.</li>
+            <li>Multimodal vision support (agar student question ke sath image/document upload kare).</li>
+        </ul>
+
+        <div class="file-tag">bakend/services/rag_service.py & embedding_service.py</div>
+        <p><strong>Purpose:</strong> Document Chunking, 384-d Embeddings & Cosine Retrieval.</p>
+        <ul>
+            <li><code>chunk_text()</code>: Badi PDF files ko 600 characters ke small chunks me divide karta hai (120 char overlap ke sath taaki context na toote).</li>
+            <li><code>compute_embeddings()</code>: Text chunks ko 384-dimensional dense vectors me convert karta hai.</li>
+            <li><code>search_similar_chunks()</code>: User ke question aur document chunks ke beech mathematical Cosine Similarity calculate karke sabse relevant verified excerpts retrieve karta hai.</li>
+        </ul>
+
+        <div class="file-tag">bakend/services/user_service.py & database.py</div>
+        <p><strong>Purpose:</strong> Dual-Engine Cloud & Local User Management.</p>
+        <ul>
+            <li><code>create_user()</code>: New user create karte samay password ko <code>generate_password_hash</code> (PBKDF2 SHA256) se encrypt karta hai.</li>
+            <li><strong>Supabase + SQLite Sync:</strong> Data ko pehle <strong>Supabase Cloud PostgreSQL</strong> (<code>public.users</code>) me insert karta hai aur local <code>campusmind.db</code> me backup rakhta hai.</li>
+            <li><strong>Passcode Security:</strong> Admin ke liye <code>VPCSC@ADMIN2026</code> aur Faculty ke liye <code>VPCSC@FAC2026</code> passcodes verify karta hai.</li>
+            <li><code>generate_token()</code>: Cryptographically signed JWT Token generate karta hai jisme user ka role aur academic year embed hota hai.</li>
+        </ul>
+
+        <!-- FRONTEND CODE -->
+        <h3>B. Frontend Files (HTML + CSS + JavaScript)</h3>
+
+        <div class="file-tag">frontend/pages/chat.html & frontend/js/chatbot.js</div>
+        <p><strong>Purpose:</strong> Full AI Chatbot Interface, Voice Speech Engine & Message Toolbars.</p>
+        <ul>
+            <li><strong>Voice Speech-to-Text:</strong> <code>window.SpeechRecognition</code> use karke real-time voice typing input karta hai. Mic active hone par red glowing pulse animation chalti hai.</li>
+            <li><strong>Voice Text-to-Speech:</strong> <code>window.speechSynthesis</code> use karke bot ke answer ko bol kar sunata hai (Listen button).</li>
+            <li><strong>Copy, Edit & Resend Toolbar:</strong> Har user question par Copy (clipboard), Inline Edit (editable box with Save & Resend), aur Resend buttons hain.</li>
+            <li><strong>Custom Profile Photo Rendering:</strong> Chat header status badge aur user message bubble ke sath student ki custom uploaded photo display hoti hai.</li>
+        </ul>
+
+        <div class="file-tag">frontend/pages/student-dashboard.html & frontend/js/script.js</div>
+        <p><strong>Purpose:</strong> Student Cockpit & Custom Profile Photo Upload.</p>
+        <ul>
+            <li><strong>React 18 Component Architecture:</strong> Student dashboard dynamic React state par chalta hai. Program switch karne par (`BBA(CA)`, `BCS`, `BBA`, etc.) bina page reload hue subjects aur exam timetables switch ho jaate hain.</li>
+            <li><strong>HTML5 Canvas Image Compression:</strong> Edit Profile modal me student jab apne device se photo choose karta hai, browser in-memory <code>&lt;canvas&gt;</code> ke through image ko 280px par resize aur 0.85 quality JPEG me compress karke base64 data URL banata hai. Isse cloud database par koi heavy load nahi padta.</li>
+            <li><strong>Profile Details Modal:</strong> Navbar me profile photo par click karne par student details, PRN ID, college name, aur Edit option open hota hai.</li>
+        </ul>
+    </div>
+
+    <!-- 4. ACADEMIC & CALCULATION ENGINE -->
+    <div class="section page-break">
+        <h2 class="section-title"><i class="fa-solid fa-calculator"></i> 4. Mathematical & Academic Calculation Capabilities</h2>
+        <p>CampusMind AI academic calculations ko step-by-step formula ke sath solve karta hai:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Calculation Type</th>
+                    <th>Formula / Logic Used</th>
+                    <th>Example Question & Answer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>SPPU CGPA to Percentage</strong></td>
+                    <td><code>Percentage = CGPA × 9.5</code></td>
+                    <td><em>"CGPA 8.4 ka percentage kya hoga?"</em> &rarr; <code>8.4 × 9.5 = 79.80%</code> (First Class with Distinction)</td>
+                </tr>
+                <tr>
+                    <td><strong>75% Attendance Target</strong></td>
+                    <td><code>Required = ⌈0.75 × Total - Attended⌉</code></td>
+                    <td><em>"42/60 lectures attend kiye hain, 75% ke liye kitne aur chahiye?"</em> &rarr; Current: 70%, 20 new lectures me 18 attend karne honge.</td>
+                </tr>
+                <tr>
+                    <td><strong>Exam Marks Split</strong></td>
+                    <td>Internal (30) + External (70) &ge; 40%</td>
+                    <td>Internal 30 me se 18 hain toh External 70 me minimum 22 marks chahiye passing ke liye.</td>
+                </tr>
+                <tr>
+                    <td><strong>CS Time Complexity & Subnetting</strong></td>
+                    <td>Big-O Analysis & IP Binary calculations</td>
+                    <td>Calculates loops $O(n \log n)$, binary to hex conversions, usable host counts.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 5. VIVA & INTERVIEW GUIDE -->
+    <div class="section page-break">
+        <h2 class="section-title"><i class="fa-solid fa-graduation-cap"></i> 5. College Viva / Project Presentation Q&A (Examiner Questions)</h2>
+        <p>College exam ya project presentation me teachers aapse ye questions puchh sakte hain. Inke exact technical answers:</p>
+
+        <h3>Q1: "Aapke chatbot aur ChatGPT me kya difference hai?"</h3>
+        <p><strong>Answer:</strong> ChatGPT ek general LLM hai jo specific college ke rules, HODs, window helpdesks aur exact syllabus nahi jaanta aur guess (hallucinate) karta hai. Hamara project <strong>Retrieval-Augmented Generation (RAG)</strong> use karta hai jo pehle VPCSC Indapur aur SPPU ke verified PDF circulars ko search karta hai aur sirf unhi se factual answer with source citations deta hai.</p>
+
+        <h3>Q2: "RAG kaise kaam karta hai aapke project me?"</h3>
+        <p><strong>Answer:</strong> RAG 3 steps me kaam karta hai: (1) <em>Ingestion:</em> College PDFs ko 600-character chunks me break karke 384-dimensional dense vector embeddings banate hain. (2) <em>Retrieval:</em> User question ko vectorize karke Cosine Similarity se top relevant chunks match karte hain. (3) <em>Generation:</em> Retrieved official chunks ko system prompt ke sath OpenRouter AI ko pass karke accurate answer generate karte hain.</p>
+
+        <h3>Q3: "Profile photo upload kaise handle kiya hai bina server heavy storage ke?"</h3>
+        <p><strong>Answer:</strong> Humne <em>Client-Side HTML5 Canvas Compression</em> use kiya hai. Student jab photo select karta hai, browser client-side canvas me image ko max 280x280 resolution aur 0.85 JPEG quality me optimize karta hai aur base64 data format me Supabase Cloud DB me store karta hai. Isse external S3 bucket ki jarurat nahi padti aur loading super fast hoti hai.</p>
+
+        <h3>Q4: "Security kaise implement ki hai?"</h3>
+        <p><strong>Answer:</strong> Humne industry standard <strong>PyJWT (JSON Web Tokens)</strong> with HS256 algorithm use kiya hai. Passwords ko Werkzeug PBKDF2 SHA256 hashing se securely encrypt kiya jata hai. Admin aur Faculty signup ke liye college verification passcodes (`VPCSC@ADMIN2026` / `VPCSC@FAC2026`) mandatory hain.</p>
+    </div>
+
+    <!-- 6. TECH STACK SUMMARY -->
+    <div class="section">
+        <h2 class="section-title"><i class="fa-solid fa-layer-group"></i> 6. Technology Stack Summary Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Technology Used</th>
+                    <th>Key Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Frontend UI</strong></td>
+                    <td>HTML5, CSS3 Glassmorphic UI, React 18, FontAwesome</td>
+                    <td>Responsive UI, Multi-Year Cockpits, Modals</td>
+                </tr>
+                <tr>
+                    <td><strong>Voice Engine</strong></td>
+                    <td>Web Speech API (SpeechRecognition & SpeechSynthesis)</td>
+                    <td>Voice Speech-to-Text and Audio Listen TTS</td>
+                </tr>
+                <tr>
+                    <td><strong>Backend API</strong></td>
+                    <td>Python 3.14, Flask, Flask-CORS</td>
+                    <td>REST API Endpoints, Blueprint Routing, Middleware</td>
+                </tr>
+                <tr>
+                    <td><strong>AI Model Engine</strong></td>
+                    <td>OpenRouter (NVIDIA Nemotron 3.5 Lightning Free)</td>
+                    <td>Natural Language Inference, Problem Solving & Calculations</td>
+                </tr>
+                <tr>
+                    <td><strong>RAG & Vector Search</strong></td>
+                    <td>PyPDF, Dense 384-d Vector Embeddings, Cosine Similarity</td>
+                    <td>Document Chunking, Embedding Indexing, Semantic Grounding</td>
+                </tr>
+                <tr>
+                    <td><strong>Cloud Database</strong></td>
+                    <td>Supabase PostgreSQL (<code>public.users</code>)</td>
+                    <td>Cloud User Sync, Real-time Profile Management</td>
+                </tr>
+                <tr>
+                    <td><strong>Local Database</strong></td>
+                    <td>SQLite (<code>bakend/campusmind.db</code>)</td>
+                    <td>Zero-configuration Offline Backup Resilience</td>
+                </tr>
+                <tr>
+                    <td><strong>Authentication</strong></td>
+                    <td>PyJWT, Werkzeug PBKDF2 Hashing</td>
+                    <td>Role-Based Access Control (RBAC), Passcode Security</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

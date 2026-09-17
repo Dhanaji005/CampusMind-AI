@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | VPCSC Indapur & CampusMind AI</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main Page CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
+
+    <style>
+        .about-tabs-nav {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin: 30px auto 40px;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            max-width: 580px;
+            backdrop-filter: blur(12px);
+        }
+
+        .about-tab-btn {
+            flex: 1;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .about-tab-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .about-tab-btn.active {
+            background: linear-gradient(135deg, #6366f1, #00d4ff);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .tab-content-panel {
+            display: none;
+            animation: fadeInTab 0.4s ease;
+        }
+
+        .tab-content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeInTab {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* College Specific Styles */
+        .college-hero-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 36px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .college-hero-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .college-hero-subtitle {
+            color: #00d4ff;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .college-badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .college-badge {
+            background: rgba(0, 212, 255, 0.12);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #38bdf8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .dept-card {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dept-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.15);
+        }
+
+        .dept-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .dept-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .dept-duration {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .dept-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .dept-hod {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dept-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .faculty-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .faculty-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .faculty-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .faculty-info h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .faculty-info p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .faculty-info .faculty-tag {
+            font-size: 11px;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .contact-box-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .contact-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .contact-item i {
+            font-size: 22px;
+            color: #00d4ff;
+        }
+
+        .contact-item-text div:first-child {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .contact-item-text div:last-child {
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .college-hero-card {
+                grid-template-columns: 1fr;
+                padding: 24px;
+            }
+            .about-tabs-nav {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BACKGROUND EFFECTS -->
+    <div class="page-glow glow-left"></div>
+    <div class="page-glow glow-right"></div>
+
+    <!-- NAVBAR -->
+    <header class="navbar" style="position:sticky; top:0; z-index:1000; background:rgba(7, 11, 22, 0.85); backdrop-filter:blur(18px); border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <span>CampusMind <span class="ai-text">AI</span></span>
+        </div>
+        <nav>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="student-dashboard.html"><i class="fa-solid fa-graduation-cap"></i> Dashboard</a>
+            <a href="chat.html"><i class="fa-solid fa-comments"></i> AI Chat</a>
+            <a href="features.html">Features</a>
+            <a href="about.html" class="active"><i class="fa-solid fa-circle-info"></i> About</a>
+        </nav>
+        <div class="auth-buttons">
+            <a href="student-dashboard.html" class="signin-button" style="background:linear-gradient(135deg, #6366f1, #00d4ff);"><i class="fa-solid fa-gauge-high"></i> Cockpit</a>
+        </div>
+    </header>
+
+    <main style="max-width: 1200px; margin: 0 auto; padding: 40px 20px 80px;">
+
+        <!-- PAGE HERO HEADER -->
+        <section class="page-hero" style="min-height: auto; padding: 40px 20px 20px; text-align: center;">
+            <div class="hero-badge" style="margin: 0 auto 16px;">
+                <span class="hero-dot"></span>
+                CAMPUSMIND AI & VPCSC INDAPUR
+            </div>
+
+            <h1 style="font-size: 42px; margin-bottom: 14px;">
+                About Our <span>Institution & AI Platform</span>
+            </h1>
+
+            <p style="max-width: 750px; margin: 0 auto; color: #94a3b8; font-size: 16px;">
+                Learn about <strong>Vidya Pratishthan's Commerce & Science College, Indapur</strong> and the intelligent <strong>CampusMind AI Smart Campus Platform</strong> empowering modern students.
+            </p>
+
+            <!-- TABS SWITCHER -->
+            <div class="about-tabs-nav">
+                <button class="about-tab-btn active" id="tab-btn-college" onclick="switchAboutTab('college')">
+                    <i class="fa-solid fa-building-columns"></i> About VPCSC College
+                </button>
+                <button class="about-tab-btn" id="tab-btn-ai" onclick="switchAboutTab('ai')">
+                    <i class="fa-solid fa-brain"></i> About CampusMind AI
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             TAB 1: ABOUT VPCSC COLLEGE, INDAPUR
+        ===================================================== -->
+        <div id="tab-panel-college" class="tab-content-panel active">
+
+            <!-- Institutional Hero Card -->
+            <div class="college-hero-card">
+                <div>
+                    <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 700; margin-bottom: 8px;">
+                        Vidya Pratishthan, Baramati (Est. 1972)
+                    </div>
+                    <div class="college-hero-title">
+                        Vidya Pratishthan's Commerce & Science College, Indapur (VPCSC)
+                    </div>
+                    <div class="college-hero-subtitle">
+                        Affiliated to Savitribai Phule Pune University (SPPU) | College ID: PU/PN/CS/319/2008
+                    </div>
+                    <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; max-width: 800px;">
+                        Established in <strong>2008</strong> in the lush green 70-acre Vidyanagari Campus at Indapur, VPCSC is committed to providing world-class higher education in Science, Commerce, and Computer Applications to rural and semi-urban youth with modern ICT smart classrooms, high-tech labs, and career development.
+                    </p>
+
+                    <div class="college-badge-group">
+                        <span class="college-badge"><i class="fa-solid fa-check-double"></i> SPPU Affiliated</span>
+                        <span class="college-badge"><i class="fa-solid fa-tree"></i> 70-Acre Campus</span>
+                        <span class="college-badge"><i class="fa-solid fa-book-open"></i> NEP 2020 & CBCS Curriculum</span>
+                        <span class="college-badge"><i class="fa-solid fa-wifi"></i> High-Speed Wi-Fi Labs</span>
+                        <span class="college-badge"><i class="fa-solid fa-award"></i> MahaDBT Scholarships</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <div style="width: 110px; height: 110px; border-radius: 20px; background: rgba(0, 212, 255, 0.1); border: 2px solid rgba(0, 212, 255, 0.4); display: flex; align-items: center; justify-content: center; font-size: 48px; color: #00d4ff; margin: 0 auto;">
+                        <i class="fa-solid fa-landmark-dome"></i>
+                    </div>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 10px;">Est. 2008</div>
+                </div>
+            </div>
+
+            <!-- Vision & Mission -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                <div class="info-card" style="border-left: 4px solid #00d4ff;">
+                    <div class="info-icon" style="color: #00d4ff;"><i class="fa-solid fa-eye"></i></div>
+                    <h3>Our Vision</h3>
+                    <p>
+                        To provide quality higher education in Science, Commerce, and Computer Applications to rural youth, fostering scientific temper, ethical leadership, and employable skills for nation-building.
+                    </p>
+                </div>
+
+                <div class="info-card" style="border-left: 4px solid #818cf8;">
+                    <div class="info-icon" style="color: #818cf8;"><i class="fa-solid fa-bullseye"></i></div>
+                    <h3>Our Mission</h3>
+                    <p>
+                        To impart student-centric education, promote technological innovation, nurture environmental consciousness, and facilitate industry-ready career development through holistic academic and co-curricular programs.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 6 Official Degree Programs -->
+            <div class="section-heading" style="text-align: left; margin-bottom: 10px;">
+                <span style="color: #00d4ff; font-weight: 700; font-size: 13px; text-transform: uppercase;">ACADEMIC EXCELLENCE</span>
+                <h2 style="font-size: 26px; color: #ffffff; margin-top: 6px;">
+                    Official Departments & Degree Programs
+                </h2>
+                <p style="color: #94a3b8; font-size: 14px;">The 6 core academic programs offered at VPCSC Indapur under Savitribai Phule Pune University:</p>
+            </div>
+
+            <div class="departments-grid">
+                <!-- Dept 1: BBA(CA) -->
+                <div class="dept-card">
+                    <div class="dept-card-header">
+                        <div class="dept-icon"><i class="fa-solid fa-code"></i></div>
+                        <span class="dept-duration">3 Years (6 Sems)</span>
+                    </div>
+                    <div class="dept-name">B.B.A. (Computer Application) — BBA(CA)</div>
+                    <div class="dept-hod"><i class="fa-solid fa-user-tie"></i> HOD: Prof. Kaldate N. S. (Nilesh Kaldate Sir)</div>
+                    <p class="dept-desc">
+                        Comprehensive curriculum covering C Programming, Python, Core & Advanced Java, Cloud Computing, DBMS/RDBMS, Web Technology (PHP/MySQL), and Software Engineering.
+                    </p>
+                </div>
+
+                <!-- Dept 2: BCS -->
+                <div class="dept-card">
+                    <div class="dept-card-header">
+                        <div class="dept-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <span class="dept-duration">3 Years (6 Sems)</span>
+                    </div>
+                    <div class="dept-name">B.Sc. (Computer Science) — BCS</div>
+                    <div class="dept-hod"><i class="fa-solid fa-user-tie"></i> HOD: Prof. Shaikh S. Y.</div>
+                    <p class="dept-desc">
+                        Rigorous computer science degree covering Data Structures, Algorithms, Linux OS Internals, Advanced Java, Networks & Cyber Security, Matrix Algebra, and Statistics.
+                    </p>
+                </div>
+
+                <!-- Dept 3: BBA -->
+                <div class="dept-card">
+                    <div class="dept-card-header">
+                        <div class="dept-icon"><i class="fa-solid fa-briefcase"></i></div>
+                        <span class="dept-duration">3 Years (6 Sems)</span>
+                    </div>
+                    <div class="dept-name">B.B.A. (Bachelor of Business Administration)</div>
+                    <div class="dept-hod"><i class="fa-solid fa-user-tie"></i> HOD: Prof. Bhong S. N.</div>
+                    <p class="dept-desc">
+                        Focuses on Strategic Management, Marketing Management, Human Resource Management (HRM), Business Law, Entrepreneurship Development, and Financial Analysis.
+                    </p>
+                </div>
+
+                <!-- Dept 4: B.Sc -->
+                <div class="dept-card">
+                    <div class="dept-card-header">
+                        <div class="dept-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                        <span class="dept-duration">3 Years (6 Sems)</span>
+                    </div>
+                    <div class="dept-name">B.Sc. (Bachelor of Science)</div>
+                    <div class="dept-hod"><i class="fa-solid fa-user-tie"></i> Coordinator: Prof. Shaikh M. D.</div>
+                    <p class="dept-desc">
+                        Undergraduate science education with state-of-the-art laboratory practicals in Chemistry (Organic/Inorganic), Botany (Plant Biotechnology), Zoology, and Environmental Science.
+                    </p>
+                </div>
+
+                <!-- Dept 5: B.Com -->
+                <div class="dept-card">
+                    <div class="dept-card-header">
+                        <div class="dept-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <span class="dept-duration">3 Years (6 Sems)</span>
+                    </div>
+                    <div class="dept-name">B.Com. (Bachelor of Commerce)</div>
+                    <div class="dept-hod"><i class="fa-solid fa-user-tie"></i> HOD: Prof. Bhosale S. D.</div>
+                    <p class="dept-desc">
+                        Specializations in Advanced Financial Accounting, Cost & Works Accounting, Banking & Finance, Business Economics, Corporate Law, and Auditing & GST Compliance.
+                    </p>
+                </div>
+
+                <!-- Dept 6: M.Sc -->
+                <div class="dept-card">
+                    <div class="dept-card-header">
+                        <div class="dept-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <span class="dept-duration" style="background:rgba(192, 132, 252, 0.15); color:#c084fc; border-color:rgba(192, 132, 252, 0.3);">2 Years PG (4 Sems)</span>
+                    </div>
+                    <div class="dept-name">M.Sc. (Computer Science)</div>
+                    <div class="dept-hod"><i class="fa-solid fa-user-tie"></i> Coordinator: Prof. Shaikh S. Y.</div>
+                    <p class="dept-desc">
+                        Advanced Post-Graduate studies in Distributed Operating Systems, AI & Deep Learning, Big Data Analytics, Full Stack MERN/Django, Cloud Security, and 6-Month Industrial Research.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Campus Infrastructure Highlights -->
+            <div class="section-heading" style="text-align: left; margin-top: 40px; margin-bottom: 10px;">
+                <span style="color: #00d4ff; font-weight: 700; font-size: 13px; text-transform: uppercase;">CAMPUS INFRASTRUCTURE</span>
+                <h2 style="font-size: 26px; color: #ffffff; margin-top: 6px;">
+                    70-Acre Vidyanagari Campus Facilities
+                </h2>
+            </div>
+
+            <div class="about-grid" style="margin-top: 20px;">
+                <div class="info-card">
+                    <div class="info-icon"><i class="fa-solid fa-desktop"></i></div>
+                    <h3>Computer Labs 1 to 4</h3>
+                    <p>
+                        High-speed fiber-connected computer labs: Labs 1 & 2 for BCS (1st Floor A' Wing), Labs 3 & 4 for BBA-CA (1st Floor B' Wing). Managed by Lab Assistant <strong>Chaitanya Savant</strong>.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                    <h3>Central Knowledge Resource Centre</h3>
+                    <p>
+                        Located on Ground Floor B' Wing with 15,000+ reference volumes, DELNET e-journals, OPAC catalog, and 150-seat reading hall. Managed by <strong>Gaikwad Sir</strong>.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                    <h3>ICT Smart Classrooms</h3>
+                    <p>
+                        Spacious, well-ventilated lecture halls equipped with modern interactive projectors, audiovisual systems, and Moodle Learning Management System (LMS) integration.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i class="fa-solid fa-flask"></i></div>
+                    <h3>Advanced Science Laboratories</h3>
+                    <p>
+                        Specialized laboratories for Physics, Chemistry, Botany, and Zoology with sophisticated analytical instruments, fume hoods, and safety workstations.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i class="fa-solid fa-building-shield"></i></div>
+                    <h3>Hostels & Residential Life</h3>
+                    <p>
+                        Safe on-campus residential hostels for boys and girls with 24/7 security, continuous Wi-Fi, RO purified drinking water, and hygienic dining mess.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon"><i class="fa-solid fa-futbol"></i></div>
+                    <h3>Sports Complex & Health Center</h3>
+                    <p>
+                        Multi-sport athletic grounds, indoor sports complex, well-equipped gymnasium, 24/7 on-campus medical health clinic, and hygienic cafeteria.
+                    </p>
+                </div>
+            </div>
+
+            <!-- College Contact & Address Card -->
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 28px; margin-top: 40px;">
+                <h3 style="color: #ffffff; font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-address-book" style="color: #00d4ff;"></i> Institutional Contact & Location
+                </h3>
+
+                <div class="contact-box-grid">
+                    <div class="contact-item">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <div class="contact-item-text">
+                            <div>College Campus Address</div>
+                            <div>Vidyanagari, Indapur, Dist - Pune, 413106</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fa-solid fa-phone-volume"></i>
+                        <div class="contact-item-text">
+                            <div>Phone / Office Telephone</div>
+                            <div>02111-225602</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                        <div class="contact-item-text">
+                            <div>Official Email</div>
+                            <div>principal@vpcscindapur.org</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fa-solid fa-globe"></i>
+                        <div class="contact-item-text">
+                            <div>Official Website</div>
+                            <div><a href="https://www.vpcscindapur.org/" target="_blank" style="color:#00d4ff; text-decoration:underline;">vpcscindapur.org</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- =====================================================
+             TAB 2: ABOUT CAMPUSMIND AI PLATFORM
+        ===================================================== -->
+        <div id="tab-panel-ai" class="tab-content-panel">
+
+            <!-- WHAT IS CAMPUSMIND -->
+            <section class="about-section" style="padding-top: 10px;">
+                <div class="section-heading">
+                    <span>OUR PLATFORM VISION</span>
+                    <h2>
+                        What is
+                        <strong>CampusMind AI?</strong>
+                    </h2>
+                    <p>
+                        An intelligent, unified academic cockpit and grounded RAG assistant engineered for modern college students and faculty.
+                    </p>
+                </div>
+
+                <div class="about-grid">
+                    <!-- CARD 1 -->
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <h3>Student Centric</h3>
+                        <p>
+                            CampusMind is designed around real student workflows: instant syllabus clarification, teacher allocations, exam schedule tracking, and interactive subject mentoring.
+                        </p>
+                    </div>
+
+                    <!-- CARD 2 -->
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3>Grounded AI (RAG)</h3>
+                        <p>
+                            Utilizes Retrieval-Augmented Generation (RAG) over official college PDFs, SPPU NEP syllabi, and academic handbooks to deliver 100% truthful, hallucination-free answers.
+                        </p>
+                    </div>
+
+                    <!-- CARD 3 -->
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <h3>Unified Academic Cockpit</h3>
+                        <p>
+                            Instead of scattered circulars, students access their enrolled subjects, teacher details, upcoming mid-term dates, and college notices from a single interface.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HOW IT WORKS -->
+            <section class="workflow-section">
+                <div class="section-heading">
+                    <span>HOW IT WORKS</span>
+                    <h2>
+                        From Query
+                        <strong>to Grounded Answers.</strong>
+                    </h2>
+                    <p>
+                        CampusMind combines vector similarity search and large language models for smart learning.
+                    </p>
+                </div>
+
+                <div class="workflow">
+                    <!-- STEP 1 -->
+                    <div class="workflow-card">
+                        <div class="step-number">01</div>
+                        <div class="workflow-icon"><i class="fa-solid fa-message"></i></div>
+                        <h3>Ask Question</h3>
+                        <p>Student asks about syllabus, exam formats, lab schedules, or campus policies in English or Hinglish.</p>
+                    </div>
+
+                    <div class="workflow-line"></div>
+
+                    <!-- STEP 2 -->
+                    <div class="workflow-card">
+                        <div class="step-number">02</div>
+                        <div class="workflow-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <h3>RAG Retrieval</h3>
+                        <p>System performs vector semantic search across indexed VPCSC syllabus PDFs and regulations.</p>
+                    </div>
+
+                    <div class="workflow-line"></div>
+
+                    <!-- STEP 3 -->
+                    <div class="workflow-card">
+                        <div class="step-number">03</div>
+                        <div class="workflow-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                        <h3>Direct Explanation</h3>
+                        <p>Delivers concise, point-to-point explanations, study tips, and accurate teacher references.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TECHNOLOGY STACK -->
+            <section class="technology-section">
+                <div class="technology-content">
+                    <span class="section-label">ARCHITECTURE & TECH STACK</span>
+                    <h2>
+                        Built with
+                        <strong>enterprise technology.</strong>
+                    </h2>
+                    <p>
+                        CampusMind AI is powered by an asynchronous Python backend, pgvector / SQLite hybrid database, and a responsive frontend with OpenRouter AI models.
+                    </p>
+
+                    <div class="tech-list">
+                        <div class="tech-item">
+                            <i class="fa-brands fa-python"></i>
+                            <span>Python & Flask REST APIs</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fa-solid fa-robot"></i>
+                            <span>OpenRouter AI & Embeddings</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fa-solid fa-database"></i>
+                            <span>Vector Store & Supabase Auth</span>
+                        </div>
+                        <div class="tech-item">
+                            <i class="fa-brands fa-html5"></i>
+                            <span>Responsive Modern UI / React</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technology-visual">
+                    <div class="tech-orbit orbit-one"></div>
+                    <div class="tech-orbit orbit-two"></div>
+                    <div class="tech-core">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>AI</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- CTA SECTION -->
+        <section class="page-cta" style="margin-top: 60px;">
+            <div>
+                <span>READY TO EXPERIENCE CAMPUSMIND?</span>
+                <h2>Start Exploring Your Smart Campus Cockpit</h2>
+                <p>Access your personalized syllabus, exam schedules, and AI mentor today.</p>
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <a href="student-dashboard.html" class="page-primary-button">
+                    Open Student Dashboard <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="chat.html" class="page-secondary-button">
+                    <i class="fa-solid fa-comments"></i> AI Study Chat
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="page-footer">
+        <span>© 2026 Vidya Pratishthan's Commerce & Science College, Indapur | CampusMind AI</span>
+        <span>Empowering Education with Artificial Intelligence</span>
+    </footer>
+
+    <!-- INTERACTIVE TAB SWITCHING SCRIPT -->
+    <script>
+        function switchAboutTab(tabName) {
+            const btnCollege = document.getElementById('tab-btn-college');
+            const btnAi = document.getElementById('tab-btn-ai');
+            const panelCollege = document.getElementById('tab-panel-college');
+            const panelAi = document.getElementById('tab-panel-ai');
+
+            if (tabName === 'college') {
+                btnCollege.classList.add('active');
+                btnAi.classList.remove('active');
+                panelCollege.classList.add('active');
+                panelAi.classList.remove('active');
+            } else {
+                btnAi.classList.add('active');
+                btnCollege.classList.remove('active');
+                panelAi.classList.add('active');
+                panelCollege.classList.remove('active');
+            }
+        }
+
+        // Support URL hash for direct tab linking, e.g. about.html#ai or about.html#college
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.location.hash === '#ai') {
+                switchAboutTab('ai');
+            } else if (window.location.hash === '#college') {
+                switchAboutTab('college');
+            }
+        });
+    </script>
+</body>
+
+</html>

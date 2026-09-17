@@ -1,0 +1,1178 @@
+/* =====================================================
+   CAMPUSMIND AI
+   HOW IT WORKS PAGE
+===================================================== */
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background: #070b16;
+    color: #ffffff;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+
+/* =====================================================
+   BACKGROUND GLOWS
+===================================================== */
+
+.background-glow {
+    position: fixed;
+
+    width: 500px;
+    height: 500px;
+
+    border-radius: 50%;
+
+    filter: blur(140px);
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+.glow-one {
+    top: 80px;
+    left: -250px;
+
+    background: #6258ff;
+
+    opacity: 0.13;
+}
+
+.glow-two {
+    right: -250px;
+    top: 450px;
+
+    background: #00d4ff;
+
+    opacity: 0.09;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.how-navbar {
+    position: relative;
+
+    width: 100%;
+
+    padding: 22px 7%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    z-index: 10;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
+    background:
+        rgba(7, 11, 22, 0.75);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+.brand-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00d4ff
+        );
+
+    box-shadow:
+        0 0 25px
+        rgba(0, 212, 255, 0.25);
+}
+
+.brand-icon i {
+    font-size: 18px;
+}
+
+.brand b {
+    color: #00d4ff;
+}
+
+
+/* =====================================================
+   BACK HOME
+===================================================== */
+
+.back-home {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #929db3;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    transition: 0.3s;
+}
+
+.back-home:hover {
+    color: #ffffff;
+
+    transform: translateX(-4px);
+}
+
+.back-home i {
+    color: #00d4ff;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.how-hero {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 850px;
+
+    margin: auto;
+
+    padding:
+        110px 20px 70px;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   HERO BADGE
+===================================================== */
+
+.hero-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 8px 16px;
+
+    border-radius: 50px;
+
+    color: #9eefff;
+
+    background:
+        rgba(0, 212, 255, 0.06);
+
+    border:
+        1px solid
+        rgba(0, 212, 255, 0.18);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #00d4ff;
+
+    box-shadow:
+        0 0 15px
+        #00d4ff;
+
+    animation:
+        livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+}
+
+
+/* =====================================================
+   HERO HEADING
+===================================================== */
+
+.how-hero h1 {
+    margin-top: 25px;
+
+    font-size:
+        clamp(45px, 6vw, 76px);
+
+    line-height: 1.05;
+
+    letter-spacing: -3px;
+
+    font-weight: 800;
+}
+
+.how-hero h1 span {
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #8178ff,
+            #00d4ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+
+/* =====================================================
+   HERO DESCRIPTION
+===================================================== */
+
+.how-hero p {
+    max-width: 650px;
+
+    margin:
+        24px auto 0;
+
+    color: #8994aa;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+}
+
+
+/* =====================================================
+   WORKFLOW
+===================================================== */
+
+.workflow {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 1000px;
+
+    margin:
+        20px auto 0;
+
+    padding:
+        20px 20px 80px;
+}
+
+
+/* =====================================================
+   TIMELINE LINE
+===================================================== */
+
+.workflow-line {
+    position: absolute;
+
+    top: 20px;
+    bottom: 20px;
+
+    left: 50%;
+
+    width: 2px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(108, 99, 255, 0.7),
+            rgba(0, 212, 255, 0.7),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px
+        rgba(0, 212, 255, 0.15);
+}
+
+
+/* =====================================================
+   WORKFLOW STEP
+===================================================== */
+
+.workflow-step {
+    position: relative;
+
+    width: 50%;
+
+    padding:
+        25px 50px 25px 0;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 25px;
+
+    animation:
+        stepAppear 0.8s ease both;
+}
+
+.workflow-step:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.workflow-step:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.workflow-step:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.workflow-step:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.workflow-step:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+@keyframes stepAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =====================================================
+   REVERSE STEPS
+===================================================== */
+
+.workflow-step.reverse {
+    margin-left: 50%;
+
+    padding:
+        25px 0 25px 50px;
+
+    flex-direction: row-reverse;
+
+    text-align: left;
+}
+
+
+/* =====================================================
+   STEP NUMBER
+===================================================== */
+
+.step-number {
+    position: absolute;
+
+    top: 28px;
+
+    right: -19px;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        #0d1427;
+
+    border:
+        1px solid
+        rgba(0, 212, 255, 0.35);
+
+    color: #00d4ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    z-index: 3;
+
+    box-shadow:
+        0 0 25px
+        rgba(0, 212, 255, 0.12);
+}
+
+.workflow-step.reverse .step-number {
+    left: -19px;
+    right: auto;
+}
+
+
+/* =====================================================
+   STEP ICON
+===================================================== */
+
+.step-icon {
+    flex-shrink: 0;
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 99, 255, 0.2),
+            rgba(0, 212, 255, 0.1)
+        );
+
+    border:
+        1px solid
+        rgba(0, 212, 255, 0.18);
+
+    color: #00d4ff;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        background 0.35s ease;
+}
+
+.workflow-step:hover .step-icon {
+    transform:
+        translateY(-6px)
+        rotate(-4deg);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 99, 255, 0.35),
+            rgba(0, 212, 255, 0.18)
+        );
+
+    box-shadow:
+        0 18px 45px
+        rgba(0, 212, 255, 0.14);
+}
+
+
+/* =====================================================
+   STEP CONTENT
+===================================================== */
+
+.step-content {
+    padding-top: 5px;
+
+    max-width: 330px;
+}
+
+.step-content > span {
+    color: #00d4ff;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.step-content h2 {
+    margin-top: 8px;
+
+    font-size: 21px;
+
+    line-height: 1.25;
+}
+
+.step-content p {
+    margin-top: 11px;
+
+    color: #7f899f;
+
+    font-size: 13px;
+
+    line-height: 1.75;
+}
+
+
+/* =====================================================
+   TECHNOLOGY
+===================================================== */
+
+.technology {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 1100px;
+
+    margin:
+        40px auto 0;
+
+    padding:
+        80px 25px;
+}
+
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
+.section-title {
+    max-width: 700px;
+
+    margin: auto;
+
+    text-align: center;
+}
+
+.section-title > span {
+    color: #00d4ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.section-title h2 {
+    margin-top: 12px;
+
+    font-size:
+        clamp(32px, 4vw, 48px);
+
+    line-height: 1.15;
+
+    letter-spacing: -1.5px;
+}
+
+.section-title h2 strong {
+    background:
+        linear-gradient(
+            90deg,
+            #8178ff,
+            #00d4ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+}
+
+.section-title p {
+    margin-top: 15px;
+
+    color: #818ca2;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   TECH GRID
+===================================================== */
+
+.tech-grid {
+    margin-top: 50px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+
+/* =====================================================
+   TECH CARD
+===================================================== */
+
+.tech-card {
+    padding: 30px 22px;
+
+    min-height: 190px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.045),
+            rgba(255, 255, 255, 0.012)
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    transition:
+        transform 0.35s ease,
+        border-color 0.35s ease,
+        background 0.35s ease;
+}
+
+.tech-card:hover {
+    transform: translateY(-8px);
+
+    border-color:
+        rgba(0, 212, 255, 0.25);
+
+    background:
+        rgba(255, 255, 255, 0.055);
+}
+
+
+/* =====================================================
+   TECH ICON
+===================================================== */
+
+.tech-icon {
+    width: 55px;
+    height: 55px;
+
+    margin:
+        0 auto 18px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        rgba(0, 212, 255, 0.07);
+
+    color: #00d4ff;
+
+    font-size: 23px;
+
+    border:
+        1px solid
+        rgba(0, 212, 255, 0.12);
+
+    transition: 0.35s;
+}
+
+.tech-card:hover .tech-icon {
+    transform: scale(1.1);
+}
+
+.tech-card h3 {
+    font-size: 16px;
+}
+
+.tech-card p {
+    margin-top: 8px;
+
+    color: #778298;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   CTA
+===================================================== */
+
+.workflow-cta {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 850px;
+
+    margin:
+        30px auto 100px;
+
+    padding:
+        55px 30px;
+
+    text-align: center;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(108, 99, 255, 0.13),
+            rgba(0, 212, 255, 0.05)
+        );
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    overflow: hidden;
+}
+
+.workflow-cta::before {
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    left: 50%;
+    top: -170px;
+
+    transform:
+        translateX(-50%);
+
+    background: #00d4ff;
+
+    filter: blur(100px);
+
+    opacity: 0.12;
+
+    pointer-events: none;
+}
+
+
+/* =====================================================
+   CTA ICON
+===================================================== */
+
+.cta-icon {
+    position: relative;
+
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00bde8
+        );
+
+    box-shadow:
+        0 15px 35px
+        rgba(0, 190, 235, 0.2);
+
+    font-size: 24px;
+
+    animation:
+        rocketFloat 3s ease-in-out infinite;
+}
+
+@keyframes rocketFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+
+/* =====================================================
+   CTA TEXT
+===================================================== */
+
+.workflow-cta h2 {
+    position: relative;
+
+    font-size: 30px;
+
+    line-height: 1.2;
+}
+
+.workflow-cta p {
+    position: relative;
+
+    max-width: 500px;
+
+    margin:
+        12px auto 25px;
+
+    color: #858fa5;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   CTA BUTTON
+===================================================== */
+
+.cta-button {
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        13px 20px;
+
+    border-radius: 11px;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6c63ff,
+            #00bde8
+        );
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0, 190, 235, 0.15);
+
+    transition: 0.3s;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(0, 190, 235, 0.28);
+}
+
+.cta-button i {
+    transition: 0.3s;
+}
+
+.cta-button:hover i {
+    transform: translateX(4px);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer {
+    position: relative;
+
+    z-index: 2;
+
+    padding:
+        30px 7%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
+    color: #707a90;
+
+    font-size: 12px;
+}
+
+.footer-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+.footer-brand .brand-icon {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 9px;
+}
+
+.footer-brand .brand-icon i {
+    font-size: 14px;
+}
+
+.footer-brand b {
+    color: #00d4ff;
+}
+
+footer p {
+    color: #626d83;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+    .workflow {
+        max-width: 750px;
+    }
+
+    .tech-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+    .how-navbar {
+        padding:
+            18px 5%;
+    }
+
+    .brand {
+        font-size: 17px;
+    }
+
+    .brand-icon {
+        width: 35px;
+        height: 35px;
+    }
+
+    .back-home {
+        font-size: 12px;
+    }
+
+    .how-hero {
+        padding:
+            80px 5% 45px;
+    }
+
+    .how-hero h1 {
+        font-size: 45px;
+
+        letter-spacing: -2px;
+    }
+
+    .how-hero p {
+        font-size: 14px;
+    }
+
+
+    /* Timeline */
+
+    .workflow {
+        padding:
+            20px 5% 60px;
+    }
+
+    .workflow-line {
+        left: 31px;
+    }
+
+    .workflow-step,
+    .workflow-step.reverse {
+        width: 100%;
+
+        margin-left: 0;
+
+        padding:
+            25px 0 25px 65px;
+
+        flex-direction: row;
+
+        text-align: left;
+
+        gap: 18px;
+    }
+
+    .workflow-step .step-number,
+    .workflow-step.reverse .step-number {
+        left: 12px;
+        right: auto;
+
+        width: 38px;
+        height: 38px;
+    }
+
+    .step-icon {
+        width: 58px;
+        height: 58px;
+
+        border-radius: 16px;
+
+        font-size: 20px;
+    }
+
+    .step-content {
+        max-width: none;
+    }
+
+    .step-content h2 {
+        font-size: 18px;
+    }
+
+    .step-content p {
+        font-size: 12px;
+    }
+
+
+    /* Technology */
+
+    .technology {
+        padding:
+            55px 5%;
+    }
+
+    .tech-grid {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .tech-card {
+        min-height: auto;
+    }
+
+
+    /* CTA */
+
+    .workflow-cta {
+        margin:
+            20px 5% 70px;
+
+        padding:
+            45px 20px;
+    }
+
+    .workflow-cta h2 {
+        font-size: 25px;
+    }
+
+
+    /* Footer */
+
+    footer {
+        padding:
+            25px 5%;
+
+        flex-direction: column;
+
+        gap: 15px;
+
+        text-align: center;
+    }
+
+}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CampusMind AI</title>
+
+
+    <!-- Google Font -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+
+    <!-- Font Awesome Icons -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+    <!-- Main CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================== -->
+
+    <header class="navbar">
+
+        <!-- Logo -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+
+                <i class="fa-solid fa-brain"></i>
+
+            </div>
+
+            <span>
+                CampusMind
+                <span class="ai-text">AI</span>
+            </span>
+
+        </div>
+
+
+        <!-- Navigation -->
+
+        <!-- =========================================
+     NAVIGATION
+========================================== -->
+
+<nav>
+
+    <a href="#home">
+        <i class="fa-solid fa-house"></i>
+        Home
+    </a>
+
+    <a id="nav-dashboard-link" href="pages/student-dashboard.html">
+        <i class="fa-solid fa-graduation-cap"></i>
+        Dashboard
+    </a>
+
+    <a href="pages/chat.html">
+        <i class="fa-solid fa-comments"></i>
+        AI Chat
+    </a>
+
+    <a href="pages/features.html">
+        <i class="fa-solid fa-sparkles"></i>
+        Features
+    </a>
+
+    <a href="pages/about.html">
+        <i class="fa-solid fa-circle-info"></i>
+        About
+    </a>
+</nav>
+
+
+        <!-- Authentication Buttons -->
+
+        <div class="auth-buttons">
+
+            <button class="signin-button">
+
+                Sign In
+
+            </button>
+
+
+            <button class="signup-button">
+
+                Sign Up
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <main>
+
+
+        <!-- =====================================
+             HERO SECTION
+        ====================================== -->
+
+        <section class="hero"
+                 id="home">
+
+
+            <!-- LEFT SIDE -->
+
+            <div class="hero-content">
+
+
+                <!-- Badge -->
+
+                <div class="badge">
+
+                    <span class="pulse"></span>
+
+                    AI-Powered Student Platform
+
+                </div>
+
+
+
+                <!-- Heading -->
+
+                <h1>
+
+                    Your Campus.
+
+                    <br>
+
+                    <span>
+                        Your AI Mind.
+                    </span>
+
+                </h1>
+
+
+
+                <!-- Description -->
+
+                <p>
+
+                    CampusMind AI is a smart student platform
+                    designed to help you learn, organize,
+                    and achieve more with the power of
+                    Artificial Intelligence.
+
+                </p>
+
+
+
+                <!-- Hero Buttons -->
+
+                <div class="hero-buttons">
+
+
+                    <button class="primary-button">
+
+                        Explore CampusMind
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+
+
+                    <button class="secondary-button">
+
+                        <i class="fa-solid fa-play"></i>
+
+                        See How It Works
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- Statistics -->
+
+                <div class="stats">
+
+
+                    <div>
+
+                        <strong>
+                            AI
+                        </strong>
+
+                        <span>
+                            Powered
+                        </span>
+
+                    </div>
+
+
+
+                    <div>
+
+                        <strong>
+                            24/7
+                        </strong>
+
+                        <span>
+                            Available
+                        </span>
+
+                    </div>
+
+
+
+                    <div>
+
+                        <strong>
+                            100%
+                        </strong>
+
+                        <span>
+                            Student Focused
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================
+                 RIGHT AI CARD
+            ================================== -->
+
+            <div class="hero-visual">
+
+
+                <div class="glow"></div>
+
+
+
+                <div class="ai-card">
+
+
+                    <!-- Card Header -->
+
+                    <div class="card-top">
+
+                        <span class="status-dot"></span>
+
+                        CampusMind AI
+
+                        <i class="fa-solid fa-ellipsis"></i>
+
+                    </div>
+
+
+
+                    <!-- Brain -->
+
+                    <div class="brain-container">
+
+                        <i class="fa-solid fa-brain brain-icon"></i>
+
+                    </div>
+
+
+
+                    <!-- Card Content -->
+
+                    <h3>
+
+                        Your AI Study Companion
+
+                    </h3>
+
+
+
+                    <p>
+
+                        Ask questions, understand concepts,
+                        plan your studies and learn smarter.
+
+                    </p>
+
+
+
+                    <!-- AI Input -->
+
+                    <div class="ai-input">
+
+                        <input
+                            type="text"
+                            id="ai-quick-input"
+                            class="ai-quick-input"
+                            placeholder="Ask CampusMind anything..."
+                            autocomplete="off"
+                        >
+
+                        <button
+                            type="button"
+                            id="ai-quick-send"
+                            aria-label="Send message"
+                        >
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                        </button>
+
+                    </div>
+
+                    <!-- Quick reply preview -->
+
+                    <div
+                        id="ai-quick-reply"
+                        class="ai-quick-reply"
+                        hidden
+                    ></div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             FEATURES SECTION
+        ========================================== -->
+
+        <section class="features"
+                 id="features">
+
+
+            <div class="section-heading">
+
+
+                <span>
+                    SMART FEATURES
+                </span>
+
+
+                <h2>
+
+                    Everything you need to
+
+                    <span>
+                        learn smarter.
+                    </span>
+
+                </h2>
+
+
+                <p>
+
+                    One intelligent platform built around
+                    the real needs of modern students.
+
+                </p>
+
+
+            </div>
+
+
+
+            <!-- Feature Cards -->
+
+            <div class="feature-grid">
+
+
+                <!-- Card 1 -->
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+
+                        <i class="fa-solid fa-robot"></i>
+
+                    </div>
+
+
+                    <h3>
+                        AI Study Assistant
+                    </h3>
+
+
+                    <p>
+
+                        Get instant explanations,
+                        answers and personalized
+                        learning support.
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- Card 2 -->
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </div>
+
+
+                    <h3>
+                        Smart Planner
+                    </h3>
+
+
+                    <p>
+
+                        Organize classes, assignments
+                        and study sessions in one place.
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- Card 3 -->
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                    </div>
+
+
+                    <h3>
+                        Progress Tracking
+                    </h3>
+
+
+                    <p>
+
+                        Understand your learning progress
+                        with simple and useful analytics.
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- Card 4 -->
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+
+                        <i class="fa-solid fa-book-open"></i>
+
+                    </div>
+
+
+                    <h3>
+                        Smart Resources
+                    </h3>
+
+
+                    <p>
+
+                        Keep your notes, resources and
+                        learning material organized.
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             ABOUT SECTION
+        ========================================== -->
+
+        <section class="about"
+                 id="about">
+
+
+            <div>
+
+                <span class="section-label">
+
+                    ABOUT CAMPUSMIND
+
+                </span>
+
+
+                <h2>
+
+                    Built for students.
+
+                    <br>
+
+                    Designed for the future.
+
+                </h2>
+
+            </div>
+
+
+
+            <p>
+
+                CampusMind AI combines modern web technology,
+                Python backend development and Artificial
+                Intelligence to create a practical,
+                student-focused platform.
+
+            </p>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer>
+
+
+        <div class="logo">
+
+            <div class="logo-icon">
+
+                <i class="fa-solid fa-brain"></i>
+
+            </div>
+
+
+            <span>
+
+                CampusMind
+
+                <span class="ai-text">
+                    AI
+                </span>
+
+            </span>
+
+        </div>
+
+
+
+        <p>
+
+            Built with AI • Python • Web Technology
+
+        </p>
+
+
+    </footer>
+
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script src="js/script.js"></script>
+    <script src="js/chatbot.js"></script>
+
+
+</body>
+
+</html>

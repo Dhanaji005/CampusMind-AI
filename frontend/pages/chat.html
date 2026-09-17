@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMind AI — Intelligent Campus Assistant</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/chat.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+
+<body class="fullscreen-chat-body">
+
+    <div class="chat-app-layout" id="chat-drop-zone">
+
+        <!-- =====================================================
+             TOP CHAT HEADER
+        ====================================================== -->
+        <header class="app-chat-header">
+            <div class="header-left">
+                <a href="../index.html" class="header-brand" title="Back to Home">
+                    <div class="header-logo-icon">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="header-title-group">
+                        <span class="header-app-name">CampusMind <b>AI</b></span>
+                        <span class="header-app-subtitle">Your Intelligent Campus Assistant</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <button id="chat-new-btn" class="header-btn new-chat-btn" type="button" title="Start a fresh conversation">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>New Chat</span>
+                </button>
+
+                <div id="header-user-status" class="header-user-badge">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <a href="../index.html" class="header-icon-btn" title="Home">
+                    <i class="fa-solid fa-house"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- =====================================================
+             CENTRAL CONVERSATION STREAM
+        ====================================================== -->
+        <main class="chat-main-area">
+            <div id="chat-log" class="chat-stream-container">
+                
+                <!-- COMPACT WELCOME SCREEN (shown when chat is empty) -->
+                <div class="chat-welcome" id="chat-welcome-screen">
+                    <div class="chat-welcome-avatar">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h2>How can I help you today?</h2>
+                    <p class="welcome-desc">Ask anything about your syllabus, college rules, exams, or VPCSC Indapur campus resources.</p>
+                    
+                    <div class="chat-suggestion-grid">
+                        <button type="button" class="suggestion-card" data-prompt="What are my enrolled academic subjects and syllabus?">
+                            <i class="fa-solid fa-book-open"></i>
+                            <div class="suggestion-text">
+                                <strong>My Academic Subjects</strong>
+                                <span>View subjects & syllabus for your current year</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="suggestion-card" data-prompt="What is the latest college notice and announcement?">
+                            <i class="fa-solid fa-bullhorn"></i>
+                            <div class="suggestion-text">
+                                <strong>Latest College Notices</strong>
+                                <span>Check recent circulars & urgent deadlines</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="suggestion-card" data-prompt="Tell me about upcoming exam dates, schedules, and rules.">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <div class="suggestion-text">
+                                <strong>Upcoming Exams & Rules</strong>
+                                <span>Timetable, room venues & attendance rules</span>
+                            </div>
+                        </button>
+
+                        <button type="button" class="suggestion-card" data-prompt="Tell me about VPCSC Indapur college, courses, and campus facilities.">
+                            <i class="fa-solid fa-building-columns"></i>
+                            <div class="suggestion-text">
+                                <strong>VPCSC Indapur Knowledge</strong>
+                                <span>SPPU affiliation, degrees, labs & facilities</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- =====================================================
+             BOTTOM INPUT ANCHOR
+        ====================================================== -->
+        <footer class="chat-bottom-dock">
+            <div class="chat-bottom-wrapper">
+
+                <!-- Attachment Preview Tray -->
+                <div id="chat-attachments-preview" class="chat-attachments-preview" hidden></div>
+
+                <!-- Input Box Form -->
+                <form id="chat-form" class="chat-input-form" autocomplete="off" onsubmit="return false;">
+                    
+                    <!-- Hidden File Input -->
+                    <input
+                        type="file"
+                        id="chat-file-input"
+                        accept=".pdf,image/png,image/jpeg,image/webp,image/gif"
+                        multiple
+                        style="display: none;"
+                    >
+
+                    <!-- Attachment Trigger -->
+                    <button
+                        id="chat-attach-btn"
+                        class="chat-action-btn attach-btn"
+                        type="button"
+                        title="Attach PDF notes or image"
+                        aria-label="Attach File"
+                    >
+                        <i class="fa-solid fa-paperclip"></i>
+                    </button>
+
+                    <!-- Expanding Textarea -->
+                    <textarea
+                        id="chat-input"
+                        rows="1"
+                        placeholder="Ask CampusMind anything about your college..."
+                        aria-label="Message CampusMind"
+                    ></textarea>
+
+                    <!-- Voice Input Mic Button -->
+                    <button
+                        id="chat-voice-btn"
+                        class="chat-action-btn voice-btn"
+                        type="button"
+                        title="Voice Input: Speak to ask questions"
+                        aria-label="Voice Input"
+                    >
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+
+                    <!-- Send Button -->
+                    <button
+                        id="chat-send"
+                        class="chat-action-btn send-btn"
+                        type="button"
+                        title="Send message"
+                        aria-label="Send"
+                    >
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+                </form>
+
+                <p class="chat-disclaimer">
+                    CampusMind AI provides grounded guidance from official records. Always verify critical notices with college administration.
+                </p>
+
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =====================================================
+         VERIFIED SOURCE EXCERPT MODAL
+    ====================================================== -->
+    <div id="source-modal" class="custom-modal-overlay" style="display:none;">
+        <div class="custom-modal">
+            <div class="custom-modal-header">
+                <h3 id="modal-source-title"><i class="fa-solid fa-file-shield" style="color:#00d4ff;"></i> Verified Campus Source</h3>
+                <button type="button" class="btn-modal-close" id="modal-close-btn">&times;</button>
+            </div>
+            <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+                <span id="modal-source-category" style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(0,212,255,0.15);color:#00d4ff;text-transform:uppercase;"></span>
+            </div>
+            <div id="modal-source-content" style="font-size:13px;line-height:1.65;color:#cbd5e1;background:rgba(0,0,0,0.35);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);max-height:320px;overflow-y:auto;white-space:pre-wrap;"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/chatbot.js"></script>
+</body>
+
+</html>
