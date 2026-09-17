@@ -240,6 +240,40 @@ def init_db():
         )
     """)
 
+    # 10. Department Timetables (Managed by Department HOD)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS timetables (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            department TEXT NOT NULL,
+            year_of_study TEXT NOT NULL,
+            semester INTEGER DEFAULT 1,
+            day_of_week TEXT NOT NULL,
+            time_slot TEXT NOT NULL,
+            subject_code TEXT,
+            subject_name TEXT NOT NULL,
+            faculty_name TEXT,
+            room_no TEXT DEFAULT 'Room 101',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # 11. Official Circulars (Issued by Principal or Department HOD)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS circulars (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            circular_no TEXT NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            department TEXT DEFAULT 'All',
+            target_audience TEXT DEFAULT 'All',
+            issued_by TEXT DEFAULT 'Principal Dr. Lalasaheb Kashid',
+            priority TEXT DEFAULT 'Normal',
+            attachment_url TEXT,
+            issued_date TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
 
     # Pre-seed initial data if empty
@@ -255,6 +289,15 @@ def _seed_initial_data(conn):
     # 1. Seed Users if not present
     demo_users = [
         ("Admin Director", "admin@campusmind.ai", "Admin@123", "admin", "Administration", "All", 0, "ADM-001"),
+        # Principal (Dr. Lalasaheb Kashid)
+        ("Dr. Lalasaheb Kashid", "principal@vpcscindapur.org", "Principal@123", "principal", "All", "All", 0, "VPCSC-PRIN-01"),
+        # Department HODs
+        ("Prof. Nilesh Kaldate", "hod_bbaca@vpcscindapur.org", "Hod@123", "hod", "BBA(CA)", "All", 0, "HOD-BBACA-01"),
+        ("Prof. Shaikh Sarfaraz Yusuf", "hod_bcs@vpcscindapur.org", "Hod@123", "hod", "BCS", "All", 0, "HOD-BCS-01"),
+        ("Prof. Bhosale S. D.", "hod_bcom@vpcscindapur.org", "Hod@123", "hod", "B.Com", "All", 0, "HOD-BCOM-01"),
+        ("Prof. Bhong S. N.", "hod_bba@vpcscindapur.org", "Hod@123", "hod", "BBA", "All", 0, "HOD-BBA-01"),
+        ("Prof. Shaikh M. D.", "hod_bsc@vpcscindapur.org", "Hod@123", "hod", "B.Sc", "All", 0, "HOD-BSC-01"),
+        # Students & Faculty
         ("Aarav Sharma", "firstyear@campusmind.ai", "Student@123", "student", "Computer Science", "1st Year", 1, "CS-2026-042"),
         ("Priya Patel", "thirdyear@campusmind.ai", "Student@123", "student", "Computer Science", "3rd Year", 5, "CS-2024-118"),
         ("Rohan Gupta", "fourthyear@campusmind.ai", "Student@123", "student", "Computer Science", "4th Year", 7, "CS-2023-009"),
@@ -534,5 +577,53 @@ INSTITUTION: Vidya Pratishthan's Commerce & Science College, Indapur (https://ww
             print("[Database] Successfully ingested and indexed sample & VPCSC Indapur RAG documents.")
         except Exception as e:
             print(f"[Database] Notice on sample RAG ingestion: {e}")
+
+    # 4. Seed Department Timetables if empty
+    cursor.execute("SELECT COUNT(*) FROM timetables")
+    if cursor.fetchone()[0] == 0:
+        print("[Database] Seeding official department timetables...")
+        timetables_data = [
+            # BBA(CA) 3rd Year (TYBBA-CA)
+            ("BBA(CA)", "3rd Year", 5, "Monday", "10:00 AM - 11:00 AM", "CA-501", "Cyber Security", "Prof. Nilesh Kaldate (HOD)", "Computer Lab 2"),
+            ("BBA(CA)", "3rd Year", 5, "Monday", "11:00 AM - 12:00 PM", "CA-502", "Object Oriented Software Engineering", "Prof. Tamanna Shaikh", "Classroom A-204"),
+            ("BBA(CA)", "3rd Year", 5, "Tuesday", "10:00 AM - 11:00 AM", "CA-503", "Core Java Programming", "Prof. Ankit Zagade", "Computer Lab 1"),
+            ("BBA(CA)", "3rd Year", 5, "Tuesday", "11:00 AM - 12:00 PM", "CA-504", "Python Programming & Data Science", "Prof. Sudarshan Awate", "Computer Lab 3"),
+            ("BBA(CA)", "3rd Year", 5, "Wednesday", "10:00 AM - 12:00 PM", "CA-505", "Advanced Java & Web Lab", "Prof. Ankit Zagade", "Computer Lab 1"),
+            ("BBA(CA)", "3rd Year", 5, "Thursday", "10:00 AM - 11:00 AM", "CA-501", "Cyber Security", "Prof. Nilesh Kaldate (HOD)", "Computer Lab 2"),
+            ("BBA(CA)", "3rd Year", 5, "Friday", "10:00 AM - 12:00 PM", "CA-506", "Major Project Implementation Review", "Prof. Nilesh Kaldate (HOD)", "Project Seminar Hall"),
+
+            # BCS 2nd Year (SYBSc-CS)
+            ("BCS", "2nd Year", 3, "Monday", "10:00 AM - 11:00 AM", "CS-251", "Data Structures II", "Prof. Mahadik Urmila", "Classroom B-102"),
+            ("BCS", "2nd Year", 3, "Tuesday", "10:00 AM - 11:00 AM", "CS-252", "Database Management Systems II", "Prof. Teke Jyoti", "Classroom B-102"),
+            ("BCS", "2nd Year", 3, "Wednesday", "10:00 AM - 12:00 PM", "CS-253", "DBMS & Data Structures Practical", "Prof. Teke Jyoti", "Computer Lab 4"),
+            ("BCS", "2nd Year", 3, "Thursday", "10:00 AM - 11:00 AM", "CS-271", "Advanced Python Programming", "Prof. Sakhare Ganesh", "Computer Lab 3"),
+            ("BCS", "2nd Year", 3, "Friday", "10:00 AM - 11:00 AM", "CS-281", "Mini Project Guidance", "Prof. Shaikh Sarfaraz (HOD)", "Computer Lab 4")
+        ]
+        cursor.executemany("""
+            INSERT INTO timetables (department, year_of_study, semester, day_of_week, time_slot, subject_code, subject_name, faculty_name, room_no)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, timetables_data)
+
+    # 5. Seed Official Institutional Circulars if empty
+    cursor.execute("SELECT COUNT(*) FROM circulars")
+    if cursor.fetchone()[0] == 0:
+        print("[Database] Seeding official college circulars...")
+        circulars_data = [
+            ("VPCSC/2026/CIR-01", "Mandatory 75% Attendance Requirement for SPPU University Examination Eligibility",
+             "As per Savitribai Phule Pune University (SPPU) ordinances and academic regulations, all undergraduate and postgraduate students must maintain a minimum of 75% cumulative attendance across all enrolled subjects. Department HODs are instructed to review defaulter lists on the 1st of every month. Students below 75% will face hall ticket clearance withholding unless valid medical documentation is approved.",
+             "All", "All", "Dr. Lalasaheb Kashid (Principal)", "Urgent", "", "2026-03-01"),
+            
+            ("VPCSC/2026/CIR-02", "Schedule for Internal Continuous Assessment (CIE) & Practical Submissions",
+             "All academic departments (BCS, BBA-CA, B.Com, BBA, B.Sc, M.Sc) shall conduct their mid-semester CIE tests and internal journal certifications as per the unified academic calendar. Marks must be compiled and submitted to the examination committee by the 25th of this month.",
+             "All", "Students", "Dr. Lalasaheb Kashid (Principal)", "High", "", "2026-03-10"),
+             
+            ("VPCSC/2026/CIR-03", "Annual Campus Technical Symposium & Project Exhibition 2026",
+             "The Department of Computer Science and BBA (Computer Application) are jointly hosting the Annual Project Exhibition. Final Year students must register their prototype projects with their respective department HODs by next week.",
+             "All", "All", "Dr. Lalasaheb Kashid (Principal)", "Normal", "", "2026-03-15")
+        ]
+        cursor.executemany("""
+            INSERT INTO circulars (circular_no, title, content, department, target_audience, issued_by, priority, attachment_url, issued_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, circulars_data)
 
     conn.commit()

@@ -95,15 +95,20 @@ def create_user(name: str, email: str, password: str, role: str = "student",
     year_of_study = (year_of_study or "1st Year").strip()
     passcode = (passcode or "").strip()
 
-    valid_roles = ["guest", "student", "alumni", "faculty", "admin"]
+    valid_roles = ["guest", "student", "alumni", "faculty", "admin", "principal", "hod"]
     if role not in valid_roles:
         role = "student"
 
     # --- SECURITY ROLE VERIFICATION ---
-    if role == "admin":
-        valid_admin_keys = ["VPCSC@ADMIN2026", "VPCSC-ADMIN-2026", "Admin@123"]
+    if role in ("admin", "principal"):
+        valid_admin_keys = ["VPCSC@PRINCIPAL2026", "VPCSC@ADMIN2026", "VPCSC-ADMIN-2026", "Principal@123", "Admin@123"]
         if not passcode or passcode not in valid_admin_keys:
-            return None, None, "Invalid Administrator Security Passcode. Unauthorized access denied."
+            return None, None, "Invalid Principal / Administrator Security Passcode. Unauthorized access denied."
+
+    if role == "hod":
+        valid_hod_keys = ["VPCSC@HOD2026", "VPCSC-HOD-2026", "Hod@123", "VPCSC@ADMIN2026"]
+        if not passcode or passcode not in valid_hod_keys:
+            return None, None, "Invalid Head of Department (HOD) Authorization Key. Unauthorized access denied."
 
     if role == "faculty":
         valid_faculty_keys = ["VPCSC@FAC2026", "VPCSC-FACULTY-2026", "Faculty@123"]

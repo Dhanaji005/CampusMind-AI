@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMind AI — Department HOD Cockpit</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main & Dashboard Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- React 18 & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <span>CampusMind <span class="ai-text">AI</span></span>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="hod-dashboard.html" class="active">HOD Portal</a>
+            <a href="principal-dashboard.html">Principal Cockpit</a>
+            <a href="student-dashboard.html">Student View</a>
+            <a href="chat.html">AI Chat</a>
+        </nav>
+        <div class="auth-buttons">
+            <span id="user-display" style="color: #94a3b8; font-size: 13px; margin-right: 12px;"></span>
+            <a href="../auth/signin.html" class="signin-button" id="auth-btn">Sign In</a>
+        </div>
+    </header>
+
+    <!-- REACT ROOT -->
+    <div id="hod-root">
+        <div style="text-align:center;padding:140px 20px;color:#00d4ff;">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size:32px;"></i>
+            <p style="margin-top:16px;font-size:16px;">Loading Department HOD Command Center…</p>
+        </div>
+    </div>
+
+    <!-- REACT APPLICATION SCRIPT -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const API_BASE = (function () {
+            if (window.CAMPUSMIND_API_BASE) return window.CAMPUSMIND_API_BASE;
+            try {
+                if (window.location && window.location.protocol && window.location.protocol.startsWith("http")) {
+                    const port = window.location.port;
+                    if (!port || port === "80" || port === "443" || port === "5000") {
+                        return window.location.origin;
+                    }
+                    if (window.location.hostname) {
+                        return window.location.protocol + "//" + window.location.hostname + ":5000";
+                    }
+                }
+            } catch (e) {}
+            return "http://127.0.0.1:5000";
+        })();
+
+        const DEPARTMENTS = [
+            { code: "BBA(CA)", name: "BBA (Computer Application)", hodDefault: "Prof. Nilesh Kaldate" },
+            { code: "BCS", name: "B.Sc. (Computer Science)", hodDefault: "Prof. Shaikh Sarfaraz Yusuf" },
+            { code: "B.Com", name: "Bachelor of Commerce", hodDefault: "Prof. Bhosale S. D." },
+            { code: "BBA", name: "Bachelor of Business Administration", hodDefault: "Prof. Bhong S. N." },
+            { code: "B.Sc", name: "Bachelor of Science", hodDefault: "Prof. Shaikh M. D." },
+            { code: "M.Sc", name: "M.Sc. (Computer Science)", hodDefault: "Prof. Shaikh Sarfaraz Yusuf" }
+        ];
+
+        function HodDashboardApp() {
+            // Read stored logged in user
+            let storedUser = null;
+            try {
+                storedUser = JSON.parse(localStorage.getItem("campusmind_user") || "null");
+            } catch (e) {}
+
+            const [currentUser, setCurrentUser] = useState(storedUser);
+            const initialDept = (storedUser && storedUser.department && storedUser.department !== "All") 
+                ? storedUser.department 
+                : "BBA(CA)";
+            
+            const [selectedDept, setSelectedDept] = useState(initialDept);
+            const [activeTab, setActiveTab] = useState("attendance"); // attendance, timetable, exams, notices, students
+            const [metrics, setMetrics] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [toast, setToast] = useState({ text: "", type: "" });
+
+            // Attendance state
+            const [attendanceList, setAttendanceList] = useState([]);
+            const [attYearFilter, setAttYearFilter] = useState("All");
+            const [attStatusFilter, setAttStatusFilter] = useState("All");
+            const [uploadFile, setUploadFile] = useState(null);
+            const [uploadYear, setUploadYear] = useState("1st Year");
+            const [uploadSubject, setUploadSubject] = useState("Core Subject");
+            const [uploadSubjectCode, setUploadSubjectCode] = useState("");
+            const [isUploading, setIsUploading] = useState(false);
+
+            // Manual attendance state
+            const [manName, setManName] = useState("");
+            const [manRoll, setManRoll] = useState("");
+            const [manId, setManId] = useState("");
+            const [manEmail, setManEmail] = useState("");
+            const [manTotal, setManTotal] = useState("40");
+            const [manAttended, setManAttended] = useState("35");
+
+            // Timetable state
+            const [timetableList, setTimetableList] = useState([]);
+            const [ttYearFilter, setTtYearFilter] = useState("All");
+            const [ttDay, setTtDay] = useState("Monday");
+            const [ttTime, setTtTime] = useState("10:00 AM - 11:00 AM");
+            const [ttYear, setTtYear] = useState("1st Year");
+            const [ttSem, setTtSem] = useState(1);
+            const [ttSubName, setTtSubName] = useState("");
+            const [ttSubCode, setTtSubCode] = useState("");
+            const [ttFaculty, setTtFaculty] = useState("");
+            const [ttRoom, setTtRoom] = useState("Room A-101");
+
+            // Exams state
+            const [examsList, setExamsList] = useState([]);
+            const [examSubName, setExamSubName] = useState("");
+            const [examSubCode, setExamSubCode] = useState("");
+            const [examYear, setExamYear] = useState("1st Year");
+            const [examDate, setExamDate] = useState("");
+            const [examStart, setExamStart] = useState("10:00 AM");
+            const [examEnd, setExamEnd] = useState("01:00 PM");
+            const [examRoom, setExamRoom] = useState("Hall A-101");
+            const [examTopics, setExamTopics] = useState("");
+
+            // Notices state
+            const [noticeTitle, setNoticeTitle] = useState("");
+            const [noticeContent, setNoticeContent] = useState("");
+            const [noticeYear, setNoticeYear] = useState("All");
+            const [noticePriority, setNoticePriority] = useState("Normal");
+            const [deptNotices, setDeptNotices] = useState([]);
+
+            // Students state
+            const [studentsList, setStudentsList] = useState([]);
+            const [studentYearFilter, setStudentYearFilter] = useState("All");
+
+            function showToast(text, type = "success") {
+                setToast({ text, type });
+                setTimeout(() => setToast({ text: "", type: "" }), 4000);
+            }
+
+            // Fetch Overview metrics
+            async function fetchMetrics() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/overview?department=${encodeURIComponent(selectedDept)}`);
+                    const data = await res.json();
+                    if (data.success) setMetrics(data.metrics);
+                } catch (e) {
+                    console.error("Error fetching HOD metrics:", e);
+                }
+            }
+
+            // Fetch Attendance
+            async function fetchAttendance() {
+                try {
+                    let url = `${API_BASE}/api/attendance/department?department=${encodeURIComponent(selectedDept)}&year=${encodeURIComponent(attYearFilter)}`;
+                    if (attStatusFilter !== "All") url += `&status=${encodeURIComponent(attStatusFilter)}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data.success) setAttendanceList(data.records);
+                } catch (e) {
+                    console.error("Error fetching attendance:", e);
+                }
+            }
+
+            // Fetch Timetable
+            async function fetchTimetable() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/timetable?department=${encodeURIComponent(selectedDept)}&year=${encodeURIComponent(ttYearFilter)}`);
+                    const data = await res.json();
+                    if (data.success) setTimetableList(data.timetable);
+                } catch (e) {
+                    console.error("Error fetching timetable:", e);
+                }
+            }
+
+            // Fetch Exams
+            async function fetchExams() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/exams?department=${encodeURIComponent(selectedDept)}`);
+                    const data = await res.json();
+                    if (data.success) setExamsList(data.exams);
+                } catch (e) {
+                    console.error("Error fetching exams:", e);
+                }
+            }
+
+            // Fetch Notices
+            async function fetchNotices() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/student/notices?department=${encodeURIComponent(selectedDept)}`);
+                    const data = await res.json();
+                    if (data.success) setDeptNotices(data.notices);
+                } catch (e) {
+                    console.error("Error fetching notices:", e);
+                }
+            }
+
+            // Fetch Students
+            async function fetchStudents() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/students?department=${encodeURIComponent(selectedDept)}&year=${encodeURIComponent(studentYearFilter)}`);
+                    const data = await res.json();
+                    if (data.success) setStudentsList(data.students);
+                } catch (e) {
+                    console.error("Error fetching students:", e);
+                }
+            }
+
+            // Initial load & when selectedDept changes
+            useEffect(() => {
+                fetchMetrics();
+                fetchAttendance();
+                fetchTimetable();
+                fetchExams();
+                fetchNotices();
+                fetchStudents();
+            }, [selectedDept]);
+
+            // Filter changes
+            useEffect(() => { fetchAttendance(); }, [attYearFilter, attStatusFilter]);
+            useEffect(() => { fetchTimetable(); }, [ttYearFilter]);
+            useEffect(() => { fetchStudents(); }, [studentYearFilter]);
+
+            // Handle Attendance Upload
+            async function handleAttendanceUpload(e) {
+                e.preventDefault();
+                if (!uploadFile) {
+                    showToast("Please choose an attendance CSV or Excel sheet.", "error");
+                    return;
+                }
+                setIsUploading(true);
+                const formData = new FormData();
+                formData.append("file", uploadFile);
+                formData.append("department", selectedDept);
+                formData.append("year_of_study", uploadYear);
+                formData.append("subject_name", uploadSubject);
+                formData.append("subject_code", uploadSubjectCode);
+                formData.append("uploaded_by", currentUser?.name || `${selectedDept} HOD`);
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/attendance/upload`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`Successfully processed & updated attendance for ${data.processed_count} students! 🎉`, "success");
+                        setUploadFile(null);
+                        const fileInput = document.getElementById("hodAttFileInput");
+                        if (fileInput) fileInput.value = "";
+                        fetchAttendance();
+                        fetchMetrics();
+                    } else {
+                        showToast(data.error || "Failed to parse attendance sheet.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error connecting to attendance server.", "error");
+                } finally {
+                    setIsUploading(false);
+                }
+            }
+
+            // Handle Manual Attendance Entry
+            async function handleManualAttendance(e) {
+                e.preventDefault();
+                if (!manName) {
+                    showToast("Student Name is required.", "error");
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/api/attendance/record`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            student_name: manName,
+                            roll_no: manRoll,
+                            student_id: manId,
+                            email: manEmail,
+                            department: selectedDept,
+                            year_of_study: uploadYear,
+                            subject_name: uploadSubject,
+                            subject_code: uploadSubjectCode,
+                            total_lectures: parseInt(manTotal, 10),
+                            attended_lectures: parseInt(manAttended, 10),
+                            uploaded_by: currentUser?.name || `${selectedDept} HOD`
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`Attendance recorded! Percentage: ${data.record.percentage}% (${data.record.status})`, "success");
+                        setManName(""); setManRoll(""); setManId(""); setManEmail("");
+                        fetchAttendance();
+                        fetchMetrics();
+                    } else {
+                        showToast(data.error || "Failed to record attendance.", "error");
+                    }
+                } catch (err) {
+                    showToast("Server error recording attendance.", "error");
+                }
+            }
+
+            // Delete Attendance Entry
+            async function handleDeleteAttendance(id) {
+                if (!confirm("Are you sure you want to remove this attendance record?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/attendance/${id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Attendance record removed.", "success");
+                        fetchAttendance();
+                        fetchMetrics();
+                    }
+                } catch (e) {
+                    showToast("Error deleting record.", "error");
+                }
+            }
+
+            // Handle Timetable Slot Add
+            async function handleAddTimetable(e) {
+                e.preventDefault();
+                if (!ttSubName) {
+                    showToast("Subject Name is required.", "error");
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/timetable`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            department: selectedDept,
+                            year_of_study: ttYear,
+                            semester: ttSem,
+                            day_of_week: ttDay,
+                            time_slot: ttTime,
+                            subject_name: ttSubName,
+                            subject_code: ttSubCode,
+                            faculty_name: ttFaculty,
+                            room_no: ttRoom
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, "success");
+                        setTtSubName(""); setTtSubCode(""); setTtFaculty("");
+                        fetchTimetable();
+                        fetchMetrics();
+                    } else {
+                        showToast(data.error || "Failed to add timetable slot.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error adding timetable slot.", "error");
+                }
+            }
+
+            // Delete Timetable Slot
+            async function handleDeleteTimetable(id) {
+                if (!confirm("Remove this lecture slot from the timetable?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/timetable/${id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Lecture slot deleted.", "success");
+                        fetchTimetable();
+                        fetchMetrics();
+                    }
+                } catch (err) {
+                    showToast("Error deleting slot.", "error");
+                }
+            }
+
+            // Handle Exam Schedule Add
+            async function handleAddExam(e) {
+                e.preventDefault();
+                if (!examSubName || !examDate) {
+                    showToast("Subject and Exam Date are required.", "error");
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/exam`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            department: selectedDept,
+                            year_of_study: examYear,
+                            subject_name: examSubName,
+                            subject_code: examSubCode,
+                            exam_date: examDate,
+                            start_time: examStart,
+                            end_time: examEnd,
+                            room_no: examRoom,
+                            syllabus_topics: examTopics
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, "success");
+                        setExamSubName(""); setExamSubCode(""); setExamDate(""); setExamTopics("");
+                        fetchExams();
+                        fetchMetrics();
+                    } else {
+                        showToast(data.error || "Failed to schedule exam.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error scheduling exam.", "error");
+                }
+            }
+
+            // Delete Exam
+            async function handleDeleteExam(id) {
+                if (!confirm("Remove this exam schedule?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/exam/${id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Exam entry removed.", "success");
+                        fetchExams();
+                        fetchMetrics();
+                    }
+                } catch (err) {
+                    showToast("Error deleting exam.", "error");
+                }
+            }
+
+            // Handle Notice Add
+            async function handleAddNotice(e) {
+                e.preventDefault();
+                if (!noticeTitle || !noticeContent) {
+                    showToast("Title and content are required.", "error");
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/api/hod/notice`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: noticeTitle,
+                            content: noticeContent,
+                            department: selectedDept,
+                            target_year: noticeYear,
+                            priority: noticePriority,
+                            published_by: currentUser?.name || `${selectedDept} HOD`
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(data.message, "success");
+                        setNoticeTitle(""); setNoticeContent("");
+                        fetchNotices();
+                        fetchMetrics();
+                    } else {
+                        showToast(data.error || "Failed to publish notice.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error publishing notice.", "error");
+                }
+            }
+
+            const currentDeptInfo = DEPARTMENTS.find(d => d.code === selectedDept) || { name: selectedDept, hodDefault: "Department HOD" };
+
+            return (
+                <div className="dashboard-container" style={{ maxWidth: "1380px", margin: "0 auto", padding: "100px 24px 60px" }}>
+                    
+                    {/* TOAST MESSAGE */}
+                    {toast.text && (
+                        <div style={{
+                            position: "fixed", bottom: "30px", right: "30px", zIndex: 9999,
+                            background: toast.type === "error" ? "rgba(239, 68, 68, 0.95)" : "rgba(16, 185, 129, 0.95)",
+                            color: "#fff", padding: "14px 24px", borderRadius: "12px",
+                            boxShadow: "0 10px 30px rgba(0,0,0,0.5)", fontWeight: "600",
+                            display: "flex", alignItems: "center", gap: "10px", backdropFilter: "blur(10px)"
+                        }}>
+                            <i className={`fa-solid ${toast.type === "error" ? "fa-triangle-exclamation" : "fa-circle-check"}`}></i>
+                            {toast.text}
+                        </div>
+                    )}
+
+                    {/* HOD HEADER BANNER */}
+                    <div style={{
+                        background: "linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.15))",
+                        border: "1px solid rgba(14, 165, 233, 0.3)",
+                        borderRadius: "20px", padding: "28px 32px", marginBottom: "28px",
+                        display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "20px"
+                    }}>
+                        <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                                <span style={{
+                                    background: "#0284c7", color: "#fff", padding: "4px 12px",
+                                    borderRadius: "8px", fontSize: "12px", fontWeight: "700", textTransform: "uppercase"
+                                }}>
+                                    HOD Portal
+                                </span>
+                                <span style={{ color: "#94a3b8", fontSize: "14px" }}>
+                                    Vidya Pratishthan's Commerce & Science College, Indapur
+                                </span>
+                            </div>
+                            <h1 style={{ fontSize: "26px", fontWeight: "800", color: "#fff", margin: 0 }}>
+                                Department of {currentDeptInfo.name} <span style={{ color: "#38bdf8" }}>({selectedDept})</span>
+                            </h1>
+                            <p style={{ color: "#cbd5e1", margin: "6px 0 0", fontSize: "14px" }}>
+                                Head of Department: <strong>{currentUser?.name || currentDeptInfo.hodDefault}</strong> | Academic Management Cockpit
+                            </p>
+                        </div>
+
+                        {/* Department Switcher Dropdown (for Administrators or multi-department viewing) */}
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                            <label style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "600" }}>Switch Department:</label>
+                            <select
+                                value={selectedDept}
+                                onChange={(e) => setSelectedDept(e.target.value)}
+                                style={{
+                                    background: "#0f172a", border: "1px solid rgba(14, 165, 233, 0.4)",
+                                    color: "#fff", padding: "10px 16px", borderRadius: "10px",
+                                    fontWeight: "600", fontSize: "14px", outline: "none", cursor: "pointer"
+                                }}
+                            >
+                                {DEPARTMENTS.map(d => (
+                                    <option key={d.code} value={d.code}>{d.code} — {d.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* TOP STATS KPI TILES */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "28px" }}>
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.7)", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Enrolled Students</span>
+                                <i className="fa-solid fa-users" style={{ color: "#38bdf8" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#fff", margin: "10px 0 0" }}>
+                                {metrics ? metrics.total_students : 0}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Registered in {selectedDept}</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.7)", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Avg Attendance</span>
+                                <i className="fa-solid fa-chart-line" style={{ color: "#10b981" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "28px", fontWeight: "800", color: metrics?.average_attendance >= 75 ? "#10b981" : "#f59e0b", margin: "10px 0 0" }}>
+                                {metrics ? metrics.average_attendance : 0}%
+                            </h2>
+                            <small style={{ color: "#64748b" }}>SPPU 75% Mandate Target</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.7)", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Defaulters (&lt; 75%)</span>
+                                <i className="fa-solid fa-triangle-exclamation" style={{ color: "#ef4444" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#ef4444", margin: "10px 0 0" }}>
+                                {metrics ? metrics.defaulters_count : 0}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Students needing clearance</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.7)", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Weekly Lectures</span>
+                                <i className="fa-solid fa-calendar-days" style={{ color: "#a855f7" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#fff", margin: "10px 0 0" }}>
+                                {metrics ? metrics.timetable_slots_count : 0}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Timetable slots active</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.7)", padding: "20px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Scheduled Exams</span>
+                                <i className="fa-solid fa-file-pen" style={{ color: "#eab308" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#fff", margin: "10px 0 0" }}>
+                                {metrics ? metrics.upcoming_exams_count : 0}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>CIE & Semester exams</small>
+                        </div>
+                    </div>
+
+                    {/* MAIN NAVIGATION TABS */}
+                    <div style={{
+                        display: "flex", gap: "10px", borderBottom: "1px solid rgba(255,255,255,0.1)",
+                        marginBottom: "28px", overflowX: "auto", paddingBottom: "12px"
+                    }}>
+                        {[
+                            { id: "attendance", label: "Attendance Sheet Manager", icon: "fa-clipboard-user", badge: attendanceList.length },
+                            { id: "timetable", label: "Weekly Timetable", icon: "fa-calendar-week", badge: timetableList.length },
+                            { id: "exams", label: "Exams & Seating", icon: "fa-file-signature", badge: examsList.length },
+                            { id: "notices", label: "Department Notices", icon: "fa-bullhorn", badge: deptNotices.length },
+                            { id: "students", label: "Student Roster", icon: "fa-user-graduate", badge: studentsList.length }
+                        ].map(t => (
+                            <button
+                                key={t.id}
+                                onClick={() => setActiveTab(t.id)}
+                                style={{
+                                    background: activeTab === t.id ? "rgba(14, 165, 233, 0.2)" : "transparent",
+                                    border: activeTab === t.id ? "1px solid #0284c7" : "1px solid transparent",
+                                    color: activeTab === t.id ? "#38bdf8" : "#94a3b8",
+                                    padding: "10px 20px", borderRadius: "12px",
+                                    fontWeight: "700", fontSize: "14px", cursor: "pointer",
+                                    display: "flex", alignItems: "center", gap: "8px", transition: "all 0.2s"
+                                }}
+                            >
+                                <i className={`fa-solid ${t.icon}`}></i>
+                                <span>{t.label}</span>
+                                {t.badge > 0 && (
+                                    <span style={{
+                                        background: activeTab === t.id ? "#0284c7" : "rgba(255,255,255,0.1)",
+                                        color: "#fff", fontSize: "11px", padding: "2px 7px", borderRadius: "10px"
+                                    }}>
+                                        {t.badge}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* =========================================================
+                        TAB 1: ATTENDANCE SHEET MANAGER
+                    ========================================================== */}
+                    {activeTab === "attendance" && (
+                        <div>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "32px" }}>
+                                
+                                {/* A. BULK UPLOAD SHEET */}
+                                <div style={{
+                                    background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)",
+                                    borderRadius: "18px", padding: "24px"
+                                }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                                        <h3 style={{ margin: 0, color: "#fff", fontSize: "18px" }}>
+                                            <i className="fa-solid fa-file-csv" style={{ color: "#38bdf8", marginRight: "8px" }}></i>
+                                            Bulk Upload Attendance Sheet
+                                        </h3>
+                                        <a
+                                            href={`${API_BASE}/api/attendance/template`}
+                                            download="attendance_template.csv"
+                                            style={{ fontSize: "12px", color: "#38bdf8", textDecoration: "none", fontWeight: "600" }}
+                                        >
+                                            <i className="fa-solid fa-download"></i> Sample CSV
+                                        </a>
+                                    </div>
+                                    <p style={{ color: "#94a3b8", fontSize: "13px", margin: "0 0 16px" }}>
+                                        Upload official CSV sheet. The system auto-calculates student percentages and SPPU compliance status.
+                                    </p>
+
+                                    <form onSubmit={handleAttendanceUpload}>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Year of Study</label>
+                                                <select
+                                                    value={uploadYear}
+                                                    onChange={e => setUploadYear(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                >
+                                                    <option value="1st Year">1st Year (FY)</option>
+                                                    <option value="2nd Year">2nd Year (SY)</option>
+                                                    <option value="3rd Year">3rd Year (TY)</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Subject Code</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="e.g. CA-501 or CS-251"
+                                                    value={uploadSubjectCode}
+                                                    onChange={e => setUploadSubjectCode(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ marginBottom: "14px" }}>
+                                            <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Subject Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Cyber Security / Data Structures"
+                                                value={uploadSubject}
+                                                onChange={e => setUploadSubject(e.target.value)}
+                                                style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                            />
+                                        </div>
+
+                                        <div style={{
+                                            border: "2px dashed rgba(14, 165, 233, 0.4)", borderRadius: "12px",
+                                            padding: "24px", textAlign: "center", background: "rgba(14, 165, 233, 0.03)", marginBottom: "16px"
+                                        }}>
+                                            <i className="fa-solid fa-cloud-arrow-up" style={{ fontSize: "32px", color: "#38bdf8", marginBottom: "8px" }}></i>
+                                            <p style={{ margin: "4px 0", color: "#fff", fontWeight: "600", fontSize: "14px" }}>
+                                                {uploadFile ? uploadFile.name : "Choose CSV Attendance File"}
+                                            </p>
+                                            <input
+                                                id="hodAttFileInput"
+                                                type="file"
+                                                accept=".csv,.txt,.tsv"
+                                                onChange={e => setUploadFile(e.target.files[0])}
+                                                style={{ marginTop: "10px", color: "#94a3b8", fontSize: "12px" }}
+                                            />
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isUploading}
+                                            style={{
+                                                width: "100%", background: "#0284c7", color: "#fff", border: "none",
+                                                padding: "12px", borderRadius: "10px", fontWeight: "700", cursor: "pointer",
+                                                display: "flex", justifyContent: "center", alignItems: "center", gap: "8px"
+                                            }}
+                                        >
+                                            {isUploading ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-bolt"></i>}
+                                            <span>{isUploading ? "Reading Sheet..." : "Auto-Read & Publish Attendance"}</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {/* B. SINGLE STUDENT MANUAL ENTRY */}
+                                <div style={{
+                                    background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)",
+                                    borderRadius: "18px", padding: "24px"
+                                }}>
+                                    <h3 style={{ margin: "0 0 16px", color: "#fff", fontSize: "18px" }}>
+                                        <i className="fa-solid fa-user-pen" style={{ color: "#10b981", marginRight: "8px" }}></i>
+                                        Manual Student Entry
+                                    </h3>
+                                    <p style={{ color: "#94a3b8", fontSize: "13px", margin: "0 0 16px" }}>
+                                        Add or update attendance for an individual student in {selectedDept}.
+                                    </p>
+
+                                    <form onSubmit={handleManualAttendance}>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Student Full Name *</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    placeholder="Student Name"
+                                                    value={manName}
+                                                    onChange={e => setManName(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Roll Number</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="e.g. 101"
+                                                    value={manRoll}
+                                                    onChange={e => setManRoll(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Student ID</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="e.g. CS-2026-001"
+                                                    value={manId}
+                                                    onChange={e => setManId(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Email (for sync)</label>
+                                                <input
+                                                    type="email"
+                                                    placeholder="student@campus.edu"
+                                                    value={manEmail}
+                                                    onChange={e => setManEmail(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Total Lectures</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    value={manTotal}
+                                                    onChange={e => setManTotal(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Attended Lectures</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={manAttended}
+                                                    onChange={e => setManAttended(e.target.value)}
+                                                    style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            style={{
+                                                width: "100%", background: "#10b981", color: "#fff", border: "none",
+                                                padding: "12px", borderRadius: "10px", fontWeight: "700", cursor: "pointer",
+                                                display: "flex", justifyContent: "center", alignItems: "center", gap: "8px"
+                                            }}
+                                        >
+                                            <i className="fa-solid fa-floppy-disk"></i>
+                                            <span>Record Attendance Entry</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            {/* C. PUBLISHED ATTENDANCE RECORDS TABLE */}
+                            <div style={{
+                                background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)",
+                                borderRadius: "18px", padding: "24px"
+                            }}>
+                                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+                                    <div>
+                                        <h3 style={{ margin: 0, color: "#fff", fontSize: "18px" }}>
+                                            Published Attendance Records ({attendanceList.length})
+                                        </h3>
+                                        <small style={{ color: "#94a3b8" }}>Real-time SPPU 75% compliance tracking for {selectedDept}</small>
+                                    </div>
+
+                                    {/* Filters */}
+                                    <div style={{ display: "flex", gap: "10px" }}>
+                                        <select
+                                            value={attYearFilter}
+                                            onChange={e => setAttYearFilter(e.target.value)}
+                                            style={{ background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "6px 12px", borderRadius: "8px", fontSize: "13px" }}
+                                        >
+                                            <option value="All">All Years</option>
+                                            <option value="1st Year">1st Year</option>
+                                            <option value="2nd Year">2nd Year</option>
+                                            <option value="3rd Year">3rd Year</option>
+                                        </select>
+
+                                        <select
+                                            value={attStatusFilter}
+                                            onChange={e => setAttStatusFilter(e.target.value)}
+                                            style={{ background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "6px 12px", borderRadius: "8px", fontSize: "13px" }}
+                                        >
+                                            <option value="All">All Statuses</option>
+                                            <option value="Good">Good (≥ 75%)</option>
+                                            <option value="Average">Average (60-74%)</option>
+                                            <option value="Critical">Critical (&lt; 60%)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {attendanceList.length === 0 ? (
+                                    <div style={{ textAlign: "center", padding: "40px 20px", color: "#64748b" }}>
+                                        <i className="fa-solid fa-folder-open" style={{ fontSize: "36px", marginBottom: "12px", display: "block" }}></i>
+                                        No attendance records published yet for {selectedDept}. Upload a CSV sheet above to populate records.
+                                    </div>
+                                ) : (
+                                    <div style={{ overflowX: "auto" }}>
+                                        <table style={{ width: "100%", borderCollapse: "collapse", color: "#e2e8f0", fontSize: "13px" }}>
+                                            <thead>
+                                                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "left" }}>
+                                                    <th style={{ padding: "12px 8px" }}>Roll</th>
+                                                    <th style={{ padding: "12px 8px" }}>Student Name</th>
+                                                    <th style={{ padding: "12px 8px" }}>Year</th>
+                                                    <th style={{ padding: "12px 8px" }}>Subject</th>
+                                                    <th style={{ padding: "12px 8px" }}>Attended / Total</th>
+                                                    <th style={{ padding: "12px 8px" }}>Percentage</th>
+                                                    <th style={{ padding: "12px 8px" }}>SPPU Status</th>
+                                                    <th style={{ padding: "12px 8px", textAlign: "right" }}>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {attendanceList.map(r => (
+                                                    <tr key={r.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                                                        <td style={{ padding: "12px 8px", fontWeight: "700", color: "#38bdf8" }}>{r.roll_no || "—"}</td>
+                                                        <td style={{ padding: "12px 8px" }}>
+                                                            <strong>{r.student_name}</strong>
+                                                            {r.email && <div style={{ color: "#64748b", fontSize: "11px" }}>{r.email}</div>}
+                                                        </td>
+                                                        <td style={{ padding: "12px 8px" }}>{r.year_of_study}</td>
+                                                        <td style={{ padding: "12px 8px" }}>
+                                                            {r.subject_name}
+                                                            {r.subject_code && <span style={{ color: "#94a3b8", fontSize: "11px", marginLeft: "4px" }}>({r.subject_code})</span>}
+                                                        </td>
+                                                        <td style={{ padding: "12px 8px" }}>{r.attended_lectures} / {r.total_lectures}</td>
+                                                        <td style={{ padding: "12px 8px", fontWeight: "700" }}>{r.percentage}%</td>
+                                                        <td style={{ padding: "12px 8px" }}>
+                                                            <span style={{
+                                                                padding: "3px 10px", borderRadius: "8px", fontSize: "11px", fontWeight: "700",
+                                                                background: r.status === "Good" ? "rgba(16, 185, 129, 0.2)" : (r.status === "Average" ? "rgba(245, 158, 11, 0.2)" : "rgba(239, 68, 68, 0.2)"),
+                                                                color: r.status === "Good" ? "#34d399" : (r.status === "Average" ? "#fbbf24" : "#f87171")
+                                                            }}>
+                                                                {r.status}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: "12px 8px", textAlign: "right" }}>
+                                                            <button
+                                                                onClick={() => handleDeleteAttendance(r.id)}
+                                                                style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "14px" }}
+                                                                title="Delete record"
+                                                            >
+                                                                <i className="fa-solid fa-trash-can"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* =========================================================
+                        TAB 2: WEEKLY TIMETABLE
+                    ========================================================== */}
+                    {activeTab === "timetable" && (
+                        <div>
+                            {/* ADD TIMETABLE SLOT FORM */}
+                            <div style={{
+                                background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)",
+                                borderRadius: "18px", padding: "24px", marginBottom: "28px"
+                            }}>
+                                <h3 style={{ margin: "0 0 16px", color: "#fff", fontSize: "18px" }}>
+                                    <i className="fa-solid fa-plus-circle" style={{ color: "#a855f7", marginRight: "8px" }}></i>
+                                    Schedule New Lecture Slot for {selectedDept}
+                                </h3>
+
+                                <form onSubmit={handleAddTimetable} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", alignItems: "end" }}>
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Day of Week</label>
+                                        <select value={ttDay} onChange={e => setTtDay(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}>
+                                            <option value="Monday">Monday</option>
+                                            <option value="Tuesday">Tuesday</option>
+                                            <option value="Wednesday">Wednesday</option>
+                                            <option value="Thursday">Thursday</option>
+                                            <option value="Friday">Friday</option>
+                                            <option value="Saturday">Saturday</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Time Slot</label>
+                                        <input type="text" placeholder="10:00 AM - 11:00 AM" value={ttTime} onChange={e => setTtTime(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                    </div>
+
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Year of Study</label>
+                                        <select value={ttYear} onChange={e => setTtYear(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}>
+                                            <option value="1st Year">1st Year (FY)</option>
+                                            <option value="2nd Year">2nd Year (SY)</option>
+                                            <option value="3rd Year">3rd Year (TY)</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Subject Name *</label>
+                                        <input type="text" required placeholder="Subject Name" value={ttSubName} onChange={e => setTtSubName(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                    </div>
+
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Faculty Name</label>
+                                        <input type="text" placeholder="Prof. Name" value={ttFaculty} onChange={e => setTtFaculty(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                    </div>
+
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Room / Lab</label>
+                                        <input type="text" placeholder="Lab 1 / Hall A" value={ttRoom} onChange={e => setTtRoom(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                    </div>
+
+                                    <div>
+                                        <button type="submit" style={{ width: "100%", background: "#a855f7", color: "#fff", border: "none", padding: "10px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}>
+                                            <i className="fa-solid fa-plus"></i> Add Slot
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            {/* TIMETABLE DISPLAY GRID */}
+                            <div style={{
+                                background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)",
+                                borderRadius: "18px", padding: "24px"
+                            }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                    <h3 style={{ margin: 0, color: "#fff", fontSize: "18px" }}>
+                                        Weekly Lecture Schedule — {selectedDept} ({timetableList.length} slots)
+                                    </h3>
+                                    <select value={ttYearFilter} onChange={e => setTtYearFilter(e.target.value)} style={{ background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "6px 12px", borderRadius: "8px", fontSize: "13px" }}>
+                                        <option value="All">All Years</option>
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                    </select>
+                                </div>
+
+                                {timetableList.length === 0 ? (
+                                    <p style={{ color: "#64748b", textAlign: "center", padding: "30px 0" }}>No lecture slots scheduled for this filter.</p>
+                                ) : (
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+                                        {timetableList.map(slot => (
+                                            <div key={slot.id} style={{
+                                                background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                                                borderRadius: "14px", padding: "16px", position: "relative"
+                                            }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                                                    <span style={{ background: "#0284c7", color: "#fff", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "6px" }}>
+                                                        {slot.day_of_week}
+                                                    </span>
+                                                    <button onClick={() => handleDeleteTimetable(slot.id)} style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer" }}>
+                                                        <i className="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                                <h4 style={{ margin: "4px 0", color: "#fff", fontSize: "15px" }}>{slot.subject_name}</h4>
+                                                <div style={{ color: "#94a3b8", fontSize: "12px", marginTop: "6px" }}>
+                                                    <i className="fa-regular fa-clock" style={{ marginRight: "5px" }}></i> {slot.time_slot}
+                                                </div>
+                                                <div style={{ color: "#94a3b8", fontSize: "12px", marginTop: "4px" }}>
+                                                    <i className="fa-solid fa-user-tie" style={{ marginRight: "5px" }}></i> {slot.faculty_name || "Faculty Assigned"}
+                                                </div>
+                                                <div style={{ color: "#64748b", fontSize: "11px", marginTop: "6px" }}>
+                                                    📍 {slot.room_no} | Class: {slot.year_of_study}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* =========================================================
+                        TAB 3: EXAMS & SCHEDULE
+                    ========================================================== */}
+                    {activeTab === "exams" && (
+                        <div>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>
+                                
+                                {/* SCHEDULE EXAM FORM */}
+                                <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "24px", height: "fit-content" }}>
+                                    <h3 style={{ margin: "0 0 16px", color: "#fff", fontSize: "18px" }}>
+                                        <i className="fa-solid fa-calendar-plus" style={{ color: "#eab308", marginRight: "8px" }}></i>
+                                        Schedule Examination
+                                    </h3>
+
+                                    <form onSubmit={handleAddExam}>
+                                        <div style={{ marginBottom: "12px" }}>
+                                            <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Subject Name *</label>
+                                            <input type="text" required placeholder="Subject Name" value={examSubName} onChange={e => setExamSubName(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }} />
+                                        </div>
+
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Class Year</label>
+                                                <select value={examYear} onChange={e => setExamYear(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}>
+                                                    <option value="1st Year">1st Year</option>
+                                                    <option value="2nd Year">2nd Year</option>
+                                                    <option value="3rd Year">3rd Year</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Exam Date *</label>
+                                                <input type="date" required value={examDate} onChange={e => setExamDate(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Start Time</label>
+                                                <input type="text" placeholder="10:00 AM" value={examStart} onChange={e => setExamStart(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>End Time</label>
+                                                <input type="text" placeholder="01:00 PM" value={examEnd} onChange={e => setExamEnd(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }} />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ marginBottom: "12px" }}>
+                                            <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Room / Hall Number</label>
+                                            <input type="text" placeholder="Hall A-101" value={examRoom} onChange={e => setExamRoom(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }} />
+                                        </div>
+
+                                        <div style={{ marginBottom: "16px" }}>
+                                            <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Key Syllabus Topics</label>
+                                            <textarea rows="3" placeholder="Units 1 to 4 coverage..." value={examTopics} onChange={e => setExamTopics(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}></textarea>
+                                        </div>
+
+                                        <button type="submit" style={{ width: "100%", background: "#eab308", color: "#000", border: "none", padding: "12px", borderRadius: "10px", fontWeight: "700", cursor: "pointer" }}>
+                                            <i className="fa-solid fa-calendar-check"></i> Publish Exam Schedule
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {/* EXAMS LIST */}
+                                <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "24px" }}>
+                                    <h3 style={{ margin: "0 0 20px", color: "#fff", fontSize: "18px" }}>
+                                        Scheduled Examinations — {selectedDept} ({examsList.length})
+                                    </h3>
+
+                                    {examsList.length === 0 ? (
+                                        <p style={{ color: "#64748b", textAlign: "center", padding: "40px 0" }}>No upcoming exams scheduled for {selectedDept}.</p>
+                                    ) : (
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                            {examsList.map(ex => (
+                                                <div key={ex.id} style={{
+                                                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                                                    borderRadius: "14px", padding: "18px", display: "flex", justifyContent: "space-between", alignItems: "center"
+                                                }}>
+                                                    <div>
+                                                        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
+                                                            <span style={{ background: "#eab308", color: "#000", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "6px" }}>
+                                                                {ex.exam_date}
+                                                            </span>
+                                                            <span style={{ color: "#94a3b8", fontSize: "12px" }}>{ex.year_of_study}</span>
+                                                        </div>
+                                                        <h4 style={{ margin: 0, color: "#fff", fontSize: "16px" }}>{ex.subject_name}</h4>
+                                                        <div style={{ color: "#cbd5e1", fontSize: "13px", marginTop: "6px" }}>
+                                                            <i className="fa-regular fa-clock" style={{ marginRight: "6px" }}></i> {ex.start_time} - {ex.end_time} &nbsp;|&nbsp; 
+                                                            <i className="fa-solid fa-location-dot" style={{ margin: "0 6px 0 10px" }}></i> {ex.room_no}
+                                                        </div>
+                                                        {ex.syllabus_topics && (
+                                                            <div style={{ color: "#64748b", fontSize: "12px", marginTop: "4px" }}>
+                                                                Topics: {ex.syllabus_topics}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <button onClick={() => handleDeleteExam(ex.id)} style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "16px", padding: "8px" }}>
+                                                        <i className="fa-solid fa-trash-can"></i>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* =========================================================
+                        TAB 4: DEPARTMENT NOTICES & CIRCULARS
+                    ========================================================== */}
+                    {activeTab === "notices" && (
+                        <div>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>
+                                {/* CREATE NOTICE FORM */}
+                                <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "24px", height: "fit-content" }}>
+                                    <h3 style={{ margin: "0 0 16px", color: "#fff", fontSize: "18px" }}>
+                                        <i className="fa-solid fa-bullhorn" style={{ color: "#38bdf8", marginRight: "8px" }}></i>
+                                        Issue Department Notice
+                                    </h3>
+
+                                    <form onSubmit={handleAddNotice}>
+                                        <div style={{ marginBottom: "12px" }}>
+                                            <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Notice Title *</label>
+                                            <input type="text" required placeholder="Notice Heading" value={noticeTitle} onChange={e => setNoticeTitle(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }} />
+                                        </div>
+
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Target Year</label>
+                                                <select value={noticeYear} onChange={e => setNoticeYear(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}>
+                                                    <option value="All">All Years</option>
+                                                    <option value="1st Year">1st Year</option>
+                                                    <option value="2nd Year">2nd Year</option>
+                                                    <option value="3rd Year">3rd Year</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Priority</label>
+                                                <select value={noticePriority} onChange={e => setNoticePriority(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}>
+                                                    <option value="Normal">Normal</option>
+                                                    <option value="High">High</option>
+                                                    <option value="Urgent">Urgent</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ marginBottom: "16px" }}>
+                                            <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Detailed Announcement *</label>
+                                            <textarea rows="5" required placeholder="Enter instructions or notification details..." value={noticeContent} onChange={e => setNoticeContent(e.target.value)} style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}></textarea>
+                                        </div>
+
+                                        <button type="submit" style={{ width: "100%", background: "#0284c7", color: "#fff", border: "none", padding: "12px", borderRadius: "10px", fontWeight: "700", cursor: "pointer" }}>
+                                            <i className="fa-solid fa-paper-plane"></i> Publish to Department
+                                        </button>
+                                    </form>
+                                </div>
+
+                                {/* NOTICES LIST */}
+                                <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "24px" }}>
+                                    <h3 style={{ margin: "0 0 20px", color: "#fff", fontSize: "18px" }}>
+                                        Active Notices & Announcements ({deptNotices.length})
+                                    </h3>
+
+                                    {deptNotices.length === 0 ? (
+                                        <p style={{ color: "#64748b", textAlign: "center", padding: "40px 0" }}>No active notices published for {selectedDept}.</p>
+                                    ) : (
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                                            {deptNotices.map(n => (
+                                                <div key={n.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px", padding: "18px" }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                                        <span style={{
+                                                            background: n.priority === "Urgent" ? "rgba(239, 68, 68, 0.2)" : (n.priority === "High" ? "rgba(245, 158, 11, 0.2)" : "rgba(14, 165, 233, 0.2)"),
+                                                            color: n.priority === "Urgent" ? "#f87171" : (n.priority === "High" ? "#fbbf24" : "#38bdf8"),
+                                                            fontSize: "11px", fontWeight: "700", padding: "3px 8px", borderRadius: "6px"
+                                                        }}>
+                                                            {n.priority}
+                                                        </span>
+                                                        <small style={{ color: "#64748b" }}>{n.published_at || n.created_at}</small>
+                                                    </div>
+                                                    <h4 style={{ margin: "4px 0 8px", color: "#fff", fontSize: "16px" }}>{n.title}</h4>
+                                                    <p style={{ color: "#cbd5e1", fontSize: "13px", margin: 0, whiteSpace: "pre-wrap" }}>{n.content}</p>
+                                                    <small style={{ color: "#64748b", display: "block", marginTop: "10px" }}>
+                                                        Published by: {n.published_by} | Target: {n.target_year}
+                                                    </small>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* =========================================================
+                        TAB 5: STUDENT ROSTER
+                    ========================================================== */}
+                    {activeTab === "students" && (
+                        <div style={{
+                            background: "rgba(15, 23, 42, 0.7)", border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "18px", padding: "24px"
+                        }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <div>
+                                    <h3 style={{ margin: 0, color: "#fff", fontSize: "18px" }}>
+                                        Enrolled Students Directory — {selectedDept} ({studentsList.length})
+                                    </h3>
+                                    <small style={{ color: "#94a3b8" }}>Registered student profiles synced with CampusMind AI</small>
+                                </div>
+
+                                <select
+                                    value={studentYearFilter}
+                                    onChange={e => setStudentYearFilter(e.target.value)}
+                                    style={{ background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "6px 12px", borderRadius: "8px", fontSize: "13px" }}
+                                >
+                                    <option value="All">All Years</option>
+                                    <option value="1st Year">1st Year</option>
+                                    <option value="2nd Year">2nd Year</option>
+                                    <option value="3rd Year">3rd Year</option>
+                                </select>
+                            </div>
+
+                            {studentsList.length === 0 ? (
+                                <p style={{ color: "#64748b", textAlign: "center", padding: "40px 0" }}>No registered students found for {selectedDept}.</p>
+                            ) : (
+                                <div style={{ overflowX: "auto" }}>
+                                    <table style={{ width: "100%", borderCollapse: "collapse", color: "#e2e8f0", fontSize: "13px" }}>
+                                        <thead>
+                                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "left" }}>
+                                                <th style={{ padding: "12px 8px" }}>Student ID</th>
+                                                <th style={{ padding: "12px 8px" }}>Student Full Name</th>
+                                                <th style={{ padding: "12px 8px" }}>Email</th>
+                                                <th style={{ padding: "12px 8px" }}>Year of Study</th>
+                                                <th style={{ padding: "12px 8px" }}>Registered Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {studentsList.map(s => (
+                                                <tr key={s.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                                                    <td style={{ padding: "12px 8px", color: "#38bdf8", fontWeight: "700" }}>{s.student_id || `STU-${s.id}`}</td>
+                                                    <td style={{ padding: "12px 8px", fontWeight: "600" }}>{s.name}</td>
+                                                    <td style={{ padding: "12px 8px", color: "#94a3b8" }}>{s.email}</td>
+                                                    <td style={{ padding: "12px 8px" }}>{s.year_of_study}</td>
+                                                    <td style={{ padding: "12px 8px", color: "#64748b" }}>{s.created_at ? s.created_at.slice(0, 10) : "Active"}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("hod-root")).render(<HodDashboardApp />);
+    </script>
+</body>
+
+</html>

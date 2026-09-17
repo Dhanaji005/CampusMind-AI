@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusMind AI — Principal Master Cockpit</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main & Dashboard Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- React 18 & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <span>CampusMind <span class="ai-text">AI</span></span>
+        </div>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="principal-dashboard.html" class="active">Principal Cockpit</a>
+            <a href="hod-dashboard.html">HOD Portal</a>
+            <a href="student-dashboard.html">Student View</a>
+            <a href="chat.html">AI Chat</a>
+        </nav>
+        <div class="auth-buttons">
+            <span id="user-display" style="color: #94a3b8; font-size: 13px; margin-right: 12px;"></span>
+            <a href="../auth/signin.html" class="signin-button" id="auth-btn">Sign In</a>
+        </div>
+    </header>
+
+    <!-- REACT ROOT -->
+    <div id="principal-root">
+        <div style="text-align:center;padding:140px 20px;color:#00d4ff;">
+            <i class="fa-solid fa-circle-notch fa-spin" style="font-size:32px;"></i>
+            <p style="margin-top:16px;font-size:16px;">Loading Principal Executive Cockpit…</p>
+        </div>
+    </div>
+
+    <!-- REACT APPLICATION SCRIPT -->
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const API_BASE = (function () {
+            if (window.CAMPUSMIND_API_BASE) return window.CAMPUSMIND_API_BASE;
+            try {
+                if (window.location && window.location.protocol && window.location.protocol.startsWith("http")) {
+                    const port = window.location.port;
+                    if (!port || port === "80" || port === "443" || port === "5000") {
+                        return window.location.origin;
+                    }
+                    if (window.location.hostname) {
+                        return window.location.protocol + "//" + window.location.hostname + ":5000";
+                    }
+                }
+            } catch (e) {}
+            return "http://127.0.0.1:5000";
+        })();
+
+        function PrincipalDashboardApp() {
+            const [overview, setOverview] = useState(null);
+            const [selectedDept, setSelectedDept] = useState("BBA(CA)");
+            const [deptData, setDeptData] = useState(null);
+            const [deptViewTab, setDeptViewTab] = useState("attendance"); // attendance, timetable, exams, notices, students
+            const [circulars, setCirculars] = useState([]);
+            const [toast, setToast] = useState({ text: "", type: "" });
+
+            // Circular form state
+            const [cirTitle, setCirTitle] = useState("");
+            const [cirContent, setCirContent] = useState("");
+            const [cirDept, setCirDept] = useState("All");
+            const [cirTarget, setCirTarget] = useState("All");
+            const [cirPriority, setCirPriority] = useState("Normal");
+            const [cirNumber, setCirNumber] = useState("");
+            const [isIssuingCir, setIsIssuingCir] = useState(false);
+
+            function showToast(text, type = "success") {
+                setToast({ text, type });
+                setTimeout(() => setToast({ text: "", type: "" }), 4000);
+            }
+
+            // Fetch Overview
+            async function fetchOverview() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/principal/overview`);
+                    const data = await res.json();
+                    if (data.success) setOverview(data);
+                } catch (e) {
+                    console.error("Error fetching principal overview:", e);
+                }
+            }
+
+            // Fetch Circulars
+            async function fetchCirculars() {
+                try {
+                    const res = await fetch(`${API_BASE}/api/principal/circulars`);
+                    const data = await res.json();
+                    if (data.success) setCirculars(data.circulars);
+                } catch (e) {
+                    console.error("Error fetching circulars:", e);
+                }
+            }
+
+            // Fetch Department Deep Dive
+            async function fetchDepartmentData(dept) {
+                try {
+                    const res = await fetch(`${API_BASE}/api/principal/department-data?department=${encodeURIComponent(dept)}`);
+                    const data = await res.json();
+                    if (data.success) setDeptData(data);
+                } catch (e) {
+                    console.error("Error fetching department data:", e);
+                }
+            }
+
+            useEffect(() => {
+                fetchOverview();
+                fetchCirculars();
+                fetchDepartmentData(selectedDept);
+            }, []);
+
+            useEffect(() => {
+                fetchDepartmentData(selectedDept);
+            }, [selectedDept]);
+
+            // Handle Issue Circular
+            async function handleIssueCircular(e) {
+                e.preventDefault();
+                if (!cirTitle || !cirContent) {
+                    showToast("Title and content are required.", "error");
+                    return;
+                }
+                setIsIssuingCir(true);
+                try {
+                    const res = await fetch(`${API_BASE}/api/principal/circular`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: cirTitle,
+                            content: cirContent,
+                            department: cirDept,
+                            target_audience: cirTarget,
+                            priority: cirPriority,
+                            circular_no: cirNumber,
+                            issued_by: "Dr. Lalasaheb Kashid (Principal)"
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`Circular '${data.circular_no}' broadcasted successfully! 📢`, "success");
+                        setCirTitle(""); setCirContent(""); setCirNumber("");
+                        fetchCirculars();
+                        fetchOverview();
+                    } else {
+                        showToast(data.error || "Failed to broadcast circular.", "error");
+                    }
+                } catch (err) {
+                    showToast("Error communicating with server.", "error");
+                } finally {
+                    setIsIssuingCir(false);
+                }
+            }
+
+            // Handle Delete Circular
+            async function handleDeleteCircular(id) {
+                if (!confirm("Archive this circular?")) return;
+                try {
+                    const res = await fetch(`${API_BASE}/api/principal/circular/${id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast("Circular archived.", "success");
+                        fetchCirculars();
+                        fetchOverview();
+                    }
+                } catch (e) {
+                    showToast("Error deleting circular.", "error");
+                }
+            }
+
+            const kpi = overview ? overview.kpi : {
+                total_students: 0, total_faculty: 0, overall_attendance: 0, sppu_compliance_rate: 100, total_defaulters: 0, total_circulars: 0
+            };
+
+            return (
+                <div className="dashboard-container" style={{ maxWidth: "1420px", margin: "0 auto", padding: "100px 24px 60px" }}>
+                    
+                    {/* TOAST MESSAGE */}
+                    {toast.text && (
+                        <div style={{
+                            position: "fixed", bottom: "30px", right: "30px", zIndex: 9999,
+                            background: toast.type === "error" ? "rgba(239, 68, 68, 0.95)" : "rgba(16, 185, 129, 0.95)",
+                            color: "#fff", padding: "14px 24px", borderRadius: "12px",
+                            boxShadow: "0 10px 30px rgba(0,0,0,0.5)", fontWeight: "600",
+                            display: "flex", alignItems: "center", gap: "10px", backdropFilter: "blur(10px)"
+                        }}>
+                            <i className={`fa-solid ${toast.type === "error" ? "fa-triangle-exclamation" : "fa-circle-check"}`}></i>
+                            {toast.text}
+                        </div>
+                    )}
+
+                    {/* PRINCIPAL EXECUTIVE BANNER */}
+                    <div style={{
+                        background: "linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2))",
+                        border: "1px solid rgba(168, 85, 247, 0.35)",
+                        borderRadius: "20px", padding: "30px 36px", marginBottom: "28px",
+                        display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "20px"
+                    }}>
+                        <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                                <span style={{
+                                    background: "#9333ea", color: "#fff", padding: "4px 12px",
+                                    borderRadius: "8px", fontSize: "12px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px"
+                                }}>
+                                    Executive Cockpit
+                                </span>
+                                <span style={{ color: "#c084fc", fontSize: "13px", fontWeight: "600" }}>
+                                    SPPU Affiliated College Code: 856 | AISHE: C-42144
+                                </span>
+                            </div>
+                            <h1 style={{ fontSize: "28px", fontWeight: "800", color: "#fff", margin: 0 }}>
+                                Vidya Pratishthan's Commerce & Science College, Indapur
+                            </h1>
+                            <p style={{ color: "#e2e8f0", margin: "6px 0 0", fontSize: "15px" }}>
+                                Principal: <strong>Dr. Lalasaheb Kashid</strong> | Master Multi-Department Governance Center
+                            </p>
+                        </div>
+
+                        <div style={{ display: "flex", gap: "12px" }}>
+                            <a
+                                href="hod-dashboard.html"
+                                style={{
+                                    background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.2)",
+                                    color: "#fff", padding: "10px 18px", borderRadius: "10px", textDecoration: "none",
+                                    fontSize: "13px", fontWeight: "600", display: "flex", alignItems: "center", gap: "8px"
+                                }}
+                            >
+                                <i className="fa-solid fa-graduation-cap"></i>
+                                <span>HOD Portal</span>
+                            </a>
+                            <button
+                                onClick={() => {
+                                    const cirSection = document.getElementById("broadcastSection");
+                                    if (cirSection) cirSection.scrollIntoView({ behavior: "smooth" });
+                                }}
+                                style={{
+                                    background: "#9333ea", color: "#fff", border: "none",
+                                    padding: "10px 20px", borderRadius: "10px", fontSize: "13px",
+                                    fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px"
+                                }}
+                            >
+                                <i className="fa-solid fa-bullhorn"></i>
+                                <span>Issue Circular</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* TOP COLLEGE-WIDE KPI CARDS */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "32px" }}>
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.75)", padding: "22px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Total Enrolled Students</span>
+                                <i className="fa-solid fa-user-group" style={{ color: "#38bdf8", fontSize: "20px" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "32px", fontWeight: "800", color: "#fff", margin: "10px 0 0" }}>
+                                {kpi.total_students}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Across 6 Academic Departments</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.75)", padding: "22px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Faculty & HODs</span>
+                                <i className="fa-solid fa-chalkboard-user" style={{ color: "#c084fc", fontSize: "20px" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "32px", fontWeight: "800", color: "#fff", margin: "10px 0 0" }}>
+                                {kpi.total_faculty}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Teaching & Department Leadership</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.75)", padding: "22px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>College Attendance Index</span>
+                                <i className="fa-solid fa-chart-pie" style={{ color: "#10b981", fontSize: "20px" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "32px", fontWeight: "800", color: kpi.overall_attendance >= 75 ? "#10b981" : "#f59e0b", margin: "10px 0 0" }}>
+                                {kpi.overall_attendance}%
+                            </h2>
+                            <small style={{ color: "#64748b" }}>College-wide average</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.75)", padding: "22px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>SPPU Exam Compliance</span>
+                                <i className="fa-solid fa-shield-check" style={{ color: "#38bdf8", fontSize: "20px" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "32px", fontWeight: "800", color: "#38bdf8", margin: "10px 0 0" }}>
+                                {kpi.sppu_compliance_rate}%
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Eligible for University Hall Tickets</small>
+                        </div>
+
+                        <div className="stat-card" style={{ background: "rgba(15, 23, 42, 0.75)", padding: "22px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ color: "#94a3b8", fontSize: "13px" }}>Defaulters Alert</span>
+                                <i className="fa-solid fa-triangle-exclamation" style={{ color: "#ef4444", fontSize: "20px" }}></i>
+                            </div>
+                            <h2 style={{ fontSize: "32px", fontWeight: "800", color: "#ef4444", margin: "10px 0 0" }}>
+                                {kpi.total_defaulters}
+                            </h2>
+                            <small style={{ color: "#64748b" }}>Below 75% mandate across college</small>
+                        </div>
+                    </div>
+
+                    {/* =========================================================
+                        CROSS-DEPARTMENT OVERVIEW MATRIX TABLE
+                    ========================================================== */}
+                    <div style={{
+                        background: "rgba(15, 23, 42, 0.75)", border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "18px", padding: "24px", marginBottom: "32px"
+                    }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "18px" }}>
+                            <div>
+                                <h3 style={{ margin: 0, color: "#fff", fontSize: "18px" }}>
+                                    <i className="fa-solid fa-network-wired" style={{ color: "#a855f7", marginRight: "8px" }}></i>
+                                    Department-Wise Academic Matrix (VPCSC Indapur)
+                                </h3>
+                                <small style={{ color: "#94a3b8" }}>Click any department row or pill below to inspect full deep-dive records</small>
+                            </div>
+                        </div>
+
+                        {overview?.departments && (
+                            <div style={{ overflowX: "auto" }}>
+                                <table style={{ width: "100%", borderCollapse: "collapse", color: "#e2e8f0", fontSize: "13px" }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "left" }}>
+                                            <th style={{ padding: "12px 10px" }}>Department</th>
+                                            <th style={{ padding: "12px 10px" }}>Head of Department (HOD)</th>
+                                            <th style={{ padding: "12px 10px" }}>Students</th>
+                                            <th style={{ padding: "12px 10px" }}>Average Attendance</th>
+                                            <th style={{ padding: "12px 10px" }}>SPPU Status</th>
+                                            <th style={{ padding: "12px 10px" }}>Defaulters (&lt;75%)</th>
+                                            <th style={{ padding: "12px 10px", textAlign: "right" }}>Inspect Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {overview.departments.map(d => (
+                                            <tr
+                                                key={d.department}
+                                                style={{
+                                                    borderBottom: "1px solid rgba(255,255,255,0.05)",
+                                                    background: selectedDept === d.department ? "rgba(168, 85, 247, 0.08)" : "transparent"
+                                                }}
+                                            >
+                                                <td style={{ padding: "12px 10px", fontWeight: "700", color: "#38bdf8" }}>
+                                                    {d.department} <span style={{ color: "#94a3b8", fontWeight: "400", fontSize: "12px" }}>— {d.title}</span>
+                                                </td>
+                                                <td style={{ padding: "12px 10px", fontWeight: "600", color: "#e2e8f0" }}>
+                                                    {d.hod}
+                                                </td>
+                                                <td style={{ padding: "12px 10px" }}>{d.students_count}</td>
+                                                <td style={{ padding: "12px 10px", fontWeight: "700", color: d.attendance_percentage >= 75 ? "#10b981" : "#f59e0b" }}>
+                                                    {d.attendance_percentage}%
+                                                </td>
+                                                <td style={{ padding: "12px 10px" }}>
+                                                    <span style={{
+                                                        padding: "3px 10px", borderRadius: "8px", fontSize: "11px", fontWeight: "700",
+                                                        background: d.attendance_percentage >= 75 ? "rgba(16, 185, 129, 0.2)" : "rgba(245, 158, 11, 0.2)",
+                                                        color: d.attendance_percentage >= 75 ? "#34d399" : "#fbbf24"
+                                                    }}>
+                                                        {d.attendance_percentage >= 75 ? "Compliant" : "Review Needed"}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: "12px 10px", color: d.defaulters_count > 0 ? "#ef4444" : "#10b981", fontWeight: "700" }}>
+                                                    {d.defaulters_count} students
+                                                </td>
+                                                <td style={{ padding: "12px 10px", textAlign: "right" }}>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedDept(d.department);
+                                                            const deepDiveEl = document.getElementById("departmentDeepDive");
+                                                            if (deepDiveEl) deepDiveEl.scrollIntoView({ behavior: "smooth" });
+                                                        }}
+                                                        style={{
+                                                            background: selectedDept === d.department ? "#9333ea" : "rgba(255,255,255,0.08)",
+                                                            color: "#fff", border: "none", padding: "6px 14px", borderRadius: "8px",
+                                                            fontSize: "12px", fontWeight: "600", cursor: "pointer"
+                                                        }}
+                                                    >
+                                                        {selectedDept === d.department ? "Active View" : "Inspect Dept"}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* =========================================================
+                        DEPARTMENT SWITCHER BAR & DEEP DIVE INSPECTOR
+                    ========================================================== */}
+                    <div id="departmentDeepDive" style={{
+                        background: "rgba(15, 23, 42, 0.8)", border: "1px solid rgba(168, 85, 247, 0.3)",
+                        borderRadius: "20px", padding: "28px", marginBottom: "32px"
+                    }}>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+                            <div>
+                                <h3 style={{ margin: 0, color: "#fff", fontSize: "20px" }}>
+                                    <i className="fa-solid fa-magnifying-glass-chart" style={{ color: "#38bdf8", marginRight: "10px" }}></i>
+                                    Department Deep Dive — <span style={{ color: "#c084fc" }}>{selectedDept}</span>
+                                </h3>
+                                <small style={{ color: "#94a3b8" }}>
+                                    Principal oversight into live attendance, timetable schedule, exams, notices, and students
+                                </small>
+                            </div>
+
+                            {/* 6 DEPARTMENT PILLS */}
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                                {["BBA(CA)", "BCS", "B.Com", "BBA", "B.Sc", "M.Sc"].map(dept => (
+                                    <button
+                                        key={dept}
+                                        onClick={() => setSelectedDept(dept)}
+                                        style={{
+                                            background: selectedDept === dept ? "#9333ea" : "rgba(255,255,255,0.06)",
+                                            border: selectedDept === dept ? "1px solid #c084fc" : "1px solid rgba(255,255,255,0.1)",
+                                            color: selectedDept === dept ? "#fff" : "#94a3b8",
+                                            padding: "8px 16px", borderRadius: "10px",
+                                            fontWeight: "700", fontSize: "13px", cursor: "pointer", transition: "all 0.2s"
+                                        }}
+                                    >
+                                        {dept}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* DEEP DIVE SUB-NAVIGATION TABS */}
+                        <div style={{
+                            display: "flex", gap: "10px", borderBottom: "1px solid rgba(255,255,255,0.1)",
+                            marginBottom: "20px", overflowX: "auto", paddingBottom: "10px"
+                        }}>
+                            {[
+                                { id: "attendance", label: "Attendance & Defaulters", icon: "fa-clipboard-user", badge: deptData?.attendance?.defaulters_count },
+                                { id: "timetable", label: "Timetable Schedule", icon: "fa-calendar-week", badge: deptData?.timetable?.length },
+                                { id: "exams", label: "Upcoming Exams", icon: "fa-file-signature", badge: deptData?.exams?.length },
+                                { id: "notices", label: "Department Notices", icon: "fa-bullhorn", badge: deptData?.notices?.length },
+                                { id: "students", label: "Registered Students", icon: "fa-users", badge: deptData?.students?.length }
+                            ].map(t => (
+                                <button
+                                    key={t.id}
+                                    onClick={() => setDeptViewTab(t.id)}
+                                    style={{
+                                        background: deptViewTab === t.id ? "rgba(168, 85, 247, 0.2)" : "transparent",
+                                        border: deptViewTab === t.id ? "1px solid #c084fc" : "1px solid transparent",
+                                        color: deptViewTab === t.id ? "#c084fc" : "#94a3b8",
+                                        padding: "8px 16px", borderRadius: "10px",
+                                        fontWeight: "700", fontSize: "13px", cursor: "pointer",
+                                        display: "flex", alignItems: "center", gap: "8px"
+                                    }}
+                                >
+                                    <i className={`fa-solid ${t.icon}`}></i>
+                                    <span>{t.label}</span>
+                                    {t.badge > 0 && (
+                                        <span style={{
+                                            background: t.id === "attendance" ? "#ef4444" : "#0284c7",
+                                            color: "#fff", fontSize: "11px", padding: "1px 6px", borderRadius: "8px"
+                                        }}>
+                                            {t.badge}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* SUB-TAB 1: ATTENDANCE & DEFAULTERS */}
+                        {deptViewTab === "attendance" && (
+                            <div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                                    <h4 style={{ margin: 0, color: "#fff" }}>
+                                        Attendance Records ({deptData?.attendance?.total_records || 0}) — 
+                                        <span style={{ color: "#ef4444", marginLeft: "6px" }}>
+                                            Defaulters Below 75%: {deptData?.attendance?.defaulters_count || 0}
+                                        </span>
+                                    </h4>
+                                </div>
+
+                                {deptData?.attendance?.all_records?.length === 0 ? (
+                                    <p style={{ color: "#64748b", textAlign: "center", padding: "30px 0" }}>
+                                        No attendance records uploaded by {selectedDept} HOD yet.
+                                    </p>
+                                ) : (
+                                    <div style={{ overflowX: "auto" }}>
+                                        <table style={{ width: "100%", borderCollapse: "collapse", color: "#e2e8f0", fontSize: "13px" }}>
+                                            <thead>
+                                                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "left" }}>
+                                                    <th style={{ padding: "10px 8px" }}>Roll</th>
+                                                    <th style={{ padding: "10px 8px" }}>Student Name</th>
+                                                    <th style={{ padding: "10px 8px" }}>Year</th>
+                                                    <th style={{ padding: "10px 8px" }}>Subject</th>
+                                                    <th style={{ padding: "10px 8px" }}>Lectures Attended</th>
+                                                    <th style={{ padding: "10px 8px" }}>Percentage</th>
+                                                    <th style={{ padding: "10px 8px" }}>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {deptData?.attendance?.all_records.map(r => (
+                                                    <tr key={r.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: r.percentage < 75 ? "rgba(239, 68, 68, 0.05)" : "transparent" }}>
+                                                        <td style={{ padding: "10px 8px", fontWeight: "700", color: "#38bdf8" }}>{r.roll_no || "—"}</td>
+                                                        <td style={{ padding: "10px 8px", fontWeight: "600" }}>{r.student_name}</td>
+                                                        <td style={{ padding: "10px 8px" }}>{r.year_of_study}</td>
+                                                        <td style={{ padding: "10px 8px" }}>{r.subject_name}</td>
+                                                        <td style={{ padding: "10px 8px" }}>{r.attended_lectures} / {r.total_lectures}</td>
+                                                        <td style={{ padding: "10px 8px", fontWeight: "700", color: r.percentage >= 75 ? "#10b981" : "#ef4444" }}>
+                                                            {r.percentage}%
+                                                        </td>
+                                                        <td style={{ padding: "10px 8px" }}>
+                                                            <span style={{
+                                                                padding: "2px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: "700",
+                                                                background: r.status === "Good" ? "rgba(16, 185, 129, 0.2)" : (r.status === "Average" ? "rgba(245, 158, 11, 0.2)" : "rgba(239, 68, 68, 0.2)"),
+                                                                color: r.status === "Good" ? "#34d399" : (r.status === "Average" ? "#fbbf24" : "#f87171")
+                                                            }}>
+                                                                {r.status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* SUB-TAB 2: TIMETABLE */}
+                        {deptViewTab === "timetable" && (
+                            <div>
+                                <h4 style={{ margin: "0 0 16px", color: "#fff" }}>Weekly Lecture Grid — {selectedDept} ({deptData?.timetable?.length || 0} slots)</h4>
+                                {deptData?.timetable?.length === 0 ? (
+                                    <p style={{ color: "#64748b", textAlign: "center", padding: "30px 0" }}>No timetable slots published yet for {selectedDept}.</p>
+                                ) : (
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "14px" }}>
+                                        {deptData?.timetable.map(slot => (
+                                            <div key={slot.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "14px" }}>
+                                                <span style={{ background: "#9333ea", color: "#fff", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "6px" }}>
+                                                    {slot.day_of_week}
+                                                </span>
+                                                <h5 style={{ margin: "8px 0 4px", color: "#fff", fontSize: "14px" }}>{slot.subject_name}</h5>
+                                                <div style={{ color: "#94a3b8", fontSize: "12px" }}>🕒 {slot.time_slot}</div>
+                                                <div style={{ color: "#cbd5e1", fontSize: "12px", marginTop: "4px" }}>👤 {slot.faculty_name || "Faculty Assigned"}</div>
+                                                <small style={{ color: "#64748b", display: "block", marginTop: "4px" }}>📍 {slot.room_no} | Class: {slot.year_of_study}</small>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* SUB-TAB 3: EXAMS */}
+                        {deptViewTab === "exams" && (
+                            <div>
+                                <h4 style={{ margin: "0 0 16px", color: "#fff" }}>Scheduled Examinations — {selectedDept} ({deptData?.exams?.length || 0})</h4>
+                                {deptData?.exams?.length === 0 ? (
+                                    <p style={{ color: "#64748b", textAlign: "center", padding: "30px 0" }}>No exams scheduled for {selectedDept}.</p>
+                                ) : (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                        {deptData?.exams.map(ex => (
+                                            <div key={ex.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <div>
+                                                    <span style={{ background: "#eab308", color: "#000", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "6px" }}>{ex.exam_date}</span>
+                                                    <h5 style={{ margin: "6px 0 2px", color: "#fff", fontSize: "15px" }}>{ex.subject_name} ({ex.year_of_study})</h5>
+                                                    <small style={{ color: "#94a3b8" }}>🕒 {ex.start_time} - {ex.end_time} &nbsp;|&nbsp; 📍 {ex.room_no}</small>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* SUB-TAB 4: NOTICES */}
+                        {deptViewTab === "notices" && (
+                            <div>
+                                <h4 style={{ margin: "0 0 16px", color: "#fff" }}>Department Notices ({deptData?.notices?.length || 0})</h4>
+                                {deptData?.notices?.length === 0 ? (
+                                    <p style={{ color: "#64748b", textAlign: "center", padding: "30px 0" }}>No notices published for {selectedDept}.</p>
+                                ) : (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                        {deptData?.notices.map(n => (
+                                            <div key={n.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "14px" }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                                                    <span style={{ color: "#38bdf8", fontWeight: "700", fontSize: "12px" }}>{n.category}</span>
+                                                    <small style={{ color: "#64748b" }}>{n.created_at}</small>
+                                                </div>
+                                                <h5 style={{ margin: 0, color: "#fff", fontSize: "15px" }}>{n.title}</h5>
+                                                <p style={{ color: "#cbd5e1", fontSize: "13px", margin: "6px 0" }}>{n.content}</p>
+                                                <small style={{ color: "#64748b" }}>Published by: {n.published_by}</small>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* SUB-TAB 5: STUDENTS */}
+                        {deptViewTab === "students" && (
+                            <div>
+                                <h4 style={{ margin: "0 0 16px", color: "#fff" }}>Enrolled Students in {selectedDept} ({deptData?.students?.length || 0})</h4>
+                                {deptData?.students?.length === 0 ? (
+                                    <p style={{ color: "#64748b", textAlign: "center", padding: "30px 0" }}>No registered students found for {selectedDept}.</p>
+                                ) : (
+                                    <div style={{ overflowX: "auto" }}>
+                                        <table style={{ width: "100%", borderCollapse: "collapse", color: "#e2e8f0", fontSize: "13px" }}>
+                                            <thead>
+                                                <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", textAlign: "left" }}>
+                                                    <th style={{ padding: "8px" }}>Student ID</th>
+                                                    <th style={{ padding: "8px" }}>Full Name</th>
+                                                    <th style={{ padding: "8px" }}>Email</th>
+                                                    <th style={{ padding: "8px" }}>Year of Study</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {deptData?.students.map(s => (
+                                                    <tr key={s.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                                                        <td style={{ padding: "8px", color: "#38bdf8", fontWeight: "700" }}>{s.student_id || `STU-${s.id}`}</td>
+                                                        <td style={{ padding: "8px", fontWeight: "600" }}>{s.name}</td>
+                                                        <td style={{ padding: "8px", color: "#94a3b8" }}>{s.email}</td>
+                                                        <td style={{ padding: "8px" }}>{s.year_of_study}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* =========================================================
+                        COLLEGE-WIDE OFFICIAL CIRCULAR BROADCAST STATION
+                    ========================================================== */}
+                    <div id="broadcastSection" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>
+                        
+                        {/* ISSUE CIRCULAR FORM */}
+                        <div style={{
+                            background: "rgba(15, 23, 42, 0.75)", border: "1px solid rgba(168, 85, 247, 0.35)",
+                            borderRadius: "18px", padding: "24px", height: "fit-content"
+                        }}>
+                            <h3 style={{ margin: "0 0 16px", color: "#fff", fontSize: "18px" }}>
+                                <i className="fa-solid fa-bullhorn" style={{ color: "#c084fc", marginRight: "8px" }}></i>
+                                Broadcast College Circular
+                            </h3>
+                            <p style={{ color: "#94a3b8", fontSize: "13px", margin: "0 0 16px" }}>
+                                Issue official institutional circulars to all departments and students simultaneously.
+                            </p>
+
+                            <form onSubmit={handleIssueCircular}>
+                                <div style={{ marginBottom: "12px" }}>
+                                    <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Circular Number (Optional)</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. VPCSC/2026/CIR-04"
+                                        value={cirNumber}
+                                        onChange={e => setCirNumber(e.target.value)}
+                                        style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                    />
+                                </div>
+
+                                <div style={{ marginBottom: "12px" }}>
+                                    <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Circular Subject / Title *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="Official Subject Heading"
+                                        value={cirTitle}
+                                        onChange={e => setCirTitle(e.target.value)}
+                                        style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                    />
+                                </div>
+
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Target Department</label>
+                                        <select
+                                            value={cirDept}
+                                            onChange={e => setCirDept(e.target.value)}
+                                            style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}
+                                        >
+                                            <option value="All">All Departments</option>
+                                            <option value="BBA(CA)">BBA(CA)</option>
+                                            <option value="BCS">BCS</option>
+                                            <option value="B.Com">B.Com</option>
+                                            <option value="BBA">BBA</option>
+                                            <option value="B.Sc">B.Sc</option>
+                                            <option value="M.Sc">M.Sc</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Priority</label>
+                                        <select
+                                            value={cirPriority}
+                                            onChange={e => setCirPriority(e.target.value)}
+                                            style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 10px", borderRadius: "8px", marginTop: "4px" }}
+                                        >
+                                            <option value="Normal">Normal</option>
+                                            <option value="High">High</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginBottom: "16px" }}>
+                                    <label style={{ color: "#cbd5e1", fontSize: "12px", fontWeight: "600" }}>Circular Detailed Text *</label>
+                                    <textarea
+                                        rows="6"
+                                        required
+                                        placeholder="Enter the official directives, instructions, or policy orders..."
+                                        value={cirContent}
+                                        onChange={e => setCirContent(e.target.value)}
+                                        style={{ width: "100%", background: "#0b132b", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 12px", borderRadius: "8px", marginTop: "4px" }}
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isIssuingCir}
+                                    style={{
+                                        width: "100%", background: "#9333ea", color: "#fff", border: "none",
+                                        padding: "12px", borderRadius: "10px", fontWeight: "700", cursor: "pointer",
+                                        display: "flex", justifyContent: "center", alignItems: "center", gap: "8px"
+                                    }}
+                                >
+                                    {isIssuingCir ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-broadcast-tower"></i>}
+                                    <span>{isIssuingCir ? "Broadcasting..." : "Broadcast Official Circular"}</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* ISSUED CIRCULARS LIST */}
+                        <div style={{
+                            background: "rgba(15, 23, 42, 0.75)", border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "18px", padding: "24px"
+                        }}>
+                            <h3 style={{ margin: "0 0 20px", color: "#fff", fontSize: "18px" }}>
+                                Official College Circulars Archive ({circulars.length})
+                            </h3>
+
+                            {circulars.length === 0 ? (
+                                <p style={{ color: "#64748b", textAlign: "center", padding: "40px 0" }}>No official circulars issued yet.</p>
+                            ) : (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                                    {circulars.map(cir => (
+                                        <div key={cir.id} style={{
+                                            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                                            borderRadius: "14px", padding: "20px"
+                                        }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                                    <span style={{
+                                                        background: "rgba(168, 85, 247, 0.2)", color: "#c084fc",
+                                                        padding: "3px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "700"
+                                                    }}>
+                                                        {cir.circular_no}
+                                                    </span>
+                                                    <span style={{
+                                                        background: cir.priority === "Urgent" ? "rgba(239, 68, 68, 0.2)" : "rgba(14, 165, 233, 0.2)",
+                                                        color: cir.priority === "Urgent" ? "#f87171" : "#38bdf8",
+                                                        padding: "3px 8px", borderRadius: "6px", fontSize: "11px", fontWeight: "700"
+                                                    }}>
+                                                        {cir.priority}
+                                                    </span>
+                                                </div>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                                    <small style={{ color: "#94a3b8" }}>{cir.issued_date || cir.created_at?.slice(0, 10)}</small>
+                                                    <button
+                                                        onClick={() => handleDeleteCircular(cir.id)}
+                                                        style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "14px" }}
+                                                        title="Archive Circular"
+                                                    >
+                                                        <i className="fa-solid fa-trash-can"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <h4 style={{ margin: "6px 0 10px", color: "#fff", fontSize: "17px" }}>{cir.title}</h4>
+                                            <p style={{ color: "#cbd5e1", fontSize: "13px", lineHeight: "1.6", margin: 0, whiteSpace: "pre-wrap" }}>
+                                                {cir.content}
+                                            </p>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "10px" }}>
+                                                <small style={{ color: "#64748b" }}>
+                                                    Issued by: <strong>{cir.issued_by}</strong> | Audience: {cir.target_audience}
+                                                </small>
+                                                <small style={{ color: "#a855f7", fontWeight: "600" }}>
+                                                    Scope: {cir.department === "All" ? "All Departments" : cir.department}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("principal-root")).render(<PrincipalDashboardApp />);
+    </script>
+</body>
+
+</html>

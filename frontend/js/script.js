@@ -182,12 +182,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (navMenu) {
                 const dashLink = document.querySelector("#nav-dashboard-link") || document.querySelector("a[href*='dashboard.html']");
                 if (dashLink) {
-                    if (role === "admin") {
-                        dashLink.href = prefix + "admin-dashboard.html";
-                        dashLink.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Admin';
+                    if (role === "principal" || role === "admin") {
+                        dashLink.href = prefix + "principal-dashboard.html";
+                        dashLink.innerHTML = '<i class="fa-solid fa-building-columns"></i> Principal';
+                    } else if (role === "hod") {
+                        dashLink.href = prefix + "hod-dashboard.html";
+                        dashLink.innerHTML = '<i class="fa-solid fa-user-tie"></i> HOD Portal';
                     } else if (role === "faculty") {
-                        dashLink.href = prefix + "student-dashboard.html";
-                        dashLink.innerHTML = '<i class="fa-solid fa-chalkboard-user"></i> Dashboard';
+                        dashLink.href = prefix + "hod-dashboard.html";
+                        dashLink.innerHTML = '<i class="fa-solid fa-chalkboard-user"></i> Faculty';
                     } else {
                         dashLink.href = prefix + "student-dashboard.html";
                         dashLink.innerHTML = '<i class="fa-solid fa-graduation-cap"></i> Dashboard';

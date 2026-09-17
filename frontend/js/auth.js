@@ -49,6 +49,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (val === "student") {
             if (studentFields) studentFields.style.display = "block";
             if (roleSecurityBox) roleSecurityBox.style.display = "none";
+        } else if (val === "hod") {
+            if (studentFields) studentFields.style.display = "block";
+            if (roleSecurityBox) {
+                roleSecurityBox.style.display = "block";
+                if (passcodeLabel) passcodeLabel.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Head of Department (HOD) Authorization Key';
+                if (rolePasscode) rolePasscode.placeholder = "Enter VPCSC HOD Key (e.g. VPCSC@HOD2026)";
+                if (passcodeHelpText) passcodeHelpText.innerText = "Authorized departmental HODs only. Unlocks department attendance & timetable cockpit.";
+            }
+        } else if (val === "principal") {
+            if (studentFields) studentFields.style.display = "none";
+            if (roleSecurityBox) {
+                roleSecurityBox.style.display = "block";
+                if (passcodeLabel) passcodeLabel.innerHTML = '<i class="fa-solid fa-shield-halved"></i> College Principal Executive Master Key';
+                if (rolePasscode) rolePasscode.placeholder = "Enter VPCSC Principal Key (e.g. VPCSC@PRINCIPAL2026)";
+                if (passcodeHelpText) passcodeHelpText.innerText = "Institutional Chief Executive access only. Unlocks all college departments.";
+            }
         } else if (val === "faculty") {
             if (studentFields) studentFields.style.display = "block";
             if (roleSecurityBox) {
@@ -174,8 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     setTimeout(() => {
-                        if (role === "admin") {
-                            window.location.href = "../pages/admin-dashboard.html";
+                        if (role === "principal" || role === "admin") {
+                            window.location.href = "../pages/principal-dashboard.html";
+                        } else if (role === "hod") {
+                            window.location.href = "../pages/hod-dashboard.html";
                         } else if (role === "student") {
                             window.location.href = "../pages/student-dashboard.html";
                         } else {
@@ -269,8 +287,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     const userRole = (data.user && data.user.role) ? data.user.role : "student";
 
                     setTimeout(() => {
-                        if (userRole === "admin") {
-                            window.location.href = "../pages/admin-dashboard.html";
+                        if (userRole === "principal" || userRole === "admin") {
+                            window.location.href = "../pages/principal-dashboard.html";
+                        } else if (userRole === "hod") {
+                            window.location.href = "../pages/hod-dashboard.html";
                         } else if (userRole === "student") {
                             window.location.href = "../pages/student-dashboard.html";
                         } else {

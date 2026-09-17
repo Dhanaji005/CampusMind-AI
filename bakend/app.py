@@ -19,6 +19,8 @@ from routes.chatbot_routes import chatbot_routes
 from routes.student_routes import student_routes
 from routes.admin_routes import admin_routes
 from routes.attendance_routes import attendance_routes
+from routes.hod_routes import hod_routes
+from routes.principal_routes import principal_routes
 
 
 # =====================================================
@@ -72,6 +74,8 @@ app.register_blueprint(chatbot_routes)
 app.register_blueprint(student_routes)
 app.register_blueprint(admin_routes)
 app.register_blueprint(attendance_routes)
+app.register_blueprint(hod_routes)
+app.register_blueprint(principal_routes)
 
 
 # =====================================================
