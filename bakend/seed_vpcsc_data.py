@@ -2,7 +2,7 @@ import sqlite3
 import os
 from datetime import datetime, timedelta
 
-DB_PATH = r"c:\Users\Admin\Downloads\CampusMind-AI-with-OpenRouter\bakend\campusmind.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "campusmind.db")
 
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()

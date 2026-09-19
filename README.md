@@ -36,7 +36,15 @@
 - Passwords hashed using industry-standard `pbkdf2:sha256`.
 - Zero credentials or API keys exposed in version control (`.env` strictly excluded).
 
+### 5. ✨ JARVIS-Style 3D Animated Female Voice Assistant
+- **Ready Player Me 3D Avatar**: Fully rigged female 3D avatar (.glb) rendered via Three.js.
+- **Real-Time Lip-Sync**: Powered by `TalkingHead.js` with viseme blendshape morphing.
+- **Natural Expressive TTS**: Integrates ElevenLabs neural voice synthesis with millisecond-accurate word/character alignment timestamps.
+- **"Hey Campus" Wake-Word Engine**: Continuous hands-free listening using Web Speech API.
+- **Interactive UI States**: Dynamic visual states for `Idle`, `Listening`, `Thinking`, and `Speaking`.
+
 ---
+
 
 ## 🛠️ Tech Stack
 
@@ -60,11 +68,30 @@ cd CampusMind-AI-chatboat
 # Copy template to .env
 cp .env.example bakend/.env
 ```
-Open `bakend/.env` and add your **OpenRouter API Key**:
+Open `bakend/.env` and configure your API keys:
 ```env
+# 1. OpenRouter (LLM Reasoning)
 OPENROUTER_API_KEY=sk-or-v1-your-key-here
 SECRET_KEY=your-random-secret-key
+
+# 2. ElevenLabs (JARVIS 3D Voice Assistant)
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+ELEVENLABS_VOICE_ID=Xb7hH8MSUJpSbSDYk0k2
+ELEVENLABS_MODEL_ID=eleven_flash_v2_5
 ```
+
+> **Testing ElevenLabs Setup:**
+> Run the diagnostic tool to verify your voice synthesis and remaining free character balance:
+> ```bash
+> python bakend/test_elevenlabs.py
+> ```
+
+### 👤 Custom 3D Avatar (Ready Player Me)
+1. Create a custom female 3D avatar on [readyplayer.me](https://readyplayer.me).
+2. Download or export it as a `.glb` file.
+3. Save it to: `frontend/avatars/avatar.glb`.
+*(If no custom file is provided, CampusMind AI automatically loads an official Ready Player Me female avatar from the official CDN!)*
+
 
 ### 3. Install Dependencies
 ```bash

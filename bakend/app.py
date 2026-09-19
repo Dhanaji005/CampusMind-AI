@@ -21,6 +21,11 @@ from routes.admin_routes import admin_routes
 from routes.attendance_routes import attendance_routes
 from routes.hod_routes import hod_routes
 from routes.principal_routes import principal_routes
+from routes.voice_assistant_routes import voice_assistant_routes
+import mimetypes
+
+mimetypes.add_type("model/gltf-binary", ".glb")
+mimetypes.add_type("application/javascript", ".mjs")
 
 
 # =====================================================
@@ -76,6 +81,7 @@ app.register_blueprint(admin_routes)
 app.register_blueprint(attendance_routes)
 app.register_blueprint(hod_routes)
 app.register_blueprint(principal_routes)
+app.register_blueprint(voice_assistant_routes)
 
 
 # =====================================================
@@ -114,8 +120,9 @@ def index():
     })
 
 
-@app.route("/<path:path>", methods=["GET"])
+@app.route("/<path:path>", methods=["GET", "HEAD"])
 def serve_frontend_static(path):
+
     # Do not intercept API endpoints
     if path.startswith("api/"):
         return jsonify({"error": "API route not found"}), 404

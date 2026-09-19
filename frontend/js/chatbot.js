@@ -290,7 +290,32 @@
             }
         }
 
+        // JARVIS 3D Voice Assistant Header Toggle
+        const jarvisToggle = document.getElementById("header-jarvis-toggle");
+        const jarvisStage = document.getElementById("jarvis-avatar-stage");
+        if (jarvisToggle && jarvisStage) {
+            jarvisToggle.addEventListener("click", () => {
+                const isHidden = jarvisStage.classList.toggle("jarvis-hidden");
+                jarvisToggle.classList.toggle("active", !isHidden);
+                if (!isHidden && window.CampusMindVoiceAvatar) {
+                    window.CampusMindVoiceAvatar.loadAvatar();
+                }
+            });
+        }
+
+        // ChatGPT-Style Bottom Bar Avatar Mode Trigger
+        const chatAvatarModeBtn = document.getElementById("chat-avatar-mode-btn");
+        if (chatAvatarModeBtn) {
+            chatAvatarModeBtn.addEventListener("click", () => {
+                if (window.CampusMindVoiceAvatar) {
+                    window.CampusMindVoiceAvatar.enterFullscreen();
+                }
+            });
+        }
+
         if (!log || !input || !sendBtn) return;
+
+
 
         const pendingAttachments = [];
 
@@ -844,20 +869,35 @@
             setSending(true);
 
             try {
+                // JARVIS 3D Avatar state hook: thinking
+                if (window.CampusMindVoiceAvatar) {
+                    window.CampusMindVoiceAvatar.setState("thinking", "Thinking about your campus question...");
+                }
+
                 const data = await sendToBackend(text, currentAtts);
                 typingWrap.remove();
 
                 const reply = data.reply || "(no reply)";
                 appendMessage("bot", reply, null, data.sources || []);
                 conversation.push({ role: "assistant", content: reply });
+
+                // JARVIS 3D Avatar speech & lip-sync hook
+                const jarvisStage = document.getElementById("jarvis-avatar-stage");
+                if (window.CampusMindVoiceAvatar && jarvisStage && !jarvisStage.classList.contains("jarvis-hidden")) {
+                    window.CampusMindVoiceAvatar.speak(reply);
+                }
             } catch (err) {
                 typingWrap.remove();
+                if (window.CampusMindVoiceAvatar) {
+                    window.CampusMindVoiceAvatar.setState("idle");
+                }
                 if (conversation.length > 0 && conversation[conversation.length - 1].role === "user") {
                     conversation.pop();
                 }
                 appendMessage("bot", "⚠️ " + (err.message || "Something went wrong. Please check if the backend is running."));
             } finally {
                 setSending(false);
+
                 input.focus();
             }
         }

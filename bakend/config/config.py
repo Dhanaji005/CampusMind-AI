@@ -82,3 +82,12 @@ class Config:
     # -----------------------------------------------------
     SUPABASE_URL = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+
+    # -----------------------------------------------------
+    # ELEVENLABS SETTINGS (JARVIS 3D Voice Assistant)
+    # -----------------------------------------------------
+    ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")
+    ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "Xb7hH8MSUJpSbSDYk0k2")  # Alice (Clear, engaging female educator - premade)
+    ELEVENLABS_MODEL_ID = os.getenv("ELEVENLABS_MODEL_ID", "eleven_flash_v2_5")     # Lowest latency, high quality
+
+

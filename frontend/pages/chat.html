@@ -17,7 +17,20 @@
     <!-- CSS -->
     <link rel="stylesheet" href="../css/chat.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- Three.js & TalkingHead for 3D Lip-Sync Voice Assistant -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js/+esm",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+            "talkinghead": "../js/talkinghead/talkinghead.mjs"
+        }
+    }
+    </script>
+
 </head>
+
 
 <body class="fullscreen-chat-body">
 
@@ -40,6 +53,11 @@
             </div>
 
             <div class="header-right">
+                <button id="header-jarvis-toggle" class="header-btn jarvis-toggle-btn active" type="button" title="Toggle 3D Voice Assistant">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>3D Avatar</span>
+                </button>
+
                 <button id="chat-new-btn" class="header-btn new-chat-btn" type="button" title="Start a fresh conversation">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span>New Chat</span>
@@ -56,56 +74,129 @@
         </header>
 
         <!-- =====================================================
-             CENTRAL CONVERSATION STREAM
+             CENTRAL CONVERSATION STREAM & 3D AVATAR WORKSPACE
         ====================================================== -->
-        <main class="chat-main-area">
-            <div id="chat-log" class="chat-stream-container">
-                
-                <!-- COMPACT WELCOME SCREEN (shown when chat is empty) -->
-                <div class="chat-welcome" id="chat-welcome-screen">
-                    <div class="chat-welcome-avatar">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
-                    <h2>How can I help you today?</h2>
-                    <p class="welcome-desc">Ask anything about your syllabus, college rules, exams, or VPCSC Indapur campus resources.</p>
+        <div class="chat-middle-container">
+            <main class="chat-main-area">
+                <div id="chat-log" class="chat-stream-container">
                     
-                    <div class="chat-suggestion-grid">
-                        <button type="button" class="suggestion-card" data-prompt="What are my enrolled academic subjects and syllabus?">
-                            <i class="fa-solid fa-book-open"></i>
-                            <div class="suggestion-text">
-                                <strong>My Academic Subjects</strong>
-                                <span>View subjects & syllabus for your current year</span>
-                            </div>
-                        </button>
+                    <!-- COMPACT WELCOME SCREEN (shown when chat is empty) -->
+                    <div class="chat-welcome" id="chat-welcome-screen">
+                        <div class="chat-welcome-avatar">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h2>How can I help you today?</h2>
+                        <p class="welcome-desc">Ask anything about your syllabus, college rules, exams, or VPCSC Indapur campus resources.</p>
+                        
+                        <div class="chat-suggestion-grid">
+                            <button type="button" class="suggestion-card" data-prompt="What are my enrolled academic subjects and syllabus?">
+                                <i class="fa-solid fa-book-open"></i>
+                                <div class="suggestion-text">
+                                    <strong>My Academic Subjects</strong>
+                                    <span>View subjects & syllabus for your current year</span>
+                                </div>
+                            </button>
 
-                        <button type="button" class="suggestion-card" data-prompt="What is the latest college notice and announcement?">
-                            <i class="fa-solid fa-bullhorn"></i>
-                            <div class="suggestion-text">
-                                <strong>Latest College Notices</strong>
-                                <span>Check recent circulars & urgent deadlines</span>
-                            </div>
-                        </button>
+                            <button type="button" class="suggestion-card" data-prompt="What is the latest college notice and announcement?">
+                                <i class="fa-solid fa-bullhorn"></i>
+                                <div class="suggestion-text">
+                                    <strong>Latest College Notices</strong>
+                                    <span>Check recent circulars & urgent deadlines</span>
+                                </div>
+                            </button>
 
-                        <button type="button" class="suggestion-card" data-prompt="Tell me about upcoming exam dates, schedules, and rules.">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <div class="suggestion-text">
-                                <strong>Upcoming Exams & Rules</strong>
-                                <span>Timetable, room venues & attendance rules</span>
-                            </div>
-                        </button>
+                            <button type="button" class="suggestion-card" data-prompt="Tell me about upcoming exam dates, schedules, and rules.">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                <div class="suggestion-text">
+                                    <strong>Upcoming Exams & Rules</strong>
+                                    <span>Timetable, room venues & attendance rules</span>
+                                </div>
+                            </button>
 
-                        <button type="button" class="suggestion-card" data-prompt="Tell me about VPCSC Indapur college, courses, and campus facilities.">
-                            <i class="fa-solid fa-building-columns"></i>
-                            <div class="suggestion-text">
-                                <strong>VPCSC Indapur Knowledge</strong>
-                                <span>SPPU affiliation, degrees, labs & facilities</span>
-                            </div>
+                            <button type="button" class="suggestion-card" data-prompt="Tell me about VPCSC Indapur college, courses, and campus facilities.">
+                                <i class="fa-solid fa-building-columns"></i>
+                                <div class="suggestion-text">
+                                    <strong>VPCSC Indapur Knowledge</strong>
+                                    <span>SPPU affiliation, degrees, labs & facilities</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- =====================================================
+                 JARVIS 3D ANIMATED FEMALE VOICE ASSISTANT STAGE
+            ====================================================== -->
+            <aside id="jarvis-avatar-stage" class="jarvis-avatar-stage state-idle" aria-label="3D Voice Assistant">
+                <!-- Top HUD Bar -->
+                <div class="jarvis-hud-header">
+                    <div class="jarvis-status-pill" id="jarvis-status-badge">
+                        <span class="jarvis-status-dot"></span>
+                        <span id="jarvis-status-text">ONLINE / IDLE</span>
+                    </div>
+                    <div class="jarvis-hud-actions">
+                        <button type="button" id="jarvis-expand-btn" class="jarvis-hud-btn" title="Toggle Fullscreen Voice Mode (ChatGPT Style)">
+                            <i class="fa-solid fa-expand"></i>
                         </button>
+                        <button type="button" id="jarvis-camera-btn" class="jarvis-hud-btn" title="Toggle Camera View (Head / Upper)">
+                            <i class="fa-solid fa-camera-rotate"></i>
+                        </button>
+                        <button type="button" id="jarvis-mute-btn" class="jarvis-hud-btn" title="Mute/Unmute Speech">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                        <button type="button" id="jarvis-close-btn" class="jarvis-hud-btn" title="Minimize Avatar">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <button type="button" id="jarvis-exit-fullscreen-btn" class="jarvis-exit-fullscreen-btn" title="Exit Fullscreen Voice Mode">
+                        <i class="fa-solid fa-xmark"></i>
+                        <span>Exit Voice Mode</span>
+                    </button>
+                </div>
+
+
+                <!-- 3D Canvas Viewport Container -->
+                <div class="jarvis-viewport-wrapper">
+                    <div id="jarvis-3d-viewport" class="jarvis-3d-viewport"></div>
+                    <div class="jarvis-hologram-ring"></div>
+                    <div class="jarvis-hologram-grid"></div>
+
+                    <!-- Subtitles Overlay -->
+                    <div id="jarvis-subtitles" class="jarvis-subtitles" style="display:none;"></div>
+
+                    <!-- Loading Overlay -->
+                    <div id="jarvis-loading-overlay" class="jarvis-loading-overlay">
+                        <div class="jarvis-spinner"></div>
+                        <p class="jarvis-loading-title">Materializing 3D Avatar...</p>
+                        <div class="jarvis-progress-track">
+                            <div id="jarvis-loading-progress" class="jarvis-progress-bar"></div>
+                        </div>
                     </div>
                 </div>
 
-            </div>
-        </main>
+                <!-- Bottom Controls & Voice Trigger -->
+                <div class="jarvis-hud-footer">
+                    <div class="jarvis-controls-row">
+                        <button type="button" id="jarvis-mic-btn" class="jarvis-talk-btn" title="Click to Speak">
+                            <i class="fa-solid fa-microphone"></i>
+                            <span>Push to Talk</span>
+                        </button>
+
+                        <label class="jarvis-wakeword-label" title="Continuously listens for 'Hey Campus'">
+                            <input type="checkbox" id="jarvis-wakeword-toggle" />
+                            <span class="jarvis-toggle-slider"></span>
+                            <span class="jarvis-toggle-text">"Hey Campus"</span>
+                        </label>
+                    </div>
+                    <div class="jarvis-model-tag">
+                        <i class="fa-solid fa-cube"></i> Ready Player Me &bull; ElevenLabs Voice
+                    </div>
+                </div>
+            </aside>
+        </div>
+
 
         <!-- =====================================================
              BOTTOM INPUT ANCHOR
@@ -158,7 +249,19 @@
                         <i class="fa-solid fa-microphone"></i>
                     </button>
 
+                    <!-- ChatGPT-style Fullscreen Voice Assistant Avatar Mode Button -->
+                    <button
+                        id="chat-avatar-mode-btn"
+                        class="chat-action-btn avatar-mode-btn"
+                        type="button"
+                        title="ChatGPT Voice Mode: Launch Fullscreen 3D Avatar"
+                        aria-label="Launch Fullscreen 3D Avatar Voice Mode"
+                    >
+                        <i class="fa-solid fa-headphones"></i>
+                    </button>
+
                     <!-- Send Button -->
+
                     <button
                         id="chat-send"
                         class="chat-action-btn send-btn"
@@ -196,7 +299,9 @@
     </div>
 
     <!-- Scripts -->
+    <script type="module" src="../js/voice-avatar.js"></script>
     <script src="../js/chatbot.js"></script>
 </body>
+
 
 </html>
