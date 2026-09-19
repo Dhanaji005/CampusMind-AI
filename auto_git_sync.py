@@ -51,7 +51,7 @@ def auto_sync_loop():
                     run_cmd("git add .")
 
                     # 2. Git commit
-                    commit_msg = f"Auto-Sync: {now_str} ({len(changed_files)} files updated)"
+                    commit_msg = "Update CampusMind AI"
                     code, c_out, _ = run_cmd(f'git commit -m "{commit_msg}"')
                     print(f"   ✓ Committed: {commit_msg}")
 

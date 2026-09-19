@@ -99,9 +99,11 @@ def health_check():
         "rag_pipeline": "Active (grounded VPCSC records & RAG engine)",
         "features": {
             "jwt_rbac": True,
-            "roles": ["guest", "student", "alumni", "faculty", "admin"],
+            "roles": ["guest", "student", "alumni", "faculty", "hod", "principal", "admin"],
             "year_detection": True,
-            "admin_document_uploads": True
+            "admin_document_uploads": True,
+            "attendance_engine": True,
+            "voice_assistant_3d": True
         }
     })
 

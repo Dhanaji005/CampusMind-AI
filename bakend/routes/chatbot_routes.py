@@ -34,7 +34,7 @@ def chatbot_status():
         "message": "CampusMind AI Intelligent Chatbot & RAG Engine is ready 🤖",
         "model": Config.OPENROUTER_MODEL,
         "features": [
-            "role-based-personas (guest, student, alumni, faculty, admin)",
+            "role-based-personas (guest, student, alumni, faculty, hod, principal, admin)",
             "rag-official-documents-grounding",
             "year-aware-curriculum-detection",
             "pdf-and-image-vision",

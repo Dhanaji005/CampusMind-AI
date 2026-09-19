@@ -80,8 +80,8 @@ Under the **Environment Variables** section on Render, add:
 ## 📋 Attendance System Quick Guide
 
 ### For Department HOD / Faculty:
-1. Login to **Admin / HOD Dashboard** (`/admin-dashboard.html`).
-2. Go to the **HOD Attendance** tab.
+1. Login to **Dedicated HOD Cockpit** (`/pages/hod-dashboard.html`) or **Admin Portal** (`/pages/admin-dashboard.html`).
+2. Go to the **Attendance Engine** tab.
 3. You have 2 options:
    - **Option A: Bulk Upload Attendance Sheet**
      - Click **Download Sample CSV Template** to get the standard format.

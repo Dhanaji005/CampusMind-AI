@@ -13,8 +13,9 @@ echo.
 echo [2/3] Adding changes and securing secrets...
 git add .
 
-set TIMESTAMP=%DATE% %TIME%
-git commit -m "Auto-update CampusMind AI: %TIMESTAMP%"
+set MSG=%*
+if "%MSG%"=="" set MSG=Update CampusMind AI
+git commit -m "%MSG%"
 
 echo.
 echo [3/3] Pushing to GitHub (origin main)...
