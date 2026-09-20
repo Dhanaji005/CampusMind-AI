@@ -1,6 +1,6 @@
 # 🎓 CampusMind AI — Intelligent Autonomous Campus Operating System & 3D Academic Companion
 
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge&logo=target)](https://github.com/Dhanaji005/CampusMind-AI-chatboat)
+[![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge&logo=target)](https://github.com/Dhanaji005/CampusMind-AI)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Flask Backend](https://img.shields.io/badge/Backend-Flask%20%7C%20REST%20API-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Three.js & 3D WebGL](https://img.shields.io/badge/3D%20Graphics-Three.js%20%7C%20Ready%20Player%20Me-049EF4?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
@@ -247,8 +247,8 @@ $$\text{Attendance Percentage} = \left( \frac{\text{Attended Lectures}}{\text{Co
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Dhanaji005/CampusMind-AI-chatboat.git
-cd CampusMind-AI-chatboat
+git clone https://github.com/Dhanaji005/CampusMind-AI.git
+cd CampusMind-AI
 ```
 
 ### 2. Configure Environment Variables
@@ -343,7 +343,7 @@ CampusMind AI is engineered to deploy **100% Free** on [Render.com](https://rend
 ## 📂 Project Structure
 
 ```
-CampusMind-AI-chatboat/
+CampusMind-AI/
 ├── .env.example                    # Global environment configuration template
 ├── .gitignore                      # Strict privacy & security exclusions
 ├── DEPLOYMENT_GUIDE.md             # Free cloud deployment handbook
@@ -445,7 +445,7 @@ CampusMind-AI-chatboat/
 - **Affiliation**: **Savitribai Phule Pune University (SPPU)**
 - **Category**: Research & Project Presentation / Avishkar
 - **Lead Developer**: Dhanaji Mali & Team
-- **Repository**: [https://github.com/Dhanaji005/CampusMind-AI-chatboat](https://github.com/Dhanaji005/CampusMind-AI-chatboat)
+- **Repository**: [https://github.com/Dhanaji005/CampusMind-AI](https://github.com/Dhanaji005/CampusMind-AI)
 
 ---
 
