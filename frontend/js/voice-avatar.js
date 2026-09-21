@@ -31,7 +31,8 @@ class VoiceAvatarController {
 
         // Default Ready Player Me female avatar fallback (jsDelivr CDN)
         this.defaultAvatarUrl = "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@main/avatars/brunette.glb";
-        this.localAvatarUrl = "/avatars/avatar.glb";
+        const isPagesSubdir = typeof window !== "undefined" && window.location.pathname.includes("/pages/");
+        this.localAvatarUrl = isPagesSubdir ? "../avatars/avatar.glb" : "avatars/avatar.glb";
 
     }
 
