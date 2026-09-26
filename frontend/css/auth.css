@@ -477,4 +477,321 @@ body {
         left: 20px;
     }
 
+    .anim-stage-card {
+        height: 180px;
+    }
+
 }
+
+/* =====================================================
+   CAMPUSMIND AI - ANIMATED 3D CHARACTER SIGN IN STAGE
+   Female Walking Character Animation (Height: 200px)
+   Matches codewithayansh warm peach-orange stage design (#f09a65)
+===================================================== */
+.anim-stage-card {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(145deg, #f7a474 0%, #ea8e5b 52%, #db7842 100%);
+    border-radius: 18px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        inset 0 -2px 10px rgba(180, 80, 20, 0.25),
+        0 12px 30px rgba(234, 142, 91, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stage-ambient-glow {
+    position: absolute;
+    top: -40px;
+    right: 20%;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 70%);
+    filter: blur(25px);
+    pointer-events: none;
+}
+
+.stage-floor-light {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to top, rgba(200, 95, 40, 0.4), transparent);
+    pointer-events: none;
+}
+
+.stage-floor-line {
+    position: absolute;
+    bottom: 34px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.3) 75%, transparent 100%);
+}
+
+.stage-particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.65);
+    pointer-events: none;
+    animation: particleFloat 6s ease-in-out infinite;
+}
+.stage-particle.p1 { width: 5px; height: 5px; top: 30px; left: 15%; animation-delay: 0s; }
+.stage-particle.p2 { width: 4px; height: 4px; top: 70px; left: 75%; animation-delay: 1.5s; }
+.stage-particle.p3 { width: 6px; height: 6px; top: 120px; left: 40%; animation-delay: 3s; }
+.stage-particle.p4 { width: 3px; height: 3px; top: 45px; left: 60%; animation-delay: 4.5s; }
+
+@keyframes particleFloat {
+    0%, 100% { transform: translateY(0) scale(0.8); opacity: 0.3; }
+    50% { transform: translateY(-12px) scale(1.2); opacity: 0.85; }
+}
+
+.character-track {
+    position: absolute;
+    bottom: 26px;
+    left: 0;
+    width: 100%;
+    height: 140px;
+    pointer-events: none;
+}
+
+.character-mover {
+    position: absolute;
+    bottom: 0;
+    left: -70px;
+    width: 110px;
+    height: 140px;
+    animation: characterWalkAcross 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform-origin: bottom center;
+}
+
+@keyframes characterWalkAcross {
+    0% {
+        left: -90px;
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        left: 420px;
+        opacity: 0;
+    }
+}
+
+.anim-stage-card.is-interacting .character-mover {
+    animation: none;
+    left: calc(50% - 55px);
+    opacity: 1;
+    transition: left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.character-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.char-shadow {
+    animation: shadowPulse 0.7s ease-in-out infinite alternate;
+    transform-origin: 55px 135px;
+}
+
+@keyframes shadowPulse {
+    0% { transform: scaleX(0.85) scaleY(0.9); opacity: 0.35; }
+    100% { transform: scaleX(1.15) scaleY(1.05); opacity: 0.55; }
+}
+
+.char-body {
+    animation: bodyBob 0.7s ease-in-out infinite alternate;
+    transform-origin: 55px 100px;
+}
+
+@keyframes bodyBob {
+    0% { transform: translateY(0) rotate(-0.5deg); }
+    100% { transform: translateY(-5px) rotate(0.8deg); }
+}
+
+.char-hair {
+    animation: hairBounce 0.7s ease-in-out infinite alternate;
+    transform-origin: 50px 30px;
+}
+
+@keyframes hairBounce {
+    0% { transform: rotate(-3deg) scaleY(0.98); }
+    100% { transform: rotate(5deg) scaleY(1.03); }
+}
+
+.char-leg-back {
+    animation: legSwingBack 0.7s ease-in-out infinite alternate;
+    transform-origin: 52px 90px;
+}
+
+@keyframes legSwingBack {
+    0% { transform: rotate(26deg); }
+    100% { transform: rotate(-24deg); }
+}
+
+.char-leg-front {
+    animation: legSwingFront 0.7s ease-in-out infinite alternate;
+    transform-origin: 58px 90px;
+}
+
+@keyframes legSwingFront {
+    0% { transform: rotate(-24deg); }
+    100% { transform: rotate(26deg); }
+}
+
+.char-arm-back {
+    animation: armSwingBack 0.7s ease-in-out infinite alternate;
+    transform-origin: 48px 54px;
+}
+
+@keyframes armSwingBack {
+    0% { transform: rotate(-24deg); }
+    100% { transform: rotate(24deg); }
+}
+
+.char-arm-front {
+    animation: armSwingFront 0.7s ease-in-out infinite alternate;
+    transform-origin: 62px 54px;
+}
+
+@keyframes armSwingFront {
+    0% { transform: rotate(18deg); }
+    100% { transform: rotate(-18deg); }
+}
+
+.char-briefcase {
+    animation: briefcaseSway 0.7s ease-in-out infinite alternate;
+    transform-origin: 76px 78px;
+}
+
+@keyframes briefcaseSway {
+    0% { transform: rotate(-10deg); }
+    100% { transform: rotate(12deg); }
+}
+
+.char-eye-open {
+    animation: blinkEyes 4s ease-in-out infinite;
+    transform-origin: 67px 35px;
+}
+
+@keyframes blinkEyes {
+    0%, 94%, 100% { transform: scaleY(1); opacity: 1; }
+    96%, 98% { transform: scaleY(0.1); opacity: 0; }
+}
+
+.char-eye-blink {
+    opacity: 0;
+    transform-origin: 67px 35px;
+    animation: blinkLine 4s ease-in-out infinite;
+}
+
+@keyframes blinkLine {
+    0%, 94%, 100% { opacity: 0; }
+    96%, 98% { opacity: 1; }
+}
+
+.char-hands-cover {
+    display: none;
+    transform-origin: 62px 35px;
+}
+
+/* Password Focus: Blindfold / No peeking */
+.anim-stage-card.state-password .char-hands-cover {
+    display: block;
+    animation: handsCoverUp 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+}
+.anim-stage-card.state-password .char-arm-front,
+.anim-stage-card.state-password .char-arm-back {
+    opacity: 0.25;
+    animation: none;
+}
+.anim-stage-card.state-password .char-leg-front,
+.anim-stage-card.state-password .char-leg-back {
+    animation-play-state: paused;
+}
+
+@keyframes handsCoverUp {
+    0% { transform: translateY(20px) scale(0.6); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Password Toggle: Peek */
+.anim-stage-card.state-peek .char-hands-cover {
+    display: block;
+    animation: handsPeek 0.3s ease-out forwards;
+}
+
+@keyframes handsPeek {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-4px) translateX(-3px) scale(0.92); }
+}
+
+/* Email Focus: Friendly Wave */
+.anim-stage-card.state-email .char-arm-front {
+    animation: armWave 0.9s ease-in-out infinite alternate;
+    transform-origin: 62px 54px;
+}
+.anim-stage-card.state-email .char-leg-front,
+.anim-stage-card.state-email .char-leg-back {
+    animation-play-state: paused;
+}
+
+@keyframes armWave {
+    0% { transform: rotate(-55deg); }
+    100% { transform: rotate(-80deg); }
+}
+
+/* Submitting State: Cheering */
+.anim-stage-card.state-submitting .char-body {
+    animation: bodyCheer 0.4s ease-in-out infinite alternate;
+}
+.anim-stage-card.state-submitting .char-arm-front {
+    animation: armCheer 0.4s ease-in-out infinite alternate;
+    transform-origin: 62px 54px;
+}
+@keyframes bodyCheer {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+@keyframes armCheer {
+    0% { transform: rotate(-80deg); }
+    100% { transform: rotate(-110deg); }
+}
+
+.stage-reaction-badge {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    color: #924016;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity: 0.95;
+    z-index: 5;
+}
+
+.stage-reaction-badge i {
+    font-size: 12px;
+    color: #e07436;
+}
