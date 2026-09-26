@@ -32,7 +32,7 @@
             Back to Home
         </a>
 
-        <div class="auth-container">
+        <div class="auth-container reel-container">
 
             <div class="auth-brand">
 
@@ -48,258 +48,221 @@
             </div>
 
 
-            <div class="auth-card">
+            <div class="auth-card reel-card">
 
-                <!-- Animated 3D Female Character Stage (Height: 200px, warm peach-orange #f09a65) -->
-                <div class="anim-stage-card" id="animStage">
-                    <div class="stage-ambient-glow"></div>
-                    <div class="stage-floor-light"></div>
-                    <div class="stage-floor-line"></div>
-                    
-                    <div class="stage-particle p1"></div>
-                    <div class="stage-particle p2"></div>
-                    <div class="stage-particle p3"></div>
-                    <div class="stage-particle p4"></div>
+                <!-- LEFT COLUMN: 3D Animated Female Character Stage -->
+                <div class="reel-character-col">
+                    <div class="anim-stage-card" id="animStage">
+                        <div class="stage-ambient-glow"></div>
+                        <div class="stage-floor-light"></div>
+                        <div class="stage-floor-line"></div>
+                        
+                        <div class="stage-particle p1"></div>
+                        <div class="stage-particle p2"></div>
+                        <div class="stage-particle p3"></div>
+                        <div class="stage-particle p4"></div>
 
-                    <!-- Dynamic Reaction Badge -->
-                    <div class="stage-reaction-badge" id="reactionBadge">
-                        <i class="fa-solid fa-person-walking"></i>
-                        <span id="reactionText">CampusMind AI</span>
-                    </div>
+                        <!-- Dynamic Reaction Badge -->
+                        <div class="stage-reaction-badge" id="reactionBadge">
+                            <i class="fa-solid fa-person-walking"></i>
+                            <span id="reactionText">CampusMind AI</span>
+                        </div>
 
-                    <!-- Character Moving Track -->
-                    <div class="character-track">
-                        <div class="character-mover" id="characterMover">
-                            <svg class="character-svg" viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="blazerGrad" x1="30" y1="40" x2="80" y2="85" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#f0f3fa" />
-                                        <stop offset="60%" stop-color="#d9e0f0" />
-                                        <stop offset="100%" stop-color="#bec8e0" />
-                                    </linearGradient>
-                                    <linearGradient id="pantsFrontGrad" x1="50" y1="85" x2="70" y2="135" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#2c3445" />
-                                        <stop offset="100%" stop-color="#1c212d" />
-                                    </linearGradient>
-                                    <linearGradient id="pantsBackGrad" x1="40" y1="85" x2="60" y2="135" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#212836" />
-                                        <stop offset="100%" stop-color="#141822" />
-                                    </linearGradient>
-                                    <linearGradient id="hairGrad" x1="30" y1="10" x2="75" y2="55" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#f5ce8c" />
-                                        <stop offset="40%" stop-color="#de9c43" />
-                                        <stop offset="100%" stop-color="#b67123" />
-                                    </linearGradient>
-                                    <linearGradient id="skinGrad" x1="50" y1="20" x2="75" y2="50" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#ffedd9" />
-                                        <stop offset="60%" stop-color="#fad1b6" />
-                                        <stop offset="100%" stop-color="#f3b895" />
-                                    </linearGradient>
-                                    <linearGradient id="briefcaseGrad" x1="65" y1="75" x2="90" y2="105" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#9a5229" />
-                                        <stop offset="70%" stop-color="#733714" />
-                                        <stop offset="100%" stop-color="#552409" />
-                                    </linearGradient>
-                                    <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
-                                        <stop offset="0%" stop-color="#8c3913" stop-opacity="0.45" />
-                                        <stop offset="70%" stop-color="#8c3913" stop-opacity="0.15" />
-                                        <stop offset="100%" stop-color="#8c3913" stop-opacity="0" />
-                                    </radialGradient>
-                                </defs>
+                        <!-- Character Moving Track -->
+                        <div class="character-track">
+                            <div class="character-mover" id="characterMover">
+                                <svg class="character-svg" viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="blazerGrad" x1="30" y1="40" x2="80" y2="85" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#f0f3fa" />
+                                            <stop offset="60%" stop-color="#d9e0f0" />
+                                            <stop offset="100%" stop-color="#bec8e0" />
+                                        </linearGradient>
+                                        <linearGradient id="pantsFrontGrad" x1="50" y1="85" x2="70" y2="135" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#2c3445" />
+                                            <stop offset="100%" stop-color="#1c212d" />
+                                        </linearGradient>
+                                        <linearGradient id="pantsBackGrad" x1="40" y1="85" x2="60" y2="135" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#212836" />
+                                            <stop offset="100%" stop-color="#141822" />
+                                        </linearGradient>
+                                        <linearGradient id="hairGrad" x1="30" y1="10" x2="75" y2="55" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#f5ce8c" />
+                                            <stop offset="40%" stop-color="#de9c43" />
+                                            <stop offset="100%" stop-color="#b67123" />
+                                        </linearGradient>
+                                        <linearGradient id="skinGrad" x1="50" y1="20" x2="75" y2="50" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#ffedd9" />
+                                            <stop offset="60%" stop-color="#fad1b6" />
+                                            <stop offset="100%" stop-color="#f3b895" />
+                                        </linearGradient>
+                                        <linearGradient id="briefcaseGrad" x1="65" y1="75" x2="90" y2="105" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#9a5229" />
+                                            <stop offset="70%" stop-color="#733714" />
+                                            <stop offset="100%" stop-color="#552409" />
+                                        </linearGradient>
+                                        <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0%" stop-color="#8c3913" stop-opacity="0.45" />
+                                            <stop offset="70%" stop-color="#8c3913" stop-opacity="0.15" />
+                                            <stop offset="100%" stop-color="#8c3913" stop-opacity="0" />
+                                        </radialGradient>
+                                    </defs>
 
-                                <!-- Ground Shadow under feet -->
-                                <ellipse class="char-shadow" cx="55" cy="138" rx="28" ry="7" fill="url(#shadowGrad)" />
+                                    <!-- Ground Shadow under feet -->
+                                    <ellipse class="char-shadow" cx="55" cy="138" rx="28" ry="7" fill="url(#shadowGrad)" />
 
-                                <!-- BACK LEG (Left Leg) -->
-                                <g class="char-leg-back" id="legBack">
-                                    <path d="M 52 86 Q 48 108 46 126 L 40 127 Q 44 105 48 86 Z" fill="url(#pantsBackGrad)" />
-                                    <path d="M 44 125 L 35 129 Q 32 133 37 135 L 50 135 Q 52 131 48 126 Z" fill="#e2e8f0" />
-                                    <path d="M 34 133 L 51 133 Q 51 136 49 136 L 35 136 Z" fill="#cbd5e1" />
-                                </g>
+                                    <!-- BACK LEG (Left Leg) -->
+                                    <g class="char-leg-back" id="legBack">
+                                        <path d="M 52 86 Q 48 108 46 126 L 40 127 Q 44 105 48 86 Z" fill="url(#pantsBackGrad)" />
+                                        <path d="M 44 125 L 35 129 Q 32 133 37 135 L 50 135 Q 52 131 48 126 Z" fill="#e2e8f0" />
+                                        <path d="M 34 133 L 51 133 Q 51 136 49 136 L 35 136 Z" fill="#cbd5e1" />
+                                    </g>
 
-                                <!-- BACK ARM (Left Arm) -->
-                                <g class="char-arm-back" id="armBack">
-                                    <path d="M 48 55 Q 40 68 36 82 L 42 84 Q 46 72 53 58 Z" fill="#bec8e0" />
-                                    <path d="M 37 82 Q 33 93 30 102 L 35 104 Q 39 95 42 84 Z" fill="url(#skinGrad)" />
-                                </g>
+                                    <!-- BACK ARM (Left Arm) -->
+                                    <g class="char-arm-back" id="armBack">
+                                        <path d="M 48 55 Q 40 68 36 82 L 42 84 Q 46 72 53 58 Z" fill="#bec8e0" />
+                                        <path d="M 37 82 Q 33 93 30 102 L 35 104 Q 39 95 42 84 Z" fill="url(#skinGrad)" />
+                                    </g>
 
-                                <!-- TORSO & HEAD GROUP (Bobbing) -->
-                                <g class="char-body">
-                                    <path d="M 46 82 Q 56 86 64 82 L 62 90 Q 55 93 47 90 Z" fill="#1c212d" />
-                                    <path d="M 46 54 Q 44 72 45 84 L 64 84 Q 65 72 63 54 Z" fill="url(#blazerGrad)" />
-                                    <path d="M 53 54 L 58 68 L 63 54 Z" fill="#ffffff" />
-                                    <path d="M 48 54 L 54 70 L 49 71 Z" fill="#d0d8ec" />
-                                    <path d="M 63 54 L 57 70 L 62 71 Z" fill="#bcc7df" />
-                                    <path d="M 53 44 H 59 V 55 H 53 Z" fill="url(#skinGrad)" />
+                                    <!-- TORSO & HEAD GROUP (Bobbing) -->
+                                    <g class="char-body">
+                                        <path d="M 46 82 Q 56 86 64 82 L 62 90 Q 55 93 47 90 Z" fill="#1c212d" />
+                                        <path d="M 46 54 Q 44 72 45 84 L 64 84 Q 65 72 63 54 Z" fill="url(#blazerGrad)" />
+                                        <path d="M 53 54 L 58 68 L 63 54 Z" fill="#ffffff" />
+                                        <path d="M 48 54 L 54 70 L 49 71 Z" fill="#d0d8ec" />
+                                        <path d="M 63 54 L 57 70 L 62 71 Z" fill="#bcc7df" />
+                                        <path d="M 53 44 H 59 V 55 H 53 Z" fill="url(#skinGrad)" />
 
-                                    <g id="headGroup">
-                                        <path class="char-hair" d="M 45 28 C 32 30 22 45 20 62 C 28 58 35 48 40 40 Z" fill="url(#hairGrad)" />
-                                        <ellipse cx="44" cy="30" rx="3" ry="4" fill="#ea580c" />
-                                        <path d="M 52 28 C 52 20 60 18 67 22 C 73 26 73 35 71 42 C 69 46 64 48 57 48 C 52 48 51 38 52 28 Z" fill="url(#skinGrad)" />
-                                        <ellipse cx="66" cy="38" rx="3.5" ry="2" fill="#f87171" opacity="0.45" />
+                                        <g id="headGroup">
+                                            <path class="char-hair" d="M 45 28 C 32 30 22 45 20 62 C 28 58 35 48 40 40 Z" fill="url(#hairGrad)" />
+                                            <ellipse cx="44" cy="30" rx="3" ry="4" fill="#ea580c" />
+                                            <path d="M 52 28 C 52 20 60 18 67 22 C 73 26 73 35 71 42 C 69 46 64 48 57 48 C 52 48 51 38 52 28 Z" fill="url(#skinGrad)" />
+                                            <ellipse cx="66" cy="38" rx="3.5" ry="2" fill="#f87171" opacity="0.45" />
 
-                                        <g class="char-eye-open" id="eyeOpen">
-                                            <ellipse cx="66" cy="32" rx="3" ry="3.5" fill="#1e293b" />
-                                            <circle cx="67" cy="31" r="1.1" fill="#ffffff" />
-                                            <circle cx="65" cy="33" r="0.6" fill="#ffffff" />
-                                            <path d="M 63 29 Q 67 27 70 30" stroke="#0f172a" stroke-width="1.2" stroke-linecap="round" fill="none" />
+                                            <g class="char-eye-open" id="eyeOpen">
+                                                <ellipse cx="66" cy="32" rx="3" ry="3.5" fill="#1e293b" />
+                                                <circle cx="67" cy="31" r="1.1" fill="#ffffff" />
+                                                <circle cx="65" cy="33" r="0.6" fill="#ffffff" />
+                                                <path d="M 63 29 Q 67 27 70 30" stroke="#0f172a" stroke-width="1.2" stroke-linecap="round" fill="none" />
+                                            </g>
+
+                                            <path class="char-eye-blink" d="M 63 32 Q 66 35 69 32" stroke="#0f172a" stroke-width="1.3" stroke-linecap="round" fill="none" />
+                                            <path d="M 63 26 Q 66 24 70 27" stroke="#9a5229" stroke-width="1.1" stroke-linecap="round" fill="none" />
+                                            <path d="M 66 42 Q 69 44 71 41" stroke="#b91c1c" stroke-width="1.1" stroke-linecap="round" fill="none" />
+                                            <path d="M 48 26 C 53 14 65 14 70 20 C 74 24 73 30 68 31 C 62 32 55 24 48 26 Z" fill="url(#hairGrad)" />
                                         </g>
 
-                                        <path class="char-eye-blink" d="M 63 32 Q 66 35 69 32" stroke="#0f172a" stroke-width="1.3" stroke-linecap="round" fill="none" />
-                                        <path d="M 63 26 Q 66 24 70 27" stroke="#9a5229" stroke-width="1.1" stroke-linecap="round" fill="none" />
-                                        <path d="M 66 42 Q 69 44 71 41" stroke="#b91c1c" stroke-width="1.1" stroke-linecap="round" fill="none" />
-                                        <path d="M 48 26 C 53 14 65 14 70 20 C 74 24 73 30 68 31 C 62 32 55 24 48 26 Z" fill="url(#hairGrad)" />
-                                    </g>
-
-                                    <!-- Hands Covering Eyes Rig -->
-                                    <g class="char-hands-cover" id="handsCover">
-                                        <g transform="translate(60, 26)">
-                                            <ellipse cx="3" cy="6" rx="5" ry="4" fill="#fad1b6" stroke="#f3b895" stroke-width="0.8" />
-                                            <path d="M 1 4 L 1 8 M 4 4 L 4 8" stroke="#e0956b" stroke-width="0.6" stroke-linecap="round" />
-                                            <ellipse cx="9" cy="6" rx="5" ry="4" fill="#ffedd9" stroke="#fad1b6" stroke-width="0.8" />
-                                            <path d="M 7 4 L 7 8 M 10 4 L 10 8" stroke="#e0956b" stroke-width="0.6" stroke-linecap="round" />
+                                        <!-- Hands Covering Eyes Rig -->
+                                        <g class="char-hands-cover" id="handsCover">
+                                            <g transform="translate(60, 26)">
+                                                <ellipse cx="3" cy="6" rx="5" ry="4" fill="#fad1b6" stroke="#f3b895" stroke-width="0.8" />
+                                                <path d="M 1 4 L 1 8 M 4 4 L 4 8" stroke="#e0956b" stroke-width="0.6" stroke-linecap="round" />
+                                                <ellipse cx="9" cy="6" rx="5" ry="4" fill="#ffedd9" stroke="#fad1b6" stroke-width="0.8" />
+                                                <path d="M 7 4 L 7 8 M 10 4 L 10 8" stroke="#e0956b" stroke-width="0.6" stroke-linecap="round" />
+                                            </g>
                                         </g>
                                     </g>
-                                </g>
 
-                                <!-- FRONT LEG (Right Leg) -->
-                                <g class="char-leg-front" id="legFront">
-                                    <path d="M 58 86 Q 62 108 66 126 L 60 127 Q 56 106 54 86 Z" fill="url(#pantsFrontGrad)" />
-                                    <path d="M 64 125 L 75 129 Q 78 133 73 135 L 59 135 Q 58 131 62 126 Z" fill="#ffffff" />
-                                    <path d="M 58 133 L 75 133 Q 76 136 74 136 L 59 136 Z" fill="#94a3b8" />
-                                    <path d="M 65 129 L 69 133" stroke="#ea580c" stroke-width="1.2" stroke-linecap="round" />
-                                </g>
-
-                                <!-- FRONT ARM (Right Arm) Holding Briefcase -->
-                                <g class="char-arm-front" id="armFront">
-                                    <path d="M 58 55 Q 66 68 71 80 L 65 83 Q 61 70 54 58 Z" fill="url(#blazerGrad)" />
-                                    <path d="M 70 80 Q 73 88 75 94 L 78 93 Q 76 86 73 80 Z" fill="url(#skinGrad)" />
-
-                                    <g class="char-briefcase" id="briefcaseGroup">
-                                        <path d="M 75 88 Q 76 83 78 88" stroke="#552409" stroke-width="2" stroke-linecap="round" fill="none" />
-                                        <rect x="67" y="88" width="22" height="17" rx="3.5" fill="url(#briefcaseGrad)" />
-                                        <path d="M 67 94 H 89" stroke="#4a1e06" stroke-width="1" />
-                                        <rect x="76.5" y="93" width="3" height="3.5" rx="0.8" fill="#fbbf24" stroke="#d97706" stroke-width="0.5" />
-                                        <path d="M 84 94 L 85 100" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+                                    <!-- FRONT LEG (Right Leg) -->
+                                    <g class="char-leg-front" id="legFront">
+                                        <path d="M 58 86 Q 62 108 66 126 L 60 127 Q 56 106 54 86 Z" fill="url(#pantsFrontGrad)" />
+                                        <path d="M 64 125 L 75 129 Q 78 133 73 135 L 59 135 Q 58 131 62 126 Z" fill="#ffffff" />
+                                        <path d="M 58 133 L 75 133 Q 76 136 74 136 L 59 136 Z" fill="#94a3b8" />
+                                        <path d="M 65 129 L 69 133" stroke="#ea580c" stroke-width="1.2" stroke-linecap="round" />
                                     </g>
-                                </g>
-                            </svg>
+
+                                    <!-- FRONT ARM (Right Arm) Holding Briefcase -->
+                                    <g class="char-arm-front" id="armFront">
+                                        <path d="M 58 55 Q 66 68 71 80 L 65 83 Q 61 70 54 58 Z" fill="url(#blazerGrad)" />
+                                        <path d="M 70 80 Q 73 88 75 94 L 78 93 Q 76 86 73 80 Z" fill="url(#skinGrad)" />
+
+                                        <g class="char-briefcase" id="briefcaseGroup">
+                                            <path d="M 75 88 Q 76 83 78 88" stroke="#552409" stroke-width="2" stroke-linecap="round" fill="none" />
+                                            <rect x="67" y="88" width="22" height="17" rx="3.5" fill="url(#briefcaseGrad)" />
+                                            <path d="M 67 94 H 89" stroke="#4a1e06" stroke-width="1" />
+                                            <rect x="76.5" y="93" width="3" height="3.5" rx="0.8" fill="#fbbf24" stroke="#d97706" stroke-width="0.5" />
+                                            <path d="M 84 94 L 85 100" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <h1>Welcome back</h1>
-
-                <p class="auth-subtitle">
-                    Sign in to continue your CampusMind journey.
-                </p>
-
-
-                <form id="signinForm">
-
-                    <div class="form-group">
-
-                        <label for="signinEmail">
-                            Email Address
-                        </label>
-
-                        <div class="input-box">
-
-                            <i class="fa-regular fa-envelope"></i>
-
-                            <input
-                                type="email"
-                                id="signinEmail"
-                                placeholder="you@example.com"
-                                required
-                            >
-
-                        </div>
-
+                <!-- RIGHT COLUMN: Login Form exactly matching the reel thumbnail -->
+                <div class="reel-form-col">
+                    <div class="reel-form-header">
+                        <h1 class="reel-form-title">Login Form</h1>
+                        <p class="reel-form-subtitle">Sign in to continue your CampusMind journey</p>
                     </div>
 
+                    <form id="signinForm">
 
-                    <div class="form-group">
+                        <div class="reel-input-group form-group">
+                            <div class="reel-pill-box input-box">
+                                <i class="fa-regular fa-user"></i>
+                                <input
+                                    type="email"
+                                    id="signinEmail"
+                                    placeholder="Username / Email"
+                                    required
+                                >
+                            </div>
+                        </div>
 
-                        <div class="label-row">
+                        <div class="reel-input-group form-group">
+                            <div class="reel-pill-box input-box">
+                                <i class="fa-solid fa-lock"></i>
+                                <input
+                                    type="password"
+                                    id="signinPassword"
+                                    placeholder="Password"
+                                    required
+                                >
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-target="signinPassword"
+                                    title="Show/Hide Password">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
 
-                            <label for="signinPassword">
-                                Password
+                        <div class="reel-options-row">
+                            <label class="reel-remember terms remember">
+                                <input type="checkbox">
+                                <span>Remember me</span>
                             </label>
 
-                            <a href="#" id="forgotPassword">
-                                Forgot password?
+                            <a href="#" id="forgotPassword" class="reel-forgot-link">
+                                Forgot Password?
                             </a>
-
                         </div>
 
+                        <button
+                            type="submit"
+                            class="reel-login-btn auth-button">
+                            <span>Login</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
 
-                        <div class="input-box">
-
-                            <i class="fa-solid fa-lock"></i>
-
-                            <input
-                                type="password"
-                                id="signinPassword"
-                                placeholder="Enter your password"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-target="signinPassword">
-
-                                <i class="fa-regular fa-eye"></i>
-
-                            </button>
-
+                        <div
+                            id="signinMessage"
+                            class="form-message"
+                            style="margin-top: 14px;">
                         </div>
 
-                    </div>
+                    </form>
 
+                    <a href="signup.html" class="reel-switch-auth switch-auth">
+                        New to CampusMind? Create Account
+                    </a>
 
-                    <label class="terms remember">
-
-                        <input type="checkbox">
-
-                        <span>
-                            Remember me
-                        </span>
-
-                    </label>
-
-
-                    <button
-                        type="submit"
-                        class="auth-button">
-
-                        Sign In
-
-                        <i class="fa-solid fa-arrow-right"></i>
-
-                    </button>
-
-
-                    <div
-                        id="signinMessage"
-                        class="form-message">
-                    </div>
-
-                </form>
-
-
-                <div class="auth-divider">
-                    <span>New to CampusMind?</span>
                 </div>
 
-
-                <a href="signup.html" class="switch-auth">
-                    Create an Account
-                </a>
-
             </div>
-
 
             <p class="auth-footer">
                 © 2026 CampusMind AI • Built for smarter learning
